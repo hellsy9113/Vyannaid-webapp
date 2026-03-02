@@ -1,0 +1,318 @@
+/* ControlledRespiration.css */
+
+.cr-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    width: 100%;
+    background-color: #FAFAFB;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: #1A2234;
+    position: relative;
+    overflow-x: hidden;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+.cr-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 1.25rem;
+    width: 100%;
+    margin: 0;
+    box-sizing: border-box;
+    position: relative;
+    z-index: 20;
+}
+
+.cr-icon-btn {
+    background: #F1F3F5;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    color: #1A2234;
+    transition: background-color 0.2s;
+}
+
+.cr-icon-btn:hover {
+    background: #E5E7EB;
+}
+
+.cr-brand {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    color: #64748B;
+    text-transform: uppercase;
+}
+
+/* Base Mobile Layout (< 768px) */
+.cr-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin: 0 auto;
+    padding: 1rem 1.5rem 2.5rem 1.5rem;
+    box-sizing: border-box;
+    position: relative;
+    z-index: 10;
+}
+
+.cr-phase-title {
+    font-size: 2.5rem;
+    font-weight: 300;
+    margin: 0 0 2.5rem 0;
+    color: #0F172A;
+    text-align: center;
+    z-index: 15;
+}
+
+/* Base Breathing Circles */
+.cr-circle-wrapper {
+    position: relative;
+    width: 260px;
+    height: 260px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 0 2.5rem 0;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: width 0.3s ease, height 0.3s ease;
+    z-index: 5;
+}
+
+.cr-circle-outer,
+.cr-circle-middle,
+.cr-circle-inner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    border-radius: 50%;
+    transform-origin: center;
+    transition: transform 4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.cr-circle-outer {
+    width: 100%;
+    height: 100%;
+    background-color: #F8F9FA;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.02);
+}
+
+.cr-circle-middle {
+    width: 80%;
+    height: 80%;
+    background-color: #F1F3F5;
+    box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.03);
+}
+
+.cr-circle-inner {
+    width: 60%;
+    height: 60%;
+    background: linear-gradient(135deg, #E2E8F0 0%, #F8FAFC 100%);
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.02), 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+/* Animations */
+.cr-circle-outer.expand {
+    transform: scale(1.15);
+}
+
+.cr-circle-outer.contract {
+    transform: scale(1);
+}
+
+.cr-circle-middle.expand {
+    transform: scale(1.2);
+}
+
+.cr-circle-middle.contract {
+    transform: scale(1);
+}
+
+.cr-circle-inner.expand {
+    transform: scale(1.25);
+}
+
+.cr-circle-inner.contract {
+    transform: scale(1);
+}
+
+
+/* Base Timer Display */
+.cr-timer-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 0 0 1.5rem 0;
+    z-index: 15;
+}
+
+.cr-time-box {
+    background-color: #F4F6F8;
+    border: 1px solid #EBEFF3;
+    border-radius: 16px;
+    width: 80px;
+    height: 90px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.01);
+}
+
+.cr-time-num {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #0F172A;
+    margin-bottom: 4px;
+}
+
+.cr-time-label {
+    font-size: 0.6rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: #94A3B8;
+}
+
+.cr-time-colon {
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: #CBD5E1;
+    padding-bottom: 1rem;
+}
+
+/* Base Instructions */
+.cr-instruction {
+    text-align: center;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #64748B;
+    max-width: 280px;
+    margin: 0;
+    z-index: 15;
+}
+
+.cr-bottom-bar {
+    display: none;
+}
+
+/* Tablet & Desktop Fullscreen Mode */
+@media (min-width: 768px) {
+    .cr-container {
+        height: 100vh;
+        overflow: hidden;
+    }
+
+    .cr-header {
+        padding: 2rem 3rem;
+    }
+
+    .cr-main {
+        padding: 0;
+        /* Center circle exactly in the screen mathematically, overriding flex flow */
+    }
+
+    .cr-phase-title {
+        position: absolute;
+        top: 2rem;
+        left: 3rem;
+        font-size: 2rem;
+        margin: 0;
+        text-align: left;
+    }
+
+    .cr-timer-wrapper {
+        position: absolute;
+        bottom: 3rem;
+        left: 3rem;
+        margin: 0;
+        gap: 1.5rem;
+    }
+
+    .cr-instruction {
+        position: absolute;
+        bottom: 3rem;
+        right: 3rem;
+        margin: 0;
+        text-align: right;
+        font-size: 1rem;
+        max-width: 250px;
+    }
+
+    .cr-circle-wrapper {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        margin: auto;
+        /* shift up slightly to perfectly align visual center ignoring header */
+        transform: translateY(-2rem);
+        width: 55vmin;
+        height: 55vmin;
+        max-width: 420px;
+        max-height: 420px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .cr-header {
+        padding: 2.5rem 4rem;
+    }
+
+    .cr-phase-title {
+        top: 2rem;
+        left: 4rem;
+        font-size: 2.5rem;
+    }
+
+    .cr-timer-wrapper {
+        bottom: 4rem;
+        left: 4rem;
+        gap: 1.5rem;
+    }
+
+    .cr-instruction {
+        bottom: 4rem;
+        right: 4rem;
+        font-size: 1rem;
+        max-width: 300px;
+    }
+
+    .cr-circle-wrapper {
+        width: 65vmin;
+        height: 65vmin;
+        max-width: 580px;
+        max-height: 580px;
+        transform: translateY(-2.5rem);
+    }
+
+    .cr-time-box {
+        width: 80px;
+        height: 90px;
+        border-radius: 16px;
+    }
+
+    .cr-time-num {
+        font-size: 2rem;
+    }
+
+    .cr-time-label {
+        font-size: 0.75rem;
+    }
+}

@@ -1,0 +1,15 @@
+
+> serene-campus@0.0.0 build
+> vite build
+
+[36mvite v7.3.1 [32mbuilding client environment for production...[36m[39m
+transforming...
+[32m✓[39m 1833 modules transformed.
+rendering chunks...
+computing gzip size...
+[2mdist/[22m[32mindex.html                        [39m[1m[2m    0.45 kB[22m[1m[22m[2m │ gzip:   0.30 kB[22m
+[2mdist/[22m[32massets/aariv-avatar-DIDX8Q3M.png  [39m[1m[2m  367.22 kB[22m[1m[22m
+[2mdist/[22m[32massets/hero-image-93M-91J9.png    [39m[1m[2m2,147.57 kB[22m[1m[22m
+[2mdist/[22m[35massets/index-C8eK3kUp.css         [39m[1m[2m   52.28 kB[22m[1m[22m[2m │ gzip:   9.63 kB[22m
+[2mdist/[22m[36massets/index-UHDTEwRV.js          [39m[1m[2m  331.48 kB[22m[1m[22m[2m │ gzip: 105.57 kB[22m
+[32m✓ built in 2.33s[39m

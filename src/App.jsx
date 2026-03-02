@@ -146,25 +146,27 @@ import CoreConnections from "./components/LandingPage/CoreConnections";
 import CTA from "./components/LandingPage/CTA";
 
 // Auth pages
-import Login    from "./pages/Login";
+import Login from "./pages/Login";
 import Register from "./pages/Register";
 
 // Role dashboards
-import Dashboard          from "./pages/Dashboard";
+import Dashboard from "./pages/Dashboard";
 import CounsellorDashboard from "./pages/CounsellorDashboard";
-import AdminDashboard      from "./pages/AdminDashboard";
+import AdminDashboard from "./pages/AdminDashboard";
 
 // Student sub-pages
-import Community    from "./pages/Community";
+import Community from "./pages/Community";
 import Appointments from "./pages/Appointments";
-import Activities   from "./pages/Activities";
-import Analytics    from "./pages/Analytics";
-import Chatbot      from "./pages/Chatbot";
+import Activities from "./pages/Activities";
+import Analytics from "./pages/Analytics";
+import Chatbot from "./pages/Chatbot";
+import VolunteerChat from "./pages/VolunteerChat";
+import ControlledRespiration from "./pages/ControlledRespiration";
 
 const ROLE_HOME = {
-  admin:      "/dashboard/admin",
+  admin: "/dashboard/admin",
   counsellor: "/dashboard/counsellor",
-  student:    "/dashboard/student",
+  student: "/dashboard/student",
 };
 
 const Home = () => (
@@ -200,18 +202,20 @@ function App() {
 
           {/* ── Public (with landing Navbar/Footer) ── */}
           <Route element={<LandingLayout />}>
-            <Route path="/"          element={<HomeRoute />} />
-            <Route path="/login"     element={<GuestOnly><Login /></GuestOnly>} />
-            <Route path="/register"  element={<GuestOnly><Register /></GuestOnly>} />
+            <Route path="/" element={<HomeRoute />} />
+            <Route path="/login" element={<GuestOnly><Login /></GuestOnly>} />
+            <Route path="/register" element={<GuestOnly><Register /></GuestOnly>} />
           </Route>
 
           {/* ── Student ── */}
-          <Route path="/dashboard/student"      element={<ProtectedRoute allowedRoles={["student"]}><Dashboard /></ProtectedRoute>} />
-          <Route path="/dashboard/community"    element={<ProtectedRoute allowedRoles={["student"]}><Community /></ProtectedRoute>} />
+          <Route path="/dashboard/student" element={<ProtectedRoute allowedRoles={["student"]}><Dashboard /></ProtectedRoute>} />
+          <Route path="/dashboard/community" element={<ProtectedRoute allowedRoles={["student"]}><Community /></ProtectedRoute>} />
           <Route path="/dashboard/appointments" element={<ProtectedRoute allowedRoles={["student"]}><Appointments /></ProtectedRoute>} />
-          <Route path="/dashboard/activities"   element={<ProtectedRoute allowedRoles={["student"]}><Activities /></ProtectedRoute>} />
-          <Route path="/dashboard/analytics"    element={<ProtectedRoute allowedRoles={["student"]}><Analytics /></ProtectedRoute>} />
-          <Route path="/dashboard/chatbot"      element={<ProtectedRoute allowedRoles={["student"]}><Chatbot /></ProtectedRoute>} />
+          <Route path="/dashboard/activities" element={<ProtectedRoute allowedRoles={["student"]}><Activities /></ProtectedRoute>} />
+          <Route path="/dashboard/analytics" element={<ProtectedRoute allowedRoles={["student"]}><Analytics /></ProtectedRoute>} />
+          <Route path="/dashboard/chatbot" element={<ProtectedRoute allowedRoles={["student"]}><Chatbot /></ProtectedRoute>} />
+          <Route path="/dashboard/volunteer-chat" element={<ProtectedRoute allowedRoles={["student"]}><VolunteerChat /></ProtectedRoute>} />
+          <Route path="/dashboard/controlled-respiration" element={<ProtectedRoute allowedRoles={["student"]}><ControlledRespiration /></ProtectedRoute>} />
 
           {/* ── Counsellor ── */}
           <Route path="/dashboard/counsellor" element={<ProtectedRoute allowedRoles={["counsellor"]}><CounsellorDashboard /></ProtectedRoute>} />

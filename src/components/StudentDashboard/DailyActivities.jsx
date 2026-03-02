@@ -1,9 +1,10 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Wind, Anchor, Headphones, Book, ChevronRight } from 'lucide-react';
 import './DailyActivities.css';
 
-const ActivityCard = ({ icon: Icon, title, meta }) => (
-    <div className="activity-card">
+const ActivityCard = ({ icon: Icon, title, meta, onClick }) => (
+    <div className="activity-card" onClick={onClick} style={onClick ? { cursor: 'pointer' } : {}}>
         <div className="activity-icon-area">
             <div className="activity-icon-circle">
                 <Icon size={20} strokeWidth={2} />
@@ -20,6 +21,8 @@ const ActivityCard = ({ icon: Icon, title, meta }) => (
 );
 
 const DailyActivities = () => {
+    const navigate = useNavigate();
+
     return (
         <section className="activities-section">
             <div className="activities-header">
@@ -31,6 +34,7 @@ const DailyActivities = () => {
                     icon={Wind}
                     title="Controlled Respiration"
                     meta="5m • Calibrate response"
+                    onClick={() => navigate('/dashboard/controlled-respiration')}
                 />
                 <ActivityCard
                     icon={Anchor}

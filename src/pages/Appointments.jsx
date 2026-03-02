@@ -1,9 +1,11 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '../components/StudentDashboard/DashboardLayout';
 import { Video, MoreVertical, MessageSquare, HeartHandshake, Bot, Phone } from 'lucide-react';
 import './Appointments.css';
 
 const Appointments = () => {
+    const navigate = useNavigate();
     return (
         <DashboardLayout>
             <div className="appointments-page">
@@ -87,11 +89,11 @@ const Appointments = () => {
 
                 {/* Quick Actions (Navy Side-by-Side Cards) */}
                 <div className="quick-actions-grid">
-                    <button className="navy-action-btn">
+                    <button className="navy-action-btn" onClick={() => navigate('/dashboard/volunteer-chat')}>
                         <HeartHandshake size={20} />
                         <span>Talk to<br />Volunteer</span>
                     </button>
-                    <button className="navy-action-btn">
+                    <button className="navy-action-btn" onClick={() => navigate('/dashboard/chatbot')}>
                         <Bot size={20} />
                         <span>Talk to AI<br />Companion</span>
                     </button>

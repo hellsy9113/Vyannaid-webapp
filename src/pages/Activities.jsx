@@ -2,9 +2,11 @@ import React from 'react';
 import DashboardLayout from '../components/StudentDashboard/DashboardLayout';
 import AarivBanner from '../components/StudentDashboard/AarivBanner';
 import { Play, Wind, PersonStanding, Headphones, BookOpen } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import './Activities.css';
 
 const Activities = () => {
+    const navigate = useNavigate();
     return (
         <DashboardLayout>
             <div className="activities-page">
@@ -39,7 +41,7 @@ const Activities = () => {
 
                 <div className="practices-list">
                     {/* Practice 1 */}
-                    <div className="practice-item-card">
+                    <div className="practice-item-card" onClick={() => navigate('/dashboard/controlled-respiration')} style={{ cursor: 'pointer' }}>
                         <div className="practice-icon-wrapper">
                             <Wind size={24} color="#1A2234" />
                         </div>
