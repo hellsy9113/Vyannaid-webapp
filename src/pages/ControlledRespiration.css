@@ -109,22 +109,22 @@
 .cr-circle-outer {
     width: 100%;
     height: 100%;
-    background-color: #F8F9FA;
-    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.02);
+    background-color: #F1F5F9;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.05);
 }
 
 .cr-circle-middle {
     width: 80%;
     height: 80%;
-    background-color: #F1F3F5;
-    box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.03);
+    background-color: #E2E8F0;
+    box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.05);
 }
 
 .cr-circle-inner {
     width: 60%;
     height: 60%;
-    background: linear-gradient(135deg, #E2E8F0 0%, #F8FAFC 100%);
-    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.02), 0 4px 20px rgba(0, 0, 0, 0.05);
+    background: linear-gradient(135deg, #CBD5E1 0%, #E2E8F0 100%);
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05), 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
 /* Animations */
@@ -203,8 +203,115 @@
     line-height: 1.5;
     color: #64748B;
     max-width: 280px;
-    margin: 0;
+    margin: 1.5rem 0 0 0;
     z-index: 15;
+}
+
+/* Timer Controls */
+.cr-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+    z-index: 15;
+    width: 100%;
+}
+
+.cr-time-presets {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.cr-preset-btn {
+    background-color: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #64748B;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.cr-preset-btn:hover {
+    background-color: #F1F5F9;
+}
+
+.cr-preset-btn.active {
+    background-color: #1A2234;
+    color: white;
+    border-color: #1A2234;
+}
+
+.cr-edit-input {
+    width: 60px;
+    height: 40px;
+    text-align: center;
+    border: none;
+    background: transparent;
+    font-family: inherit;
+    outline: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* Hide arrows from number input */
+.cr-edit-input::-webkit-outer-spin-button,
+.cr-edit-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.cr-edit-input[type=number] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+.cr-action-buttons {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.cr-action-btn {
+    background: white;
+    border: 1px solid #E2E8F0;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    color: #1A2234;
+    transition: all 0.2s;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.cr-action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+}
+
+.cr-play-btn {
+    width: 65px;
+    height: 65px;
+    background-color: #1A2234;
+    color: white;
+    border: none;
+}
+
+.cr-play-btn:hover {
+    background-color: #2D3A54;
+}
+
+.cr-play-icon {
+    transform: translateX(2px);
+    /* visually center the play icon */
 }
 
 .cr-bottom-bar {
@@ -254,6 +361,18 @@
         max-width: 250px;
     }
 
+    .cr-controls {
+        position: absolute;
+        bottom: 12rem;
+        left: 3rem;
+        align-items: flex-start;
+        width: auto;
+    }
+
+    .cr-time-presets {
+        justify-content: flex-start;
+    }
+
     .cr-circle-wrapper {
         position: absolute;
         top: 0;
@@ -294,6 +413,11 @@
         max-width: 300px;
     }
 
+    .cr-controls {
+        bottom: 14rem;
+        left: 4rem;
+    }
+
     .cr-circle-wrapper {
         width: 65vmin;
         height: 65vmin;
@@ -315,4 +439,227 @@
     .cr-time-label {
         font-size: 0.75rem;
     }
+}
+
+/* Settings Panel */
+.cr-settings-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(15, 23, 42, 0.4);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 40;
+}
+
+.cr-settings-backdrop.open {
+    opacity: 1;
+    visibility: visible;
+}
+
+.cr-settings-panel {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 100%;
+    max-width: 360px;
+    height: 100vh;
+    background-color: #FAFAFB;
+    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.1);
+    z-index: 50;
+    transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+}
+
+.cr-settings-panel.open {
+    right: 0;
+}
+
+.cr-settings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid #E2E8F0;
+}
+
+.cr-settings-header h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #0F172A;
+    margin: 0;
+}
+
+.cr-settings-content {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    overflow-y: auto;
+}
+
+.cr-setting-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    background-color: white;
+    padding: 1rem;
+    border-radius: 12px;
+    border: 1px solid #F1F5F9;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+}
+
+.cr-setting-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.cr-setting-title {
+    font-weight: 600;
+    color: #1A2234;
+    font-size: 0.95rem;
+}
+
+.cr-setting-desc {
+    font-size: 0.75rem;
+    color: #64748B;
+}
+
+/* Custom CSS Toggle Switch */
+.cr-switch {
+    position: relative;
+    display: inline-block;
+    width: 48px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
+.cr-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.cr-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #CBD5E1;
+    transition: .4s;
+}
+
+.cr-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .4s;
+}
+
+input:checked+.cr-slider {
+    background-color: #1A2234;
+}
+
+input:focus+.cr-slider {
+    box-shadow: 0 0 1px #1A2234;
+}
+
+input:checked+.cr-slider:before {
+    transform: translateX(24px);
+}
+
+.cr-slider.round {
+    border-radius: 24px;
+}
+
+.cr-slider.round:before {
+    border-radius: 50%;
+}
+
+.cr-settings-section-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #94A3B8;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 1rem;
+    margin-bottom: -0.5rem;
+}
+
+.cr-preset-edit-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.cr-preset-edit-label,
+.cr-preset-edit-val {
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    padding: 0.5rem;
+    font-family: inherit;
+    outline: none;
+    color: #1A2234;
+    background: #F8FAFC;
+    transition: border-color 0.2s;
+}
+
+.cr-preset-edit-label:focus,
+.cr-preset-edit-val:focus {
+    border-color: #CBD5E1;
+}
+
+.cr-preset-edit-label {
+    flex: 1;
+    width: 100%;
+}
+
+.cr-preset-edit-time {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #64748B;
+    font-size: 0.85rem;
+}
+
+.cr-preset-edit-val {
+    width: 60px;
+    text-align: center;
+}
+
+.cr-save-settings-btn {
+    width: 100%;
+    padding: 0.85rem;
+    margin-top: 1rem;
+    background-color: #1A2234;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+    box-shadow: 0 4px 10px rgba(26, 34, 52, 0.15);
+}
+
+.cr-save-settings-btn:hover {
+    background-color: #2D3A54;
+    box-shadow: 0 6px 15px rgba(26, 34, 52, 0.2);
+}
+
+.cr-save-settings-btn:active {
+    transform: translateY(2px);
 }
