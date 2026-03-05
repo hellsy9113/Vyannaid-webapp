@@ -1,0 +1,151 @@
+.journaling-editor-page {
+    padding: 1.5rem 3rem 2rem 3rem;
+    width: 100%;
+    font-family: inherit;
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 100px);
+    /* Fill available height within DashboardLayout */
+}
+
+/* Header */
+.editor-header {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.editor-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: #64748b;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.editor-dot {
+    color: #cbd5e1;
+    font-size: 0.8rem;
+}
+
+.editor-time {
+    color: #64748b;
+}
+
+.editor-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.icon-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #64748b;
+    padding: 0.5rem;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.icon-btn:hover {
+    background-color: #f1f5f9;
+    color: #0f172a;
+}
+
+/* Main Editor Area */
+.editor-main {
+    flex-grow: 1;
+    /* Take up all remaining space */
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.editor-inline-prompt {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    background-color: transparent;
+    border-left: 3px solid #cbd5e1;
+    margin-bottom: 0.5rem;
+    width: 100%;
+}
+
+.editor-prompt-text {
+    font-size: 0.95rem;
+    color: #475569;
+    font-style: italic;
+}
+
+.editor-title-input {
+    border: none;
+    background: transparent;
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: #111827;
+    width: 100%;
+    outline: none;
+    font-family: inherit;
+}
+
+.editor-title-input::placeholder {
+    color: #94a3b8;
+}
+
+.editor-body-textarea {
+    border: none;
+    background: transparent;
+    font-size: 1.15rem;
+    line-height: 1.6;
+    color: #334155;
+    width: 100%;
+    flex-grow: 1;
+    /* Fill the rest of the main area */
+    outline: none;
+    resize: none;
+    font-family: inherit;
+}
+
+.editor-body-textarea::placeholder {
+    color: #94a3b8;
+}
+
+/* Bottom Meta / Signature */
+.editor-bottom-meta {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #f1f5f9;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.signature-line {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.5rem;
+}
+
+.written-by {
+    font-family: inherit;
+    font-style: italic;
+    color: #475569;
+    font-size: 1.1rem;
+}
+
+/* editor styling ends */
+
+@media (max-width: 768px) {
+    .journaling-editor-page {
+        padding: 1.5rem 1.5rem;
+    }
+
+    .editor-title-input {
+        font-size: 2rem;
+    }
+}

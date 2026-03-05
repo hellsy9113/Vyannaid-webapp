@@ -50,6 +50,7 @@ const DailyActivities = () => {
                     icon={Book}
                     title="Journaling"
                     meta="e.g. • Reflect"
+                    onClick={() => navigate('/dashboard/journaling')}
                 />
             </div>
         </section>

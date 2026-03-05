@@ -77,7 +77,7 @@ const Activities = () => {
                     </div>
 
                     {/* Practice 4 */}
-                    <div className="practice-item-card">
+                    <div className="practice-item-card" onClick={() => navigate('/dashboard/journaling')} style={{ cursor: 'pointer' }}>
                         <div className="practice-icon-wrapper">
                             <BookOpen size={24} color="#1A2234" />
                         </div>
