@@ -1,151 +1,332 @@
-.journaling-editor-page {
-    padding: 1.5rem 3rem 2rem 3rem;
-    width: 100%;
-    font-family: inherit;
-    display: flex;
-    flex-direction: column;
-    min-height: calc(100vh - 100px);
-    /* Fill available height within DashboardLayout */
+/* ── Page shell ─────────────────────────────────────────── */
+.je-page {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 1.5rem;
+  max-width: 720px;
+  min-height: calc(100vh - 80px);
 }
 
-/* Header */
-.editor-header {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    margin-bottom: 1rem;
+.je-loading {
+  padding: 2rem;
+  color: #94a3b8;
+  font-size: 0.95rem;
 }
 
-.editor-meta {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    color: #64748b;
-    font-size: 0.95rem;
-    font-weight: 500;
+/* ── Top bar ─────────────────────────────────────────────── */
+.je-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
 }
 
-.editor-dot {
-    color: #cbd5e1;
-    font-size: 0.8rem;
+.je-back-btn {
+  background: none;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  padding: 0.4rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  transition: background 0.15s, color 0.15s;
 }
 
-.editor-time {
-    color: #64748b;
+.je-back-btn:hover { background: #f1f5f9; color: #1a2234; }
+
+.je-save-area {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 }
 
-.editor-actions {
-    display: flex;
-    gap: 0.5rem;
+.je-error-inline {
+  font-size: 0.8rem;
+  color: #ef4444;
 }
 
-.icon-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: #64748b;
-    padding: 0.5rem;
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
+.je-saved-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.78rem;
+  color: #10b981;
+  font-weight: 600;
 }
 
-.icon-btn:hover {
-    background-color: #f1f5f9;
-    color: #0f172a;
+.je-last-saved {
+  font-size: 0.75rem;
+  color: #cbd5e1;
 }
 
-/* Main Editor Area */
-.editor-main {
-    flex-grow: 1;
-    /* Take up all remaining space */
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
+.je-save-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #1a2234;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 0.5rem 1.1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
 }
 
-.editor-inline-prompt {
-    display: flex;
-    align-items: center;
-    padding: 0.5rem 0.75rem;
-    background-color: transparent;
-    border-left: 3px solid #cbd5e1;
-    margin-bottom: 0.5rem;
-    width: 100%;
+.je-save-btn:hover:not(:disabled) { background: #2d3f5c; }
+.je-save-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* ── Meta row ────────────────────────────────────────────── */
+.je-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
 }
 
-.editor-prompt-text {
-    font-size: 0.95rem;
-    color: #475569;
-    font-style: italic;
+.je-date {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #374151;
 }
 
-.editor-title-input {
-    border: none;
-    background: transparent;
-    font-size: 2.5rem;
-    font-weight: 600;
-    color: #111827;
-    width: 100%;
-    outline: none;
-    font-family: inherit;
+.je-time {
+  font-size: 0.8rem;
+  color: #94a3b8;
 }
 
-.editor-title-input::placeholder {
-    color: #94a3b8;
+.je-edited-badge {
+  font-size: 0.75rem;
+  color: #cbd5e1;
+  font-style: italic;
 }
 
-.editor-body-textarea {
-    border: none;
-    background: transparent;
-    font-size: 1.15rem;
-    line-height: 1.6;
-    color: #334155;
-    width: 100%;
-    flex-grow: 1;
-    /* Fill the rest of the main area */
-    outline: none;
-    resize: none;
-    font-family: inherit;
+.je-wordcount {
+  margin-left: auto;
+  font-size: 0.78rem;
+  color: #cbd5e1;
+  transition: color 0.2s;
 }
 
-.editor-body-textarea::placeholder {
-    color: #94a3b8;
+.je-wordcount-warn {
+  color: #f59e0b;
+  font-weight: 600;
 }
 
-/* Bottom Meta / Signature */
-.editor-bottom-meta {
-    margin-top: 2rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid #f1f5f9;
-    display: flex;
-    justify-content: flex-end;
+.je-wordcount-limit {
+  color: #ef4444;
+  font-weight: 700;
 }
 
-.signature-line {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 0.5rem;
+.je-body-textarea.at-limit {
+  caret-color: #ef4444;
 }
 
-.written-by {
-    font-family: inherit;
-    font-style: italic;
-    color: #475569;
-    font-size: 1.1rem;
+/* ── Writing area ────────────────────────────────────────── */
+.je-writing-area {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  flex: 1;
 }
 
-/* editor styling ends */
+.je-title-input {
+  width: 100%;
+  border: none;
+  outline: none;
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #1a2234;
+  background: transparent;
+  padding: 0;
+  letter-spacing: -0.02em;
+  font-family: inherit;
+}
 
-@media (max-width: 768px) {
-    .journaling-editor-page {
-        padding: 1.5rem 1.5rem;
-    }
+.je-title-input::placeholder { color: #e2e8f0; }
 
-    .editor-title-input {
-        font-size: 2rem;
-    }
+/* ── Prompt bubble ───────────────────────────────────────── */
+.je-prompt-bubble {
+  background: #f8fafc;
+  border-left: 3px solid #1a2234;
+  border-radius: 0 10px 10px 0;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.je-prompt-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #94a3b8;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.je-prompt-bubble p {
+  font-size: 0.9rem;
+  color: #374151;
+  margin: 0.25rem 0 0;
+  font-style: italic;
+  line-height: 1.5;
+}
+
+/* ── Body textarea ───────────────────────────────────────── */
+.je-body-textarea {
+  width: 100%;
+  min-height: 420px;
+  border: none;
+  outline: none;
+  resize: none;
+  font-size: 1rem;
+  color: #374151;
+  line-height: 1.8;
+  background: transparent;
+  font-family: inherit;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.je-body-textarea::placeholder { color: #e2e8f0; }
+
+/* ── Tags row ────────────────────────────────────────────── */
+.je-tags-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #f1f5f9;
+  margin-top: 1rem;
+}
+
+.je-tag-icon { color: #94a3b8; margin-top: 4px; flex-shrink: 0; }
+
+.je-tag-area { flex: 1; }
+
+.je-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.je-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: #e0f2fe;
+  color: #0369a1;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.2rem 0.6rem;
+  border-radius: 99px;
+}
+
+.je-tag-remove {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #0369a1;
+  display: flex;
+  align-items: center;
+  padding: 0;
+}
+
+.je-tag-input {
+  border: none;
+  outline: none;
+  font-size: 0.82rem;
+  color: #374151;
+  background: transparent;
+  font-family: inherit;
+  min-width: 80px;
+  padding: 0.2rem 0;
+}
+
+.je-tag-input::placeholder { color: #cbd5e1; }
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .je-page { padding: 1rem; }
+  .je-title-input { font-size: 1.25rem; }
+  .je-save-area { gap: 0.4rem; }
+  .je-last-saved { display: none; }
+}
+
+/* ── Char limit toast ────────────────────────────────────── */
+.je-toast {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1900;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.85rem 1rem 0.85rem 1.1rem;
+  border-radius: 14px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  min-width: 260px;
+  max-width: 420px;
+  animation: je-toast-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes je-toast-in {
+  from { transform: translateX(-50%) translateY(60px); opacity: 0; }
+  to   { transform: translateX(-50%) translateY(0);    opacity: 1; }
+}
+
+.je-toast-warn {
+  background: #fffbeb;
+  border: 1px solid #fcd34d;
+}
+
+.je-toast-limit {
+  background: #fef2f2;
+  border: 1px solid #fca5a5;
+}
+
+.je-toast-icon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.je-toast-msg {
+  flex: 1;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.je-toast-warn .je-toast-msg  { color: #92400e; }
+.je-toast-limit .je-toast-msg { color: #991b1b; }
+
+.je-toast-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.75rem;
+  padding: 0.2rem 0.35rem;
+  border-radius: 6px;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+
+.je-toast-warn  .je-toast-close { color: #b45309; }
+.je-toast-limit .je-toast-close { color: #b91c1c; }
+
+.je-toast-warn  .je-toast-close:hover { background: #fef3c7; }
+.je-toast-limit .je-toast-close:hover { background: #fee2e2; }
+
+@media (max-width: 600px) {
+  .je-toast {
+    bottom: 5rem;
+    width: calc(100% - 2rem);
+    min-width: unset;
+  }
 }

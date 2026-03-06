@@ -209,6 +209,106 @@
   margin: 0;
 }
 
+/* ── Bottom Toast Alert ── */
+.mci-toast {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1900;
+  width: calc(100% - 2rem);
+  max-width: 420px;
+  background: #1a2234;
+  border-radius: 16px;
+  padding: 1rem 1rem 1rem 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.22);
+  cursor: pointer;
+  overflow: hidden;
+  animation: mci-toast-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  /* Leave room above mobile nav bars */
+  margin-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@keyframes mci-toast-in {
+  from { transform: translateX(-50%) translateY(80px); opacity: 0; }
+  to   { transform: translateX(-50%) translateY(0);    opacity: 1; }
+}
+
+.mci-toast:hover {
+  background: #243049;
+}
+
+.mci-toast-emoji {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.mci-toast-content {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.mci-toast-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.mci-toast-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mci-toast-hint {
+  font-size: 0.75rem;
+  color: #64b5f6;
+  font-weight: 500;
+}
+
+.mci-toast-close {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: #94a3b8;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.15s, color 0.15s;
+}
+
+.mci-toast-close:hover {
+  background: rgba(255, 255, 255, 0.18);
+  color: #f1f5f9;
+}
+
+/* Progress bar that shrinks as the countdown runs */
+.mci-toast-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background: #64b5f6;
+  border-radius: 0 0 0 16px;
+  transition: width 1s linear;
+}
+
 /* ── Mobile ── */
 @media (max-width: 480px) {
   .mci-card {
@@ -223,5 +323,13 @@
   .mci-emoji-btn {
     padding: 0.75rem 0.1rem 0.6rem;
     border-radius: 12px;
+  }
+
+  .mci-toast {
+    bottom: 5rem; /* above mobile bottom nav */
+  }
+
+  .mci-toast-title {
+    font-size: 0.82rem;
   }
 }
