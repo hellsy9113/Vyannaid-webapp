@@ -1,6 +1,7 @@
 import React from 'react';
-import { Home, Activity, Calendar, Users, Square } from 'lucide-react';
+import { Home, Activity, Calendar, Users, Square, Music } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
+
 import './Sidebar.css';
 
 const Sidebar = ({ isOpen, closeSidebar }) => {
@@ -48,6 +49,8 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
                     <Users size={20} strokeWidth={2} />
                     <span>Community</span>
                 </Link>
+               
+
             </nav>
 
         </aside>

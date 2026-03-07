@@ -45,6 +45,7 @@ const DailyActivities = () => {
                     icon={Headphones}
                     title="Calm Music"
                     meta="e.g. • Playlist"
+                   
                 />
                 <ActivityCard
                     icon={Book}
