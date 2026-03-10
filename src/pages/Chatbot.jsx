@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import DashboardLayout from '../components/StudentDashboard/DashboardLayout';
 import { Send, Mic, Settings, ArrowRight } from 'lucide-react';
-import aarivAvatar from '../assets/aariv-avatar.png'; // Assuming an avatar exists, I will use a placeholder if not
+// import aarivAvatar from '../assets/aariv-avatar.png'; // Assuming an avatar exists, I will use a placeholder if not
 import './Chatbot.css';
 
 const Chatbot = () => {
@@ -20,10 +20,10 @@ const Chatbot = () => {
                 {/* Header */}
                 <div className="chatbot-header">
                     <div className="aariv-profile-info">
-                        <img src={aarivAvatar} alt="Aariv Avatar" className="aariv-avatar-img" onError={(e) => {
+                        {/* <img src={} alt="Aariv Avatar" className="aariv-avatar-img" onError={(e) => {
                             e.target.onerror = null;
                             e.target.src = 'https://ui-avatars.com/api/?name=Aariv&background=1E293B&color=fff&rounded=true'
-                        }} />
+                        }} /> */}
                         <div className="aariv-header-text">
                             <h3>Aariv</h3>
                             <span>VYANNAID COMPANION</span>

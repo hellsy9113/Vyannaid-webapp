@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Play, Sun } from 'lucide-react';
-import heroImage from '../../assets/hero-image.png'; // Need to adjust path since we are in components/LandingPage
+// import heroImage from '../../assets/hero-image.png'; // Need to adjust path since we are in components/LandingPage
 import './Hero.css';
 
 const Hero = () => {
@@ -37,7 +37,7 @@ const Hero = () => {
 
             <div className="hero-image-container">
                 <img
-                    src={heroImage}
+                    // src={heroImage}
                     alt="Students on campus"
                     className="hero-image"
                 />
