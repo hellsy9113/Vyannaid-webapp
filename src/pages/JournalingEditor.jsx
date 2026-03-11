@@ -11,41 +11,99 @@ import './JournalingEditor.css';
 
 /* ─── Character limit ────────────────────────────────────── */
 const CHAR_LIMIT = 3000;
+const QUICK_TAGS = ['gratitude', 'reflection', 'mood', 'goals', 'milestone', 'clarity'];
 
 /* ─── Tag input ──────────────────────────────────────────── */
 const TagInput = ({ tags, onChange }) => {
   const [input, setInput] = useState('');
+  const [isExpanding, setIsExpanding] = useState(false);
+  const inputRef = useRef(null);
 
-  const add = () => {
-    const t = input.trim().toLowerCase().replace(/\s+/g, '-');
+  const add = (text) => {
+    const t = (text || input).trim().toLowerCase().replace(/\s+/g, '-');
     if (t && !tags.includes(t) && tags.length < 5) {
       onChange([...tags, t]);
     }
     setInput('');
+    if (!text) setIsExpanding(false);
   };
 
   const remove = (tag) => onChange(tags.filter(t => t !== tag));
 
   return (
-    <div className="je-tag-area">
-      <div className="je-tags">
+    <div className="je-tag-container">
+      <div className="je-tag-header">
+        <div className="je-tag-label">
+          <Tag size={14} />
+          <span>Themes & Tags</span>
+        </div>
+        <span className="je-tag-count">{tags.length}/5</span>
+      </div>
+
+      <div className="je-tags-display">
         {tags.map(t => (
-          <span key={t} className="je-tag">
-            #{t}
-            <button className="je-tag-remove" onClick={() => remove(t)}><X size={11} /></button>
+          <span key={t} className="je-tag-pill">
+            <span className="je-tag-hash">#</span>
+            {t}
+            <button className="je-tag-remove" onClick={() => remove(t)} aria-label={`Remove ${t}`}>
+              <X size={12} />
+            </button>
           </span>
         ))}
+
         {tags.length < 5 && (
-          <input
-            className="je-tag-input"
-            placeholder="Add tag…"
-            value={input}
-            onChange={e => setInput(e.target.value)}
-            onKeyDown={e => { if (e.key === 'Enter' || e.key === ',') { e.preventDefault(); add(); } }}
-            onBlur={add}
-            maxLength={30}
-          />
+          <div className={`je-tag-input-wrapper ${isExpanding ? 'is-active' : ''}`}>
+            {!isExpanding ? (
+              <button
+                className="je-tag-add-trigger"
+                onClick={() => {
+                  setIsExpanding(true);
+                  setTimeout(() => inputRef.current?.focus(), 10);
+                }}
+              >
+                + Add tag
+              </button>
+            ) : (
+              <input
+                ref={inputRef}
+                className="je-tag-field"
+                placeholder="type and press enter..."
+                value={input}
+                onChange={e => setInput(e.target.value)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' || e.key === ',') {
+                    e.preventDefault();
+                    add();
+                  } else if (e.key === 'Escape') {
+                    setIsExpanding(false);
+                    setInput('');
+                  }
+                }}
+                onBlur={() => {
+                  if (!input.trim()) setIsExpanding(false);
+                  else add();
+                }}
+                maxLength={25}
+              />
+            )}
+          </div>
         )}
+      </div>
+
+      <div className="je-quick-tags">
+        <span className="je-quick-label">Suggestions:</span>
+        <div className="je-quick-list">
+          {QUICK_TAGS.filter(qt => !tags.includes(qt)).map(qt => (
+            <button
+              key={qt}
+              className="je-quick-tag-btn"
+              onClick={() => add(qt)}
+              disabled={tags.length >= 5}
+            >
+              #{qt}
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -177,7 +235,10 @@ const JournalingEditor = () => {
   if (loading) {
     return (
       <DashboardLayout>
-        <div className="je-loading">Preparing your journal…</div>
+        <div className="je-loading">
+          <div className="je-loading-spinner"></div>
+          <span>Preparing your space…</span>
+        </div>
       </DashboardLayout>
     );
   }
@@ -186,11 +247,12 @@ const JournalingEditor = () => {
     <DashboardLayout>
       <div className="je-page fade-in">
 
-        {/* ── Top Bar (Floating) ── */}
+        {/* ── Top Bar ── */}
         <header className="je-topbar">
           <div className="je-topbar-left">
             <button className="je-icon-btn" onClick={() => navigate('/dashboard/journaling')} aria-label="Go back">
-              <ArrowLeft size={20} />
+              <ArrowLeft size={18} />
+              <span>Back</span>
             </button>
             <div className="je-meta-info">
               <span className="je-date">{displayDate}</span>
@@ -216,7 +278,7 @@ const JournalingEditor = () => {
           </div>
         </header>
 
-        {/* ── Zen Writing Area ── */}
+        {/* ── Writing Area ── */}
         <div className="je-writing-container">
           <input
             className="je-title-input"
@@ -228,9 +290,11 @@ const JournalingEditor = () => {
 
           {selectedPrompt && !isEdit && (
             <div className="je-prompt-bubble">
-              <div className="je-prompt-icon">✨</div>
+              <div className="je-prompt-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v4"></path><path d="M12 18v4"></path><path d="M4.93 4.93l2.83 2.83"></path><path d="M16.24 16.24l2.83 2.83"></path><path d="M2 12h4"></path><path d="M18 12h4"></path><path d="M4.93 19.07l2.83-2.83"></path><path d="M16.24 7.76l2.83-2.83"></path></svg>
+              </div>
               <div className="je-prompt-content">
-                <span className="je-prompt-label">Daily Prompt</span>
+                <span className="je-prompt-label">Daily Inspiration</span>
                 <p>{selectedPrompt}</p>
               </div>
             </div>
@@ -246,9 +310,8 @@ const JournalingEditor = () => {
             spellCheck
           />
 
-          {/* ── Tags (Subtle at the bottom) ── */}
+          {/* ── Tags (Modern Section) ── */}
           <div className="je-tags-section">
-            <Tag size={16} className="je-tag-icon" />
             <TagInput tags={tags} onChange={setTags} />
           </div>
         </div>

@@ -45,7 +45,7 @@ const DailyActivities = () => {
                     icon={Headphones}
                     title="Calm Music"
                     meta="e.g. • Playlist"
-                   
+                    onClick={() => navigate('/dashboard/calm-music')}
                 />
                 <ActivityCard
                     icon={Book}

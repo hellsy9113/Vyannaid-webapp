@@ -12,6 +12,13 @@
     justify-content: space-between;
     align-items: center;
     position: relative;
+    cursor: pointer;
+    transition: transform 0.2s, background 0.2s;
+}
+
+.volunteer-card:hover {
+    background: #2d3748;
+    transform: translateY(-2px);
 }
 
 .volunteer-content h4 {

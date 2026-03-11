@@ -1,0 +1,242 @@
+.vf-container {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 2rem;
+    animation: fadeIn 0.4s ease-out;
+}
+
+.vf-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.vf-back-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: transparent;
+    border: none;
+    color: #64748b;
+    font-weight: 600;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.vf-back-btn:hover {
+    color: #1e293b;
+}
+
+.vf-progress {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.5rem;
+}
+
+.vf-progress-text {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.vf-progress-bar {
+    width: 120px;
+    height: 6px;
+    background: #f1f5f9;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.vf-progress-fill {
+    height: 100%;
+    background: #0f172a;
+    transition: width 0.3s ease;
+}
+
+/* CARD */
+.vf-card {
+    background: white;
+    padding: 3rem;
+    border-radius: 24px;
+    border: 1px solid #f1f5f9;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+}
+
+.vf-step-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin-bottom: 2rem;
+    letter-spacing: -0.01em;
+}
+
+/* FORM GRID */
+.vf-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.vf-full-width {
+    grid-column: span 2;
+}
+
+.vf-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.vf-input-group label {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #475569;
+}
+
+.vf-input-group input,
+.vf-input-group select,
+.vf-input-group textarea {
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    font-size: 0.95rem;
+    background: #f8fafc;
+    transition: all 0.2s;
+}
+
+.vf-input-group input:focus,
+.vf-input-group select:focus,
+.vf-input-group textarea:focus {
+    outline: none;
+    border-color: #0f172a;
+    background: white;
+    box-shadow: 0 0 0 4px rgba(15, 23, 42, 0.05);
+}
+
+/* CHECKBOXES & RADIOS */
+.vf-checkbox-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.vf-checkbox-vertical {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.vf-checkbox-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    cursor: pointer;
+}
+
+.vf-checkbox-item input {
+    width: 18px;
+    height: 18px;
+    margin-top: 2px;
+}
+
+.vf-checkbox-item span {
+    font-size: 0.95rem;
+    color: #475569;
+    line-height: 1.4;
+}
+
+.vf-radio-group {
+    display: flex;
+    gap: 2rem;
+}
+
+.vf-radio-group label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+/* ACTIONS */
+.vf-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid #f1f5f9;
+}
+
+.vf-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #0f172a;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.vf-btn-primary:hover {
+    background: #1e293b;
+    transform: translateY(-1px);
+}
+
+.vf-btn-secondary {
+    background: transparent;
+    color: #475569;
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
+    font-weight: 700;
+    border: 1px solid #e2e8f0;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.vf-btn-secondary:hover {
+    background: #f8fafc;
+}
+
+.vf-submit {
+    background: #10b981;
+}
+
+.vf-submit:hover {
+    background: #059669;
+}
+
+.vf-alert {
+    display: flex;
+    gap: 0.75rem;
+    background: #fff7ed;
+    color: #9a3412;
+    padding: 1rem;
+    border-radius: 12px;
+    margin-top: 1.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border: 1px solid #ffedd5;
+}
+
+@media (max-width: 600px) {
+
+    .vf-form-grid,
+    .vf-checkbox-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .vf-card {
+        padding: 2rem;
+    }
+}

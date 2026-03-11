@@ -1,0 +1,242 @@
+.va-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem;
+    animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* HERO SECTION */
+.va-hero {
+    margin-bottom: 3rem;
+    padding: 4rem 3rem;
+    border-radius: 24px;
+    background: #111827;
+    /* Dark monochrome */
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.va-hero::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(96, 165, 250, 0.1) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.va-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.va-title {
+    font-size: 3rem;
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+    letter-spacing: -0.02em;
+}
+
+.text-gradient {
+    background: linear-gradient(135deg, #cbd5e1 0%, #ffffff 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.va-subtitle {
+    font-size: 1.125rem;
+    color: #94a3b8;
+    max-width: 600px;
+    margin-bottom: 2.5rem;
+    line-height: 1.6;
+}
+
+.va-primary-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: white;
+    color: #0f172a;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 1rem;
+    transition: all 0.2s;
+    border: none;
+}
+
+.va-primary-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px -5px rgba(255, 255, 255, 0.2);
+}
+
+/* GRID LAYOUT */
+.va-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 2rem;
+}
+
+.va-side-col {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.va-info-card {
+    background: white;
+    border-radius: 20px;
+    padding: 2.5rem;
+    border: 1px solid #f1f5f9;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+}
+
+.va-section-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin-bottom: 2rem;
+}
+
+/* STEPS */
+.va-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.va-step {
+    display: flex;
+    gap: 1.5rem;
+    position: relative;
+}
+
+.va-step-icon {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    background: #f8fafc;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #1e293b;
+    border: 1px solid #f1f5f9;
+}
+
+.va-step-text h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 0.5rem;
+}
+
+.va-step-text p {
+    font-size: 0.95rem;
+    color: #64748b;
+    line-height: 1.5;
+}
+
+/* LISTS */
+.va-list {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.va-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    font-size: 0.95rem;
+    color: #475569;
+    line-height: 1.4;
+}
+
+.va-check {
+    color: #10b981;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+/* COORDINATOR CTA */
+.va-chat-cta {
+    background: #f8fafc;
+    text-align: center;
+}
+
+.va-cta-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.va-cta-inner h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.va-cta-inner p {
+    font-size: 0.875rem;
+    color: #64748b;
+    margin-bottom: 0.5rem;
+}
+
+.va-secondary-btn {
+    background: white;
+    border: 1px solid #e2e8f0;
+    padding: 0.75rem 1.5rem;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: #1e293b;
+    transition: all 0.2s;
+}
+
+.va-secondary-btn:hover {
+    background: #f1f5f9;
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+    .va-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .va-hero {
+        padding: 3rem 2rem;
+    }
+
+    .va-title {
+        font-size: 2.5rem;
+    }
+}

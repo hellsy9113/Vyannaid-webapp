@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '../components/StudentDashboard/DashboardLayout';
-import { Plus, ChevronLeft, ChevronRight, BookOpen, Calendar, List, X } from 'lucide-react';
+import { Plus, ChevronLeft, ChevronRight, BookOpen, Calendar, List, X, ArrowLeft } from 'lucide-react';
 import { getJournalEntries, getJournalCalendar, deleteJournalEntry } from '../api/journalApi';
 import './JournalingHome.css';
 
@@ -11,6 +11,16 @@ const MONTHS = [
   'July', 'August', 'September', 'October', 'November', 'December'
 ];
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+const DAILY_PROMPT = "What are three things you are grateful for today?";
+const DAILY_PROMPT_SUB = "Taking a moment to acknowledge the good in your life can significantly boost your mood.";
+
+const SUGGESTED_PROMPTS = [
+  { id: 1, text: "Describe a moment today when you felt fully present." },
+  { id: 2, text: "What is a recent challenge that ended up teaching you a valuable lesson?" },
+  { id: 3, text: "If you could speak to yourself from five years ago, what advice would you give?" },
+  { id: 4, text: "Write about a time you surprised yourself with your own strength." }
+];
 
 function groupByDay(entries) {
   const map = {};
@@ -42,6 +52,34 @@ function formatUpdated(iso) {
     ' at ' + d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 }
 
+function calculateStreak(entries) {
+  if (!entries || entries.length === 0) return 0;
+
+  // Get unique dates with entries, sorted descending
+  const dates = [...new Set(entries.map(e => e.createdAt.slice(0, 10)))].sort((a, b) => b.localeCompare(a));
+
+  const today = new Date().toISOString().slice(0, 10);
+  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+
+  // If the latest entry isn't today or yesterday, streak is broken
+  if (dates[0] !== today && dates[0] !== yesterday) return 0;
+
+  let streak = 1;
+  for (let i = 0; i < dates.length - 1; i++) {
+    const current = new Date(dates[i]);
+    const next = new Date(dates[i + 1]);
+    const diffTime = Math.abs(current - next);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays === 1) {
+      streak++;
+    } else {
+      break;
+    }
+  }
+  return streak;
+}
+
 /* ─── Calendar sub-component ─────────────────────────────── */
 const JournalCalendar = ({ year, month, activeDays, onDayClick, onMonthChange }) => {
   const firstDay = new Date(year, month - 1, 1).getDay();
@@ -57,26 +95,35 @@ const JournalCalendar = ({ year, month, activeDays, onDayClick, onMonthChange })
   return (
     <div className="jh-calendar">
       <div className="jh-cal-header">
-        <button className="jh-cal-nav" onClick={() => onMonthChange(-1)}><ChevronLeft size={16} /></button>
-        <span className="jh-cal-title">{MONTHS[month - 1]} {year}</span>
-        <button className="jh-cal-nav" onClick={() => onMonthChange(1)}><ChevronRight size={16} /></button>
+        <div className="jh-cal-info">
+          <span className="jh-cal-month">{MONTHS[month - 1]}</span>
+          <span className="jh-cal-year">{year}</span>
+        </div>
+        <div className="jh-cal-actions">
+          <button className="jh-cal-nav-btn" onClick={() => onMonthChange(-1)} aria-label="Previous month">
+            <ChevronLeft size={18} />
+          </button>
+          <button className="jh-cal-nav-btn" onClick={() => onMonthChange(1)} aria-label="Next month">
+            <ChevronRight size={18} />
+          </button>
+        </div>
       </div>
       <div className="jh-cal-grid">
-        {DAYS.map(d => <div key={d} className="jh-cal-dayname">{d}</div>)}
+        {DAYS.map(d => <div key={d} className="jh-cal-weekday">{d[0]}</div>)}
         {cells.map((day, i) => {
-          if (!day) return <div key={`e-${i}`} className="jh-cal-cell empty" />;
+          if (!day) return <div key={`e-${i}`} className="jh-cal-day jh-cal-day-empty" />;
           const isToday = day === today.getDate() && month === today.getMonth() + 1 && year === today.getFullYear();
           const hasEntry = activeSet.has(day);
           return (
-            <div
+            <button
               key={day}
-              className={`jh-cal-cell ${isToday ? 'today' : ''} ${hasEntry ? 'has-entry' : ''}`}
+              className={`jh-cal-day ${isToday ? 'is-today' : ''} ${hasEntry ? 'has-entry' : ''}`}
               onClick={() => hasEntry && onDayClick(day)}
-              title={hasEntry ? 'Has entries' : ''}
+              disabled={!hasEntry && !isToday}
             >
-              {day}
-              {hasEntry && <span className="jh-cal-dot" />}
-            </div>
+              <span className="jh-cal-day-number">{day}</span>
+              {hasEntry && <span className="jh-cal-entry-dot" />}
+            </button>
           );
         })}
       </div>
@@ -155,6 +202,7 @@ const JournalingHome = () => {
 
   const grouped = groupByDay(entries);
   const totalWords = entries.reduce((sum, e) => sum + (e.wordCount || 0), 0);
+  const streak = calculateStreak(entries);
 
   // Check if an entry already exists for today
   const todayStr = new Date().toISOString().slice(0, 10);
@@ -174,12 +222,28 @@ const JournalingHome = () => {
       <div className="jh-page">
         {/* ── Hero / Header ── */}
         <div className="jh-hero">
+          <button className="jh-back-btn" onClick={() => navigate('/dashboard/activities')}>
+            <ArrowLeft size={18} />
+            <span>Back</span>
+          </button>
           <div className="jh-hero-content">
             <h1 className="jh-hero-title">Mindful Journal</h1>
-            <p className="jh-hero-subtitle">
-              Your safe space to reflect, process, and grow.<br />
-              <span className="jh-hero-stats">{entries.length} {entries.length === 1 ? 'entry' : 'entries'} · {totalWords.toLocaleString()} words</span>
-            </p>
+            <div className="jh-hero-stats-bar">
+              <div className="jh-stat-item">
+                <span className="jh-stat-value">{streak}</span>
+                <span className="jh-stat-label">Day Streak</span>
+              </div>
+              <div className="jh-stat-divider"></div>
+              <div className="jh-stat-item">
+                <span className="jh-stat-value">{entries.length}</span>
+                <span className="jh-stat-label">Reflections</span>
+              </div>
+              <div className="jh-stat-divider"></div>
+              <div className="jh-stat-item">
+                <span className="jh-stat-value">{totalWords.toLocaleString()}</span>
+                <span className="jh-stat-label">Words</span>
+              </div>
+            </div>
           </div>
           <button className="jh-hero-btn" onClick={() => handleNewEntry(null)}>
             <Plus size={18} strokeWidth={2.5} />
@@ -187,16 +251,44 @@ const JournalingHome = () => {
           </button>
         </div>
 
-        {/* ── Prompt of the Day (Glassmorphism card) ── */}
-        <div
-          className="jh-prompt-card"
-          onClick={() => handleNewEntry({ selectedPrompt: "How has your perspective on a personal challenge shifted over the past week?" })}
-        >
-          <div className="jh-prompt-bg"></div>
-          <div className="jh-prompt-content">
-            <span className="jh-prompt-tag">Daily Reflection</span>
-            <p className="jh-prompt-text">"How has your perspective on a personal challenge shifted over the past week?"</p>
-            <div className="jh-prompt-cta">Respond thoughtfully <ChevronRight size={14} /></div>
+        {/* ── Daily & Suggested Prompts ── */}
+        <div className="jh-prompts-section">
+          {/* Main Daily Prompt */}
+          <div className="jh-daily-prompt-card">
+            <div className="jh-dp-content">
+              <span className="jh-dp-tag">DAILY INSPIRATION</span>
+              <h2 className="jh-dp-text">{DAILY_PROMPT}</h2>
+              <p className="jh-dp-subtext">{DAILY_PROMPT_SUB}</p>
+
+              <button
+                className="jh-dp-cta-btn"
+                onClick={() => handleNewEntry({ selectedPrompt: DAILY_PROMPT })}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" y1="6" x2="16" y2="6"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="18" x2="12" y2="18"></line></svg>
+                <span>Start Writing</span>
+              </button>
+            </div>
+            <div className="jh-dp-icon-wrapper">
+              <div className="jh-dp-icon-circle">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18h6"></path><path d="M10 22h4"></path><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1.45.62 2.84 1.5 3.5.76.76 1.23 1.52 1.41 2.5"></path></svg>
+              </div>
+            </div>
+          </div>
+
+          {/* Suggested Prompts (Horizontal Scroll) */}
+          <div className="jh-suggested-prompts-wrapper">
+            <h3 className="jh-sp-title">DEEP REFLECTIONS</h3>
+            <div className="jh-sp-scroll">
+              {SUGGESTED_PROMPTS.map(p => (
+                <div
+                  key={p.id}
+                  className="jh-sp-card"
+                  onClick={() => handleNewEntry({ selectedPrompt: p.text })}
+                >
+                  <p className="jh-sp-text">{p.text}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -233,11 +325,21 @@ const JournalingHome = () => {
 
                 {!loading && !error && entries.length === 0 && (
                   <div className="jh-empty-state">
-                    <div className="jh-empty-icon"><BookOpen size={48} strokeWidth={1} /></div>
-                    <h3>Your journal is empty</h3>
-                    <p>Begin your mindfulness journey today.</p>
-                    <button className="jh-empty-btn" onClick={() => handleNewEntry(null)}>
-                      Start Writing
+                    <div className="jh-empty-illustration">
+                      <div className="jh-empty-circle">
+                        <BookOpen size={40} />
+                      </div>
+                      <div className="jh-empty-dots">
+                        <span></span><span></span><span></span>
+                      </div>
+                    </div>
+                    <div className="jh-empty-text">
+                      <h3>Begin Your Journey</h3>
+                      <p>Your mindful reflections will appear here. Why not start with your first entry today?</p>
+                    </div>
+                    <button className="jh-empty-cta" onClick={() => handleNewEntry(null)}>
+                      <Plus size={18} />
+                      <span>Create Your First Entry</span>
                     </button>
                   </div>
                 )}
@@ -256,30 +358,38 @@ const JournalingHome = () => {
                           className="jh-card"
                           onClick={() => navigate(`/dashboard/journaling/${entry._id}`)}
                         >
-                          <div className="jh-card-inner">
+                          <div className="jh-card-header">
                             <h3 className="jh-card-title">{entry.title || 'Untitled Entry'}</h3>
-                            <p className="jh-card-preview">
-                              {entry.body.slice(0, 120)}{entry.body.length > 120 ? '…' : ''}
-                            </p>
-
-                            <div className="jh-card-footer">
-                              <span className="jh-card-time">{formatTime(entry.createdAt)}</span>
-                              <div className="jh-card-actions">
-                                {entry.wordCount > 0 && <span className="jh-card-words">{entry.wordCount} words</span>}
-                                <button
-                                  className="jh-card-delete"
-                                  disabled={deleting === entry._id}
-                                  onClick={(e) => handleDelete(e, entry._id)}
-                                  aria-label="Delete entry"
-                                >
-                                  {deleting === entry._id ? '…' : <X size={14} />}
-                                </button>
-                              </div>
-                            </div>
+                            <span className="jh-card-time">{formatTime(entry.createdAt)}</span>
                           </div>
 
-                          {/* Accent bar on the side dependent on tags optionally */}
-                          <div className="jh-card-accent"></div>
+                          <p className="jh-card-preview">
+                            {entry.body.slice(0, 140)}{entry.body.length > 140 ? '…' : ''}
+                          </p>
+
+                          <div className="jh-card-footer">
+                            <div className="jh-card-tags">
+                              {entry.tags && entry.tags.length > 0 ? (
+                                entry.tags.map(tag => (
+                                  <span key={tag} className="jh-card-tag">#{tag}</span>
+                                ))
+                              ) : (
+                                <span className="jh-card-no-tags">No tags</span>
+                              )}
+                            </div>
+
+                            <div className="jh-card-meta">
+                              {entry.wordCount > 0 && <span className="jh-card-words">{entry.wordCount} words</span>}
+                              <button
+                                className="jh-card-delete"
+                                disabled={deleting === entry._id}
+                                onClick={(e) => handleDelete(e, entry._id)}
+                                aria-label="Delete entry"
+                              >
+                                {deleting === entry._id ? '…' : <X size={14} />}
+                              </button>
+                            </div>
+                          </div>
                         </div>
                       ))}
                     </div>

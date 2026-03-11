@@ -203,3 +203,171 @@
 .volunteer-send-btn:hover {
     background-color: #1E293B;
 }
+
+
+/* ── Append these styles to src/pages/VolunteerApplication.css ── */
+
+/* SUCCESS BANNER */
+.va-success-banner {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: #f0fdf4;
+    color: #166534;
+    border: 1px solid #bbf7d0;
+    padding: 1rem 1.5rem;
+    border-radius: 14px;
+    margin-bottom: 2rem;
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+/* HERO LOADING / ALREADY APPLIED STATES */
+.va-hero-loading {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: rgba(255,255,255,0.7);
+    font-size: 0.95rem;
+}
+
+.va-already-applied {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #86efac;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+/* APPLICATION STATUS CARD */
+.va-status-card {
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 2.5rem;
+    border: 1px solid transparent;
+}
+
+.va-status-pending {
+    background: #fefce8;
+    border-color: #fef08a;
+    color: #713f12;
+}
+
+.va-status-approved {
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+    color: #14532d;
+}
+
+.va-status-rejected {
+    background: #fef2f2;
+    border-color: #fecaca;
+    color: #7f1d1d;
+}
+
+.va-status-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.va-status-icon {
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.va-status-title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    margin: 0 0 0.25rem;
+}
+
+.va-status-date {
+    font-size: 0.825rem;
+    opacity: 0.7;
+    margin: 0;
+}
+
+.va-status-desc {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin: 0 0 1rem;
+    opacity: 0.85;
+}
+
+.va-admin-notes {
+    background: rgba(255,255,255,0.5);
+    border-radius: 10px;
+    padding: 0.875rem 1rem;
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+
+.va-withdraw-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255,255,255,0.7);
+    border: 1px solid rgba(0,0,0,0.1);
+    color: #7f1d1d;
+    padding: 0.6rem 1.25rem;
+    border-radius: 10px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.va-withdraw-btn:hover:not(:disabled) {
+    background: rgba(255,255,255,0.9);
+}
+
+.va-withdraw-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* SPINNER ANIMATION (shared with VolunteerForm) */
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.vf-spinner {
+    animation: spin 0.8s linear infinite;
+}
+
+/* LOADING STATE in VolunteerForm */
+.vf-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    min-height: 40vh;
+    color: #64748b;
+    font-size: 0.95rem;
+}
+
+/* ERROR BANNER in VolunteerForm */
+.vf-error-banner {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: #fef2f2;
+    color: #b91c1c;
+    border: 1px solid #fecaca;
+    padding: 0.875rem 1.25rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+}

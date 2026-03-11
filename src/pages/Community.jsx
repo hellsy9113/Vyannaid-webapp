@@ -2,12 +2,13 @@ import React from 'react';
 import DashboardLayout from '../components/StudentDashboard/DashboardLayout';
 import {
     Bell, User, Volume2, Users, TreePine, Moon,
-    HelpCircle, Phone, ArrowRight, ArrowRightCircle, Bot
+    HelpCircle, Phone, ArrowRight, ArrowRightCircle
 } from 'lucide-react';
 import './Community.css';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Community = () => {
+    const navigate = useNavigate();
     return (
         <DashboardLayout>
             <div className="community-page">
@@ -118,16 +119,12 @@ const Community = () => {
                         <h4>Volunteer Application</h4>
                         <p>Support peers in the community</p>
                     </div>
-                    <button className="volunteer-arrow-btn">
+                    <button className="volunteer-arrow-btn" onClick={() => navigate('/dashboard/volunteer')}>
                         <ArrowRight size={24} />
                     </button>
                 </div>
             </div>
 
-            {/* Global FAB from mockup */}
-            <div className="chat-widget-fab">
-                <Bot size={28} />
-            </div>
         </DashboardLayout>
     );
 };

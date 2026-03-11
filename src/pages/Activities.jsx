@@ -65,7 +65,7 @@ const Activities = () => {
                     </div>
 
                     {/* Practice 3 */}
-                    <div className="practice-item-card">
+                    <div className="practice-item-card" onClick={() => navigate('/dashboard/calm-music')} style={{ cursor: 'pointer' }}>
                         <div className="practice-icon-wrapper">
                             <Headphones size={24} color="#1A2234" />
                         </div>

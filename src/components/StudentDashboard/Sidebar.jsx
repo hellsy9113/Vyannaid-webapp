@@ -1,24 +1,22 @@
 import React from 'react';
-import { Home, Activity, Calendar, Users, Square, Music } from 'lucide-react';
+import { Home, Activity, Calendar, Users, Music, Menu, ShieldCheck } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 
 import './Sidebar.css';
 
-const Sidebar = ({ isOpen, closeSidebar }) => {
+const Sidebar = ({ isOpen, isCollapsed, setIsCollapsed, closeSidebar }) => {
     const location = useLocation();
 
     return (
-        <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
+        <aside className={`sidebar ${isOpen ? 'open' : ''} ${isCollapsed ? 'collapsed' : ''}`}>
             <div className="sidebar-logo">
-                <div className="sidebar-logo-icon">
-                    <Square size={20} fill="#1E293B" color="#1E293B" />
-                    <div className="sidebar-logo-dots">
-                        <div className="dot"></div>
-                        <div className="dot"></div>
-                        <div className="dot"></div>
-                        <div className="dot"></div>
-                    </div>
-                </div>
+                <button
+                    className="sidebar-toggle-integrated"
+                    onClick={() => setIsCollapsed(!isCollapsed)}
+                    aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+                >
+                    <Menu size={22} />
+                </button>
                 <span className="sidebar-logo-text">VYANNAID</span>
             </div>
 
@@ -49,7 +47,11 @@ const Sidebar = ({ isOpen, closeSidebar }) => {
                     <Users size={20} strokeWidth={2} />
                     <span>Community</span>
                 </Link>
-               
+                <Link to="/dashboard/volunteer" className={`sidebar-link ${location.pathname === '/dashboard/volunteer' ? 'active' : ''}`}>
+                    <ShieldCheck size={20} strokeWidth={2} />
+                    <span>Volunteer</span>
+                </Link>
+
 
             </nav>
 

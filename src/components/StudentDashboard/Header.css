@@ -86,7 +86,7 @@
 
 .notification-btn:hover,
 .settings-btn:hover {
-    background: rgba(0,0,0,0.05);
+    background: rgba(0, 0, 0, 0.05);
 }
 
 /* ================= PROFILE BUTTON ================= */
@@ -117,9 +117,6 @@
     font-weight: 600;
     letter-spacing: .4px;
 
-    border: 2px solid #fff;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-
     transition: all 0.2s ease;
 }
 
@@ -127,7 +124,7 @@
 
 .user-profile-pill:hover .profile-avatar {
     transform: scale(1.05);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 /* Click feedback */
@@ -143,9 +140,6 @@
     height: 36px;
     border-radius: 50%;
     object-fit: cover;
-
-    border: 2px solid #fff;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 
     transition: transform 0.2s ease;
 }
