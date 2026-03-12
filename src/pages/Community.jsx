@@ -108,9 +108,9 @@ const Community = () => {
 
                 <button className="crisis-btn">
                     <Phone size={20} />
-                    Dial 988 Emergency
+                    1800-599-0019 
                 </button>
-                <p className="crisis-caption">Available 24/7 for immediate assistance</p>
+                <p className="crisis-caption">Available 24/7 for immediate assistance (KIRAN HELPLINE) </p>
 
                 {/* Volunteering */}
                 <div className="volunteer-card">

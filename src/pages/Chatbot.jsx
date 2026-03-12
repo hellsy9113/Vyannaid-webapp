@@ -2,7 +2,6 @@ import { sendMessageToAariv } from "../api/aarivApi";
 import React, { useState } from "react";
 import DashboardLayout from "../components/StudentDashboard/DashboardLayout";
 import { Send, Mic, Settings, ArrowRight } from "lucide-react";
-import aarivAvatar from "../assets/aariv-avatar.png";
 import "./Chatbot.css";
 
 const Chatbot = () => {
@@ -66,7 +65,7 @@ const Chatbot = () => {
           <div className="aariv-profile-info">
 
             <img
-              src={aarivAvatar}
+              src="https://ui-avatars.com/api/?name=Aariv&background=1E293B&color=fff&rounded=true"
               alt="Aariv Avatar"
               className="aariv-avatar-img"
               onError={(e) => {
