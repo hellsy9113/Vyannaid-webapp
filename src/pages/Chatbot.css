@@ -1,223 +1,239 @@
-.chatbot-page {
+.chatbot-container {
     display: flex;
     flex-direction: column;
-    flex: 1;
-    width: 100%;
     height: 100%;
-    min-height: calc(100vh - 120px);
-    background-color: #FAFAFA;
-    /* Matching dashboard layout grey */
-    font-family: 'Inter', sans-serif;
+    width: 100%;
+    color: #111827;
+    background-color: #FFFFFF;
+    min-height: 0;
 }
 
-.chatbot-header {
+.chat-main-header {
+    height: 70px;
+    padding: 0 32px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 16px 24px;
-    background-color: transparent;
+    border-bottom: 1px solid #F1F5F9;
+    flex-shrink: 0;
 }
 
-.aariv-profile-info {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.aariv-avatar-img {
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    object-fit: cover;
-}
-
-.aariv-header-text {
-    display: flex;
-    flex-direction: column;
-}
-
-.aariv-header-text h3 {
-    margin: 0;
-    font-size: 16px;
-    font-weight: 600;
-    color: #0F172A;
-}
-
-.aariv-header-text span {
-    font-size: 10px;
-    font-weight: 600;
-    color: #1A56DB;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-top: 2px;
-}
-
-.chatbot-settings-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 8px;
-}
-
-.chatbot-main-content {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    /* Center horizontally */
-    justify-content: center;
-    /* Center vertically inside flex 1 */
-    padding: 0 24px;
-    height: 100%;
-}
-
-.greeting-card {
-    background-color: transparent;
-    /* Remove white background to match page */
-    border-radius: 20px;
-    padding: 0;
-    width: 100%;
-    max-width: 100%;
-    /* Changed to fit screen width */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    box-shadow: none;
-    /* Remove shadow */
-}
-
-.greeting-icon-wrapper {
-    width: 48px;
-    height: 48px;
-    background-color: #E2E8F0;
-    /* Monochrome light gray */
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 12px;
-}
-
-/* Grayscale the SVG inside */
-.greeting-icon-wrapper svg path {
-    fill: #1E293B;
-    /* Dark gray */
-}
-
-.greeting-title {
+.header-title h2 {
     font-size: 18px;
     font-weight: 600;
-    color: #0F172A;
-    margin: 0 0 4px 0;
+    margin: 0;
+    color: #111827;
+    display: inline-block;
 }
 
-.greeting-subtitle {
-    font-size: 14px;
-    color: #64748B;
-    margin: 0 0 12px 0;
-}
-
-.greeting-quote {
-    font-size: 13px;
-    color: #94A3B8;
-    font-style: italic;
-    line-height: 1.4;
-    margin: 0 0 16px 0;
-}
-
-.start-convo-btn {
-    background-color: #0F172A;
-    /* Monochrome dark gray */
-    color: white;
-    border: none;
-    border-radius: 10px;
-    padding: 10px 20px;
-    font-size: 15px;
-    font-weight: 500;
-    max-width: 250px;
+.chat-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 32px;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
+    flex-direction: column;
+    background-color: #F8FAFC;
 }
 
-.start-convo-btn:hover {
-    background-color: #1E293B;
-    /* Lighter gray on hover */
-}
-
-.chatbot-input-container {
-    padding: 12px 24px;
-    background-color: transparent;
-    border-top: none;
-}
-
-.chatbot-form {
+.messages-list {
     display: flex;
-    align-items: center;
-    gap: 12px;
-    max-width: 100%;
-    /* Changed to fit screen width */
+    flex-direction: column;
+    gap: 40px;
+    max-width: 850px;
     margin: 0 auto;
+    width: 100%;
 }
 
-.input-wrapper {
-    flex: 1;
+.message-wrapper {
     display: flex;
-    align-items: center;
-    background-color: #FFFFFF;
-    border-radius: 28px;
-    padding: 4px 16px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+    gap: 20px;
 }
 
-.chatbot-input {
-    flex: 1;
-    border: none;
-    background: transparent;
-    padding: 12px 0;
-    font-size: 15px;
-    color: #0F172A;
-    outline: none;
+.message-wrapper.user {
+    justify-content: flex-end;
 }
 
-.chatbot-input::placeholder {
-    color: #94A3B8;
-}
-
-.chatbot-mic-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.chatbot-send-btn {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background-color: #0F172A;
-    /* Monochrome dark gray */
-    color: white;
-    border: none;
-    cursor: pointer;
+.aariv-avatar-mini {
+    width: 40px;
+    height: 40px;
+    background: #0F172A;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    transition: background-color 0.2s ease;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-.chatbot-send-btn:hover {
-    background-color: #1E293B;
-    /* Lighter gray on hover */
+.user-avatar-mini {
+    width: 40px;
+    height: 40px;
+    background: #FDBA74;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(253, 186, 116, 0.3);
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.message-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 80%;
+}
+
+.message-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 4px;
+}
+
+.sender-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: #111827;
+}
+
+.message-time {
+    font-size: 12px;
+    color: #94A3B8;
+}
+
+.message-bubble {
+    padding: 20px 24px;
+    border-radius: 16px;
+    font-size: 15px;
+    line-height: 1.6;
+    border: 1px solid transparent;
+}
+
+.aariv .message-bubble {
+    background-color: #FFFFFF;
+    color: #334155;
+    border-color: #F1F5F9;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+}
+
+.user .message-bubble {
+    background-color: #0F172A;
+    color: #FFFFFF;
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.15);
+}
+
+.attachment-card {
+    margin-top: 20px;
+    background-color: #FFFFFF;
+    border: 1px solid #F1F5F9;
+    border-radius: 16px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+}
+
+.attachment-icon {
+    width: 48px;
+    height: 48px;
+    background-color: #F8FAFC;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #1e293b;
+}
+
+.attachment-info .file-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: #111827;
+    display: block;
+}
+
+.attachment-info .file-meta {
+    font-size: 13px;
+    color: #94A3B8;
+}
+
+.download-btn {
+    background: transparent;
+    color: #111827;
+    padding: 10px;
+    border: none;
+}
+
+.chat-main-footer {
+    padding: 30px 40px 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    background: transparent;
+}
+
+.input-box-wrapper {
+    width: 100%;
+    max-width: 850px;
+    background-color: #FFFFFF;
+    border: 1px solid #F1F5F9;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    gap: 16px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05);
+}
+
+.input-form {
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+
+.input-form input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: #111827;
+    font-size: 16px;
+    padding: 14px 0;
+    outline: none;
+}
+
+.input-form input::placeholder {
+    color: #CBD5E1;
+}
+
+.send-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background-color: #F1F5F9;
+    color: #CBD5E1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    transition: all 0.2s;
+}
+
+.send-btn.active {
+    background-color: #0F172A;
+    color: #FFFFFF;
+}
+
+.footer-disclaimer {
+    font-size: 12px;
+    color: #94A3B8;
+}
+
+.loading-dots {
+    color: #94A3B8;
+    font-size: 14px;
+    padding-left: 4px;
 }

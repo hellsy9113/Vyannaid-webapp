@@ -8,7 +8,7 @@ import ProfileSidebar from './ProfileSidebar';
 import MobileBottomNav from './MobileBottomNav';
 import './DashboardLayout.css';
 
-const DashboardLayout = ({ children }) => {
+const DashboardLayout = ({ children, hideHeader = false, noPadding = false }) => {
     const { user } = useAuth();
     const isStudent = user?.role === 'student';
 
@@ -28,7 +28,7 @@ const DashboardLayout = ({ children }) => {
     const closeProfile = () => setIsProfileOpen(false);
 
     return (
-        <div className="dashboard-layout">
+        <div className={`dashboard-layout ${noPadding ? 'full-height' : ''}`}>
             {/* Sidebar overlay + nav — students only */}
             {isStudent && isSidebarOpen && (
                 <div className="sidebar-overlay" onClick={closeSidebar} />
@@ -44,8 +44,10 @@ const DashboardLayout = ({ children }) => {
 
             <ProfileSidebar isOpen={isProfileOpen} onClose={closeProfile} />
 
-            <main className={`dashboard-main${isStudent ? '' : ' no-sidebar'}${isSidebarCollapsed ? ' collapsed' : ''}`}>
-                <Header toggleSidebar={isStudent ? toggleSidebar : undefined} toggleProfile={toggleProfile} />
+            <main className={`dashboard-main${isStudent ? '' : ' no-sidebar'}${isSidebarCollapsed ? ' collapsed' : ''} ${noPadding ? 'no-padding' : ''}`}>
+                {!hideHeader && (
+                    <Header toggleSidebar={isStudent ? toggleSidebar : undefined} toggleProfile={toggleProfile} />
+                )}
                 <div className="dashboard-content-wrapper">
                     {children}
                 </div>

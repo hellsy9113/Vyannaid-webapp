@@ -1,180 +1,239 @@
-import { sendMessageToAariv } from "../api/aarivApi";
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import ReactMarkdown from 'react-markdown';
+import { sendMessageToAariv, getChatHistory, getRecentSessions, deleteChatSession } from "../api/aarivApi";
 import DashboardLayout from "../components/StudentDashboard/DashboardLayout";
-import { Send, Mic, Settings, ArrowRight } from "lucide-react";
+import AarivChatLayout from "../components/StudentDashboard/AarivChatLayout";
+import { useAuth } from "../auth/AuthContext";
+import { Send, Mic, Search, Share2, MoreHorizontal, Paperclip, ThumbsUp, Copy, Download, FileText } from "lucide-react";
 import "./Chatbot.css";
 
 const Chatbot = () => {
+    const { user: authUser } = useAuth();
+    const [message, setMessage] = useState("");
+    const [messages, setMessages] = useState([]);
+    const [sessions, setSessions] = useState([]);
+    const [currentSessionId, setCurrentSessionId] = useState("main");
+    const [isLoading, setIsLoading] = useState(false);
+    
+    const messagesEndRef = useRef(null);
+    const user = authUser || { id: "student_001", name: "Alex Thompson" };
 
-  const [message, setMessage] = useState("");
-  const [messages, setMessages] = useState([]);
+    const getInitials = (name = "") =>
+        name.trim().split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2);
 
-  const user = {
-    id: "student_001"
-  };
+    const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    };
 
-  const handleSubmit = async (e) => {
+    useEffect(() => {
+        loadSessions();
+        loadHistory(currentSessionId);
+    }, []);
 
-    e.preventDefault();
+    useEffect(() => {
+        scrollToBottom();
+    }, [messages]);
 
-    if (!message.trim()) return;
+    const loadSessions = async () => {
+        try {
+            const data = await getRecentSessions(user.id);
+            setSessions(data);
+        } catch (error) {
+            console.error("Failed to load sessions:", error);
+        }
+    };
 
-    const userMessage = message;
+    const loadHistory = async (sessionId) => {
+        try {
+            const data = await getChatHistory(user.id, sessionId);
+            const formattedMessages = data.map(chat => ([
+                { sender: "user", text: chat.userMessage, time: new Date(chat.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) },
+                { sender: "aariv", text: chat.botResponse, time: new Date(chat.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }
+            ])).flat();
+            setMessages(formattedMessages);
+            setCurrentSessionId(sessionId);
+        } catch (error) {
+            console.error("Failed to load history:", error);
+        }
+    };
 
-    // Show user message immediately
-    setMessages((prev) => [
-      ...prev,
-      { sender: "user", text: userMessage }
-    ]);
+    const handleNewChat = () => {
+        const newId = `session_${Date.now()}`;
+        setCurrentSessionId(newId);
+        setMessages([]);
+    };
 
-    setMessage("");
+    const handleDeleteSession = async (sessionId) => {
+        if (!window.confirm("Are you sure you want to delete this chat session?")) return;
+        try {
+            await deleteChatSession(user.id, sessionId);
+            if (currentSessionId === sessionId) {
+                setMessages([]);
+                setCurrentSessionId("main");
+            }
+            loadSessions();
+        } catch (error) {
+            console.error("Failed to delete session:", error);
+            alert("Failed to delete session");
+        }
+    };
 
-    try {
+    const handleCopy = (text) => {
+        navigator.clipboard.writeText(text);
+        alert("Copied to clipboard!");
+    };
 
-      const res = await sendMessageToAariv({
-        userId: user.id,
-        sessionId: "main",
-        message: userMessage
-      });
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (!message.trim() || isLoading) return;
 
-      setMessages((prev) => [
-        ...prev,
-        { sender: "aariv", text: res.response }
-      ]);
+        const userMsg = {
+            sender: "user",
+            text: message,
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        };
 
-    } catch (error) {
+        setMessages(prev => [...prev, userMsg]);
+        setMessage("");
+        setIsLoading(true);
 
-      console.error("AARIV error:", error);
+        try {
+            const res = await sendMessageToAariv({
+                userId: user.id,
+                sessionId: currentSessionId,
+                message: userMsg.text
+            });
 
-      setMessages((prev) => [
-        ...prev,
-        { sender: "aariv", text: "I'm here with you. Tell me more." }
-      ]);
+            setMessages(prev => [...prev, {
+                sender: "aariv",
+                text: res.response,
+                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            }]);
+            
+            loadSessions(); // Refresh session list
+        } catch (error) {
+            console.error("AARIV error:", error);
+            setMessages(prev => [...prev, {
+                sender: "aariv",
+                text: "I'm here with you. Tell me more.",
+                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            }]);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
-    }
-  };
+    return (
+        <DashboardLayout hideHeader noPadding>
+            <AarivChatLayout 
+                sessions={sessions} 
+                currentSessionId={currentSessionId} 
+                onSessionSelect={loadHistory}
+                onNewChat={handleNewChat}
+                onSessionDelete={handleDeleteSession}
+            >
+                <div className="chatbot-container">
+                <header className="chat-main-header">
+                    <div className="header-title">
+                        <h2>Aariv Chatroom</h2>
+                    </div>
+                </header>
 
-  return (
-    <DashboardLayout>
-      <div className="chatbot-page">
-
-        {/* Header */}
-
-        <div className="chatbot-header">
-
-          <div className="aariv-profile-info">
-
-            <img
-              src="https://ui-avatars.com/api/?name=Aariv&background=1E293B&color=fff&rounded=true"
-              alt="Aariv Avatar"
-              className="aariv-avatar-img"
-              onError={(e) => {
-                e.target.onerror = null;
-                e.target.src =
-                  "https://ui-avatars.com/api/?name=Aariv&background=1E293B&color=fff&rounded=true";
-              }}
-            />
-
-            <div className="aariv-header-text">
-              <h3>Aariv</h3>
-              <span>VYANNAID COMPANION</span>
-            </div>
-
-          </div>
-
-          <button className="chatbot-settings-btn">
-            <Settings size={24} color="#334155" />
-          </button>
-
-        </div>
-
-        {/* Chat Messages */}
-
-        <div className="chatbot-main-content">
-
-          {messages.length === 0 ? (
-
-            <div className="greeting-card">
-
-              <div className="greeting-icon-wrapper">
-                <svg width="32" height="32" viewBox="0 0 24 24">
-                  <circle cx="12" cy="12" r="10" fill="#154BBA" />
-                </svg>
-              </div>
-
-              <h1 className="greeting-title">Hello, I am Aariv.</h1>
-
-              <p className="greeting-subtitle">
-                How are you feeling today?
-              </p>
-
-              <button className="start-convo-btn">
-                Start Conversation
-                <ArrowRight size={20} />
-              </button>
-
-            </div>
-
-          ) : (
-
-            <div className="chat-messages">
-
-              {messages.map((msg, index) => (
-
-                <div
-                  key={index}
-                  className={
-                    msg.sender === "user"
-                      ? "message user-message"
-                      : "message aariv-message"
-                  }
-                >
-
-                  {msg.text}
-
+                <div className="chat-content">
+                    {messages.length === 0 ? (
+                        <div className="empty-state">
+                            <div className="aariv-large-icon">
+                                <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+                                    <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z" fill="#3B82F6"/>
+                                </svg>
+                            </div>
+                            <h3>Hello! I'm Aariv.</h3>
+                            <p>How can I assist you with your mental well-being today?</p>
+                        </div>
+                    ) : (
+                        <div className="messages-list">
+                            {messages.map((msg, index) => (
+                                <div key={index} className={`message-wrapper ${msg.sender}`}>
+                                    {msg.sender === "aariv" && (
+                                        <div className="aariv-avatar-mini">
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                                <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z" fill="white"/>
+                                            </svg>
+                                        </div>
+                                    )}
+                                    <div className="message-content">
+                                        <div className="message-info">
+                                            <span className="sender-name">{msg.sender === "aariv" ? "Aariv" : "You"}</span>
+                                            <span className="message-time">{msg.time}</span>
+                                        </div>
+                                        <div className="message-bubble">
+                                            <ReactMarkdown>{msg.text}</ReactMarkdown>
+                                            
+                                            {/* Example Attachment UI like in mockup */}
+                                            {msg.text.includes("Report") && (
+                                                <div className="attachment-card">
+                                                    <div className="attachment-icon">
+                                                        <FileText size={20} />
+                                                    </div>
+                                                    <div className="attachment-info">
+                                                        <span className="file-name">Contrast_Analysis_Report.pdf</span>
+                                                        <span className="file-meta">2.4 MB • PDF Document</span>
+                                                    </div>
+                                                    <button className="download-btn">
+                                                        <Download size={18} />
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                    {msg.sender === "user" && (
+                                        <div className="user-avatar-mini" style={{ background: user?.avatarColor || "#FDBA74" }}>
+                                            {getInitials(user?.name)}
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                            {isLoading && (
+                                <div className="message-wrapper aariv">
+                                    <div className="aariv-avatar-mini">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                            <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z" fill="white"/>
+                                        </svg>
+                                    </div>
+                                    <div className="message-content">
+                                        <div className="message-bubble">
+                                            <span className="loading-dots">Aariv is thinking...</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            <div ref={messagesEndRef} />
+                        </div>
+                    )}
                 </div>
 
-              ))}
-
-            </div>
-
-          )}
-
-        </div>
-
-        {/* Input */}
-
-        <div className="chatbot-input-container">
-
-          <form className="chatbot-form" onSubmit={handleSubmit}>
-
-            <div className="input-wrapper">
-
-              <input
-                type="text"
-                className="chatbot-input"
-                placeholder="Type your message..."
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-              />
-
-              <button type="button" className="chatbot-mic-btn">
-                <Mic size={20} color="#64748b" />
-              </button>
-
-            </div>
-
-            <button type="submit" className="chatbot-send-btn">
-              <Send size={20} color="#ffffff" />
-            </button>
-
-          </form>
-
-        </div>
-
-      </div>
-    </DashboardLayout>
-  );
+                <footer className="chat-main-footer">
+                    <div className="input-box-wrapper">
+                        <form className="input-form" onSubmit={handleSubmit}>
+                            <input 
+                                type="text" 
+                                placeholder="Message Aariv..." 
+                                value={message}
+                                onChange={(e) => setMessage(e.target.value)}
+                            />
+                            <div className="input-right-actions">
+                                <button type="submit" className={`send-btn ${message.trim() ? 'active' : ''}`}>
+                                    <Send size={20} />
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    <span className="footer-disclaimer">Aariv AI can make mistakes. Verify important information.</span>
+                </footer>
+                </div>
+            </AarivChatLayout>
+        </DashboardLayout>
+    );
 };
 
 export default Chatbot;
