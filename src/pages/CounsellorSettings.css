@@ -1,0 +1,181 @@
+.cset-page { display: flex; flex-direction: column; gap: 1.5rem; max-width: 760px; }
+
+.cset-loading { display:flex; justify-content:center; padding:4rem; }
+.cset-spinner {
+  width:32px; height:32px;
+  border:3px solid #e2e8f0;
+  border-top-color:#1a2234;
+  border-radius:50%;
+  animation:spin .7s linear infinite;
+}
+@keyframes spin { to { transform:rotate(360deg); } }
+
+.cset-toast {
+  position:fixed; top:1.25rem; right:1.5rem;
+  background:#1a2234; color:#fff;
+  padding:.7rem 1.2rem; border-radius:10px;
+  font-size:.88rem; z-index:9999;
+  box-shadow:0 4px 12px rgba(0,0,0,.15);
+}
+
+.cset-header {
+  display:flex; align-items:center;
+  justify-content:space-between; gap:1rem;
+}
+
+.cset-title { font-size:1.4rem; font-weight:800; color:#1a2234; margin:0; }
+
+.cset-save-btn {
+  display:flex; align-items:center; gap:.4rem;
+  background:#1a2234; color:#fff;
+  border:none; border-radius:10px;
+  padding:.65rem 1.2rem; font-size:.88rem;
+  font-weight:600; cursor:pointer; transition:background .2s;
+}
+
+.cset-save-btn:hover:not(:disabled) { background:#2d3a54; }
+.cset-save-btn:disabled { opacity:.6; cursor:not-allowed; }
+
+/* Card */
+.cset-card {
+  background:#fff; border:1px solid #f1f5f9;
+  border-radius:16px; padding:1.5rem;
+  box-shadow:0 1px 8px rgba(0,0,0,.04);
+}
+
+.cset-card-header {
+  display:flex; align-items:center; gap:1.25rem; margin-bottom:1.5rem;
+}
+
+.cset-avatar {
+  width:56px; height:56px; border-radius:50%;
+  background:#1a2234; color:#fff;
+  display:flex; align-items:center; justify-content:center;
+  font-weight:800; font-size:1.4rem; flex-shrink:0;
+}
+
+.cset-uname  { font-size:1.05rem; font-weight:700; color:#1a2234; margin:0 0 .15rem; }
+.cset-uemail { font-size:.82rem; color:#94a3b8; margin:0 0 .4rem; }
+
+.cset-role-pill {
+  background:#eef2ff; color:#6366f1;
+  font-size:.7rem; font-weight:700;
+  padding:.2rem .6rem; border-radius:99px;
+  text-transform:uppercase; letter-spacing:.05em;
+}
+
+/* Fields */
+.cset-fields { display:flex; flex-direction:column; gap:1rem; }
+
+.cset-field { display:flex; flex-direction:column; gap:.35rem; }
+
+.cset-field label {
+  font-size:.8rem; font-weight:700; color:#64748b;
+  text-transform:uppercase; letter-spacing:.04em;
+}
+
+.cset-field label span { font-weight:400; text-transform:none; color:#94a3b8; }
+
+.cset-field input,
+.cset-field textarea {
+  border:1px solid #e2e8f0; border-radius:9px;
+  padding:.65rem .9rem; font-size:.92rem;
+  color:#1a2234; font-family:inherit;
+  outline:none; transition:border-color .15s;
+  background:#fff;
+}
+
+.cset-field input:focus,
+.cset-field textarea:focus { border-color:#6366f1; }
+
+.cset-field textarea { resize:vertical; }
+
+/* Section title */
+.cset-section-title {
+  font-size:.95rem; font-weight:700; color:#1a2234; margin:0 0 1rem;
+}
+
+/* Institution */
+.cset-inst-grid {
+  display:grid; grid-template-columns:repeat(2,1fr); gap:.85rem;
+  margin-bottom:1rem;
+}
+
+.cset-inst-item {
+  background:#f8fafc; border-radius:10px; padding:.85rem;
+  display:flex; flex-direction:column; gap:.2rem;
+}
+
+.cset-inst-label { font-size:.7rem; font-weight:700; color:#94a3b8; text-transform:uppercase; letter-spacing:.04em; }
+.cset-inst-value { font-size:.95rem; font-weight:600; color:#1a2234; }
+
+.cset-status-pill {
+  font-size:.72rem; font-weight:700; padding:.25rem .6rem;
+  border-radius:99px; width:fit-content;
+  text-transform:uppercase; letter-spacing:.04em;
+}
+
+.cset-status-pill.active   { background:#f0fdf4; color:#16a34a; }
+.cset-status-pill.inactive { background:#fef2f2; color:#dc2626; }
+
+.cset-inst-note { font-size:.78rem; color:#94a3b8; font-style:italic; margin:0; }
+
+/* Availability */
+.cset-avail-header {
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:.5rem;
+}
+
+.cset-avail-desc { font-size:.83rem; color:#94a3b8; margin:0 0 1rem; }
+
+.cset-add-slot-btn {
+  display:flex; align-items:center; gap:.3rem;
+  background:#eef2ff; color:#6366f1;
+  border:none; border-radius:8px;
+  padding:.4rem .85rem; font-size:.8rem;
+  font-weight:700; cursor:pointer;
+  transition:background .15s;
+}
+
+.cset-add-slot-btn:hover { background:#e0e7ff; }
+
+.cset-no-avail {
+  text-align:center; padding:1.5rem;
+  color:#94a3b8; font-size:.85rem;
+}
+
+.cset-no-avail button {
+  background:none; border:none; color:#6366f1;
+  font-size:.85rem; font-weight:600; cursor:pointer;
+  margin-top:.5rem;
+}
+
+.cset-slot-list { display:flex; flex-direction:column; gap:.65rem; }
+
+.cset-slot-row {
+  display:flex; align-items:center; gap:.65rem; flex-wrap:wrap;
+}
+
+.cset-slot-row select,
+.cset-slot-row input[type="time"] {
+  border:1px solid #e2e8f0; border-radius:8px;
+  padding:.5rem .75rem; font-size:.88rem;
+  color:#1a2234; font-family:inherit;
+  outline:none; transition:border-color .15s; background:#fff;
+}
+
+.cset-slot-row select:focus,
+.cset-slot-row input[type="time"]:focus { border-color:#6366f1; }
+
+.cset-to { font-size:.82rem; color:#94a3b8; font-weight:600; }
+
+.cset-del-slot {
+  display:flex; align-items:center; justify-content:center;
+  width:30px; height:30px; border-radius:7px;
+  border:1px solid #fee2e2; background:#fff;
+  color:#ef4444; cursor:pointer; transition:all .15s; flex-shrink:0;
+}
+
+.cset-del-slot:hover { background:#fef2f2; }
+
+@media (max-width:600px) { .cset-inst-grid { grid-template-columns:1fr; } }

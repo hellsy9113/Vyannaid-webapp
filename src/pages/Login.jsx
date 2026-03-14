@@ -6,18 +6,25 @@ import { validateEmail } from "../utils/validators";
 import { Eye, EyeOff } from "lucide-react";
 import "./Login.css";
 
-// Redirect each role to their own dashboard after login
 const ROLE_HOME = {
-  admin:      "/dashboard/admin",
-  counsellor: "/dashboard/counsellor",
-  student:    "/dashboard/student",
+  admin:   "/dashboard/admin",
+  student: "/dashboard/student",
+};
+
+// New students (profileComplete === false) go to setup first.
+// Existing students and admins go straight to their dashboard.
+const getDestination = (user) => {
+  if (user.role === 'student' && user.profileComplete === false) {
+    return "/profile/setup";
+  }
+  return ROLE_HOME[user.role] || "/dashboard/student";
 };
 
 const Login = () => {
-  const [form, setForm] = useState({ email: "", password: "" });
-  const [showPassword, setShowPassword] = useState(false);
-  const [error, setError]   = useState("");
-  const [loading, setLoading] = useState(false);
+  const [form, setForm]           = useState({ email: "", password: "" });
+  const [showPassword, setShowPw] = useState(false);
+  const [error, setError]         = useState("");
+  const [loading, setLoading]     = useState(false);
 
   const { login } = useAuth();
   const navigate  = useNavigate();
@@ -34,11 +41,8 @@ const Login = () => {
       const res = await loginUser(form);
       const { token, user } = res.data;
 
-      // Store full user object — name, email, role, id and token
       login({ ...user, token });
-
-      // Redirect based on role
-      navigate(ROLE_HOME[user.role] || "/dashboard/student", { replace: true });
+      navigate(getDestination(user), { replace: true });
     } catch (err) {
       setError(err.response?.data?.message || "Login failed. Try again.");
     } finally {
@@ -73,7 +77,7 @@ const Login = () => {
           <button
             type="button"
             className="password-toggle"
-            onClick={() => setShowPassword(!showPassword)}
+            onClick={() => setShowPw(p => !p)}
           >
             {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
           </button>

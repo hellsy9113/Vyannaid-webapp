@@ -1,0 +1,353 @@
+/* ─── Counsellor Overview Page ──────────────────────────── */
+.co-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 1200px;
+}
+
+/* Loading */
+.co-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  height: 60vh;
+  color: #64748b;
+}
+
+.co-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid #e2e8f0;
+  border-top-color: #1a2234;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Greeting */
+.co-greeting-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.co-greeting {
+  font-size: 1.65rem;
+  font-weight: 800;
+  color: #1a2234;
+  margin: 0 0 0.25rem;
+}
+
+.co-date {
+  font-size: 0.88rem;
+  color: #94a3b8;
+  margin: 0;
+}
+
+.co-new-session-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #1a2234;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 0.65rem 1.25rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+.co-new-session-btn:hover { background: #2d3a54; }
+
+/* Alert banner */
+.co-alert-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-radius: 12px;
+  padding: 0.9rem 1.25rem;
+  color: #9a3412;
+  font-size: 0.9rem;
+}
+
+.co-alert-banner svg { flex-shrink: 0; color: #f97316; }
+
+.co-alert-banner button {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: #fff;
+  border: 1px solid #fed7aa;
+  border-radius: 8px;
+  padding: 0.4rem 0.85rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #9a3412;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* Stats grid */
+.co-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+@media (max-width: 900px)  { .co-stats-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 480px)  { .co-stats-grid { grid-template-columns: 1fr; } }
+
+.co-stat-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  box-shadow: 0 1px 8px rgba(0,0,0,0.05);
+  border: 1px solid #f1f5f9;
+  transition: box-shadow 0.2s;
+}
+
+.co-stat-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+
+.co-stat-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.accent-blue   .co-stat-icon { background: #eff6ff; color: #3b82f6; }
+.accent-indigo .co-stat-icon { background: #eef2ff; color: #6366f1; }
+.accent-green  .co-stat-icon { background: #f0fdf4; color: #22c55e; }
+.accent-red    .co-stat-icon { background: #fef2f2; color: #ef4444; }
+.accent-slate  .co-stat-icon { background: #f8fafc; color: #64748b; }
+
+.co-stat-body { display: flex; flex-direction: column; gap: 0.1rem; }
+.co-stat-value { font-size: 1.8rem; font-weight: 800; color: #1a2234; line-height: 1; }
+.co-stat-label { font-size: 0.78rem; color: #94a3b8; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+.co-stat-sub   { font-size: 0.75rem; color: #cbd5e1; margin-top: 0.15rem; }
+
+/* Two-col layout */
+.co-two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+@media (max-width: 900px) { .co-two-col { grid-template-columns: 1fr; } }
+
+/* Generic card */
+.co-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 8px rgba(0,0,0,0.05);
+  border: 1px solid #f1f5f9;
+}
+
+.co-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.co-section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1a2234;
+  margin: 0;
+}
+
+.co-view-all {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  background: none;
+  border: none;
+  color: #6366f1;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Empty state */
+.co-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 2rem;
+  color: #94a3b8;
+  text-align: center;
+}
+
+.co-empty svg   { opacity: 0.3; }
+.co-empty p     { font-size: 0.9rem; margin: 0; }
+.co-empty-sub   { font-size: 0.8rem; }
+
+.co-empty button {
+  background: none;
+  border: none;
+  color: #6366f1;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 0.5rem;
+}
+
+/* Session list */
+.co-session-list { display: flex; flex-direction: column; gap: 0.6rem; }
+
+.co-session-row {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.75rem;
+  border-radius: 10px;
+  transition: background 0.15s;
+  cursor: pointer;
+}
+
+.co-session-row:hover { background: #f8fafc; }
+
+.co-session-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #1a2234;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.co-session-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0.1rem; }
+.co-session-name { font-size: 0.9rem; font-weight: 600; color: #1a2234; }
+.co-session-time { display: flex; align-items: center; gap: 0.3rem; font-size: 0.78rem; color: #94a3b8; }
+
+/* Status pills */
+.co-pill {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.25rem 0.6rem;
+  border-radius: 99px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+}
+
+.pill-blue   { background: #eff6ff; color: #3b82f6; }
+.pill-green  { background: #f0fdf4; color: #16a34a; }
+.pill-red    { background: #fef2f2; color: #dc2626; }
+.pill-yellow { background: #fefce8; color: #ca8a04; }
+
+/* Student quick list */
+.co-student-quick-list { display: flex; flex-direction: column; gap: 0.4rem; }
+
+.co-student-quick-row {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.co-student-quick-row:hover { background: #f8fafc; }
+
+.co-sq-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #e0e7ff;
+  color: #4338ca;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.co-sq-info    { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.co-sq-name    { font-size: 0.88rem; font-weight: 600; color: #1a2234; }
+.co-sq-email   { font-size: 0.75rem; color: #94a3b8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.co-sq-arrow   { color: #cbd5e1; }
+
+.co-mood-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.co-more-btn {
+  background: none;
+  border: 1px dashed #e2e8f0;
+  border-radius: 8px;
+  padding: 0.5rem;
+  color: #94a3b8;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s;
+  margin-top: 0.25rem;
+}
+
+.co-more-btn:hover { border-color: #6366f1; color: #6366f1; }
+
+/* Institution card */
+.co-institution-card { }
+
+.co-institution-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+@media (max-width: 700px) { .co-institution-grid { grid-template-columns: repeat(2, 1fr); } }
+
+.co-inst-stat {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.co-inst-value {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #1a2234;
+  word-break: break-word;
+}
+
+.co-inst-label { font-size: 0.75rem; color: #94a3b8; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }

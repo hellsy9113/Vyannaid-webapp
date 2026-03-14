@@ -1,0 +1,32 @@
+.cl-layout {
+  display: flex;
+  min-height: 100vh;
+  background: #fafafa;
+}
+
+.cl-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 999;
+}
+
+.cl-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.cl-content {
+  flex: 1;
+  padding: 1.75rem 2rem 2.5rem;
+  overflow-y: auto;
+}
+
+@media (max-width: 768px) {
+  .cl-content {
+    padding: 1.25rem 1rem 2rem;
+  }
+}

@@ -79,7 +79,8 @@ const Register = () => {
           </button>
         </div>
 
-        {/* Role selector — uses existing auth-card input styling */}
+        {/* Counsellor role is not available via public registration.
+            Counsellors are created by an admin from the admin dashboard. */}
         <select
           className="role-select"
           value={form.role}
@@ -87,13 +88,17 @@ const Register = () => {
           required
         >
           <option value="student">Student</option>
-          <option value="counsellor">Counsellor</option>
           <option value="admin">Admin</option>
         </select>
 
         <button type="submit" disabled={loading}>
           {loading ? "Creating account…" : "Register"}
         </button>
+
+        <p className="switch">
+          Already have an account?{" "}
+          <span onClick={() => navigate("/login")}>Sign in</span>
+        </p>
       </form>
     </div>
   );
