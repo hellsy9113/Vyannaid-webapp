@@ -13,19 +13,19 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
 
   if (loading) return null;
 
-  // Not logged in → login
-  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  // 1. Not logged in → login
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
 
-  // Wrong role → that role's own home, never "/"
+  // 2. Wrong role → that role's own dashboard (never "/" which causes loops)
   if (allowedRoles && !allowedRoles.includes(user.role)) {
     return <Navigate to={ROLE_HOME[user.role] ?? "/login"} replace />;
   }
 
-  // Incomplete student profile → setup page
-  // Only redirect if:
-  //   1. They are a student
-  //   2. profileComplete is explicitly false (undefined/null = treated as complete)
-  //   3. They are NOT already on the setup page (prevents loop)
+  // 3. Incomplete profile setup — STUDENTS ONLY.
+  //    Admin and counsellor accounts NEVER go through onboarding.
+  //    Guard is skipped if already on /profile/setup to prevent loops.
   if (
     user.role === "student" &&
     user.profileComplete === false &&
