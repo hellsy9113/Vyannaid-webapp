@@ -1,0 +1,248 @@
+.ao-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  max-width: 1000px;
+}
+
+.ao-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.ao-title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 0.25rem;
+}
+
+.ao-subtitle {
+  font-size: 0.875rem;
+  color: #64748b;
+  margin: 0;
+}
+
+/* Stats grid */
+.ao-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+@media (max-width: 900px) {
+  .ao-stats-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 480px) {
+  .ao-stats-grid { grid-template-columns: 1fr; }
+}
+
+.ao-stat-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+
+.ao-stat-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ao-accent-blue   .ao-stat-icon { background: #eff6ff; color: #3b82f6; }
+.ao-accent-green  .ao-stat-icon { background: #f0fdf4; color: #22c55e; }
+.ao-accent-purple .ao-stat-icon { background: #f5f3ff; color: #8b5cf6; }
+.ao-accent-yellow .ao-stat-icon { background: #fefce8; color: #eab308; }
+
+.ao-stat-body {
+  display: flex;
+  flex-direction: column;
+}
+
+.ao-stat-value {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1;
+}
+
+.ao-stat-label {
+  font-size: 0.78rem;
+  color: #64748b;
+  margin-top: 0.2rem;
+  font-weight: 500;
+}
+
+/* Quick actions */
+.ao-quick-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.ao-qa-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.25rem;
+  background: #0f172a;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.ao-qa-btn:hover { background: #1e293b; }
+
+.ao-qa-secondary {
+  background: #fff;
+  color: #0f172a;
+  border: 1px solid #e2e8f0;
+}
+.ao-qa-secondary:hover { background: #f8fafc; }
+
+/* Card */
+.ao-card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+
+.ao-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.ao-card-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+}
+
+.ao-see-all {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: none;
+  border: none;
+  font-size: 0.8rem;
+  color: #6366f1;
+  cursor: pointer;
+  font-weight: 600;
+}
+.ao-see-all:hover { text-decoration: underline; }
+
+/* User list */
+.ao-user-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.ao-user-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem;
+  border-radius: 10px;
+  transition: background 0.15s;
+}
+.ao-user-row:hover { background: #f8fafc; }
+
+.ao-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ao-user-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.ao-user-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.ao-user-email {
+  font-size: 0.78rem;
+  color: #64748b;
+}
+
+.ao-assign-btn {
+  padding: 0.4rem 0.9rem;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.ao-assign-btn:hover { background: #e2e8f0; }
+
+.ao-loading {
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.ao-spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid #e2e8f0;
+  border-top-color: #6366f1;
+  border-radius: 50%;
+  animation: ao-spin 0.7s linear infinite;
+}
+
+@keyframes ao-spin { to { transform: rotate(360deg); } }
+
+.ao-empty {
+  color: #64748b;
+  font-size: 0.875rem;
+  padding: 0.5rem 0;
+}
+
+.ao-link {
+  background: none;
+  border: none;
+  color: #6366f1;
+  cursor: pointer;
+  font-weight: 600;
+}
+.ao-link:hover { text-decoration: underline; }

@@ -20,3 +20,15 @@ export const deleteUser = (id) => api.delete(`/admin/users/${id}`);
 // POST /admin/assign — { counsellorId, studentId }
 export const assignStudentToCounsellor = (counsellorId, studentId) =>
   api.post("/admin/assign", { counsellorId, studentId });
+
+// DELETE /admin/assign — { counsellorId, studentId }
+export const unassignStudentFromCounsellor = (counsellorId, studentId) =>
+  api.delete("/admin/assign", { data: { counsellorId, studentId } });
+
+// POST /admin/users  (create counsellor / admin staff account)
+export const createStaffUser = (data) =>
+  api.post("/admin/users", data);
+
+// GET /admin/counsellors/:id/students  — students assigned to a counsellor
+export const getCounsellorStudents = (counsellorId) =>
+  api.get(`/admin/counsellors/${counsellorId}/students`);

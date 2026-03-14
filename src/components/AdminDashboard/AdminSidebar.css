@@ -1,0 +1,240 @@
+/* ─── Admin Sidebar ──────────────────────────────────────── */
+.asb-sidebar {
+  width: 260px;
+  background-color: #0f172a;
+  height: 100vh;
+  padding: 1.5rem 1.25rem;
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s ease;
+  flex-shrink: 0;
+  border-right: 1px solid rgba(239, 246, 255, 0.06);
+}
+
+.asb-sidebar.collapsed {
+  width: 80px;
+  padding: 1.5rem 0.75rem;
+}
+
+/* Logo row */
+.asb-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  min-height: 32px;
+}
+
+.asb-sidebar.collapsed .asb-logo {
+  flex-direction: column;
+  gap: 1.5rem;
+  justify-content: center;
+}
+
+.asb-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 6px;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.asb-toggle:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.asb-logo-text {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: 1px;
+  white-space: nowrap;
+  opacity: 1;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.asb-sidebar.collapsed .asb-logo-text {
+  opacity: 0;
+  transform: translateX(-10px);
+  pointer-events: none;
+  position: absolute;
+}
+
+/* Role pill */
+.asb-role-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(234, 179, 8, 0.15);
+  border: 1px solid rgba(234, 179, 8, 0.3);
+  border-radius: 99px;
+  padding: 0.3rem 0.85rem;
+  margin-bottom: 0.75rem;
+  width: fit-content;
+  overflow: hidden;
+  transition: width 0.3s, padding 0.3s, opacity 0.2s;
+}
+
+.asb-sidebar.collapsed .asb-role-pill {
+  padding: 0.4rem;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  justify-content: center;
+}
+
+.asb-role-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #eab308;
+  flex-shrink: 0;
+  animation: adm-pulse 2s infinite;
+}
+
+@keyframes adm-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+.asb-role-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #fde047;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  opacity: 1;
+  transition: opacity 0.2s;
+}
+
+.asb-sidebar.collapsed .asb-role-label {
+  opacity: 0;
+  position: absolute;
+  pointer-events: none;
+}
+
+/* University badge */
+.asb-uni-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+  transition: padding 0.3s;
+}
+
+.asb-sidebar.collapsed .asb-uni-badge {
+  justify-content: center;
+  padding: 0.5rem;
+}
+
+.asb-uni-icon {
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.asb-uni-name {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #cbd5e1;
+  white-space: nowrap;
+  opacity: 1;
+  transition: opacity 0.2s;
+}
+
+.asb-sidebar.collapsed .asb-uni-name {
+  opacity: 0;
+  position: absolute;
+  pointer-events: none;
+}
+
+/* Nav links */
+.asb-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  flex: 1;
+}
+
+.asb-link {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.8rem 1rem;
+  color: #94a3b8;
+  text-decoration: none;
+  border-radius: 10px;
+  transition: all 0.2s;
+  font-weight: 600;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.asb-sidebar.collapsed .asb-link {
+  justify-content: center;
+  padding: 0.8rem 0;
+  gap: 0;
+}
+
+.asb-link span {
+  opacity: 1;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.asb-sidebar.collapsed .asb-link span {
+  opacity: 0;
+  transform: translateX(-10px);
+  pointer-events: none;
+  position: absolute;
+}
+
+.asb-link:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+}
+
+.asb-link.active {
+  background: rgba(234, 179, 8, 0.15);
+  color: #fde047;
+}
+
+.asb-link.active svg {
+  color: #eab308;
+}
+
+@media (max-width: 768px) {
+  .asb-sidebar {
+    position: fixed;
+    left: -280px;
+    top: 0;
+    height: 100vh;
+    transition: left 0.3s ease;
+    z-index: 1000;
+  }
+  .asb-sidebar.open {
+    left: 0;
+  }
+  .asb-sidebar.collapsed {
+    width: 260px;
+    padding: 1.5rem 1.25rem;
+    left: -280px;
+  }
+  .asb-sidebar.collapsed.open {
+    left: 0;
+  }
+}

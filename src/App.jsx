@@ -32,15 +32,34 @@ import VolunteerApplication from "./pages/VolunteerApplication";
 import VolunteerForm from "./pages/VolunteerForm";
 import CalmMusic from "./pages/CalmMusic";
 
-// ── Admin pages ─────────────────────────────────────────────────
-import AdminDashboard from "./pages/AdminDashboard";
+// ── Counsellor pages ─────────────────────────────────────────────
+import CounsellorOverview    from "./pages/CounsellorOverview";
+import CounsellorStudents    from "./pages/CounsellorStudents";
+import CounsellorSessions    from "./pages/CounsellorSessions";
+import CounsellorNotes       from "./pages/CounsellorNotes";
+import CounsellorAnalytics   from "./pages/CounsellorAnalytics";
+import CounsellorMessages    from "./pages/CounsellorMessages";
+import CounsellorResources   from "./pages/CounsellorResources";
+import CounsellorSettings    from "./pages/CounsellorSettings";
+
+// ── Admin pages ──────────────────────────────────────────────────
+import AdminOverview    from "./pages/AdminOverview";
+import AdminUsers       from "./pages/AdminUsers";
+import AdminAssign      from "./pages/AdminAssign";
+import AdminCreateStaff from "./pages/AdminCreateStaff";
 
 // ────────────────────────────────────────────────────────────────
-
+// Role → home path mapping.
+// Every possible role MUST be listed here.
+// If a role is missing, ProtectedRoute falls back to "/login".
+// ────────────────────────────────────────────────────────────────
 const ROLE_HOME = {
-  admin:   "/dashboard/admin",
-  student: "/dashboard/student",
+  admin:      "/dashboard/admin",
+  counsellor: "/dashboard/counsellor",
+  student:    "/dashboard/student",
 };
+
+// ── Guard components ─────────────────────────────────────────────
 
 const Home = () => (
   <>
@@ -51,31 +70,36 @@ const Home = () => (
   </>
 );
 
+/** "/" — show landing for guests, redirect to role home for authenticated users */
 const HomeRoute = () => {
   const { user, isAuthenticated, loading } = useAuth();
   if (loading) return null;
   if (!isAuthenticated) return <Home />;
-  return <Navigate to={ROLE_HOME[user.role] || "/"} replace />;
+  // Use login to known role path; fallback to login so there's never a loop
+  return <Navigate to={ROLE_HOME[user.role] ?? "/login"} replace />;
 };
 
+/** Public-only pages (login / register) — redirect authenticated users home */
 const GuestOnly = ({ children }) => {
   const { user, isAuthenticated, loading } = useAuth();
   if (loading) return null;
   if (!isAuthenticated) return children;
-  return <Navigate to={ROLE_HOME[user.role] || "/"} replace />;
+  return <Navigate to={ROLE_HOME[user.role] ?? "/login"} replace />;
 };
 
-// Guards /profile/setup — students only, skips if already complete
+/** /profile/setup guard — students only, skip if already complete */
 const SetupRoute = ({ children }) => {
   const { user, isAuthenticated, loading } = useAuth();
   if (loading) return null;
   if (!isAuthenticated) return <Navigate to="/login" replace />;
-  if (user.role !== 'student') return <Navigate to={ROLE_HOME[user.role] || "/"} replace />;
+  if (user.role !== "student") return <Navigate to={ROLE_HOME[user.role] ?? "/login"} replace />;
   if (user.institution?.trim() && user.course?.trim()) {
     return <Navigate to="/dashboard/student" replace />;
   }
   return children;
 };
+
+// ── App ──────────────────────────────────────────────────────────
 
 function App() {
   return (
@@ -83,9 +107,9 @@ function App() {
       <BrowserRouter>
         <Routes>
 
-          {/* ── Public (landing Navbar/Footer) ── */}
+          {/* ── Public (landing Navbar / Footer) ── */}
           <Route element={<LandingLayout />}>
-            <Route path="/" element={<HomeRoute />} />
+            <Route path="/"         element={<HomeRoute />} />
             <Route path="/login"    element={<GuestOnly><Login /></GuestOnly>} />
             <Route path="/register" element={<GuestOnly><Register /></GuestOnly>} />
           </Route>
@@ -134,8 +158,6 @@ function App() {
           <Route path="/dashboard/calm-music" element={
             <ProtectedRoute allowedRoles={["student"]}><CalmMusic /></ProtectedRoute>
           } />
-
-          {/* ── Journal ── */}
           <Route path="/dashboard/journaling" element={
             <ProtectedRoute allowedRoles={["student"]}><JournalingHome /></ProtectedRoute>
           } />
@@ -147,13 +169,53 @@ function App() {
           } />
 
           {/* ════════════════════════════════════ */}
+          {/*  COUNSELLOR ROUTES                   */}
+          {/* ════════════════════════════════════ */}
+          <Route path="/dashboard/counsellor" element={
+            <ProtectedRoute allowedRoles={["counsellor"]}><CounsellorOverview /></ProtectedRoute>
+          } />
+          <Route path="/dashboard/counsellor/students" element={
+            <ProtectedRoute allowedRoles={["counsellor"]}><CounsellorStudents /></ProtectedRoute>
+          } />
+          <Route path="/dashboard/counsellor/sessions" element={
+            <ProtectedRoute allowedRoles={["counsellor"]}><CounsellorSessions /></ProtectedRoute>
+          } />
+          <Route path="/dashboard/counsellor/notes" element={
+            <ProtectedRoute allowedRoles={["counsellor"]}><CounsellorNotes /></ProtectedRoute>
+          } />
+          <Route path="/dashboard/counsellor/analytics" element={
+            <ProtectedRoute allowedRoles={["counsellor"]}><CounsellorAnalytics /></ProtectedRoute>
+          } />
+          <Route path="/dashboard/counsellor/messages" element={
+            <ProtectedRoute allowedRoles={["counsellor"]}><CounsellorMessages /></ProtectedRoute>
+          } />
+          <Route path="/dashboard/counsellor/resources" element={
+            <ProtectedRoute allowedRoles={["counsellor"]}><CounsellorResources /></ProtectedRoute>
+          } />
+          <Route path="/dashboard/counsellor/settings" element={
+            <ProtectedRoute allowedRoles={["counsellor"]}><CounsellorSettings /></ProtectedRoute>
+          } />
+
+          {/* ════════════════════════════════════ */}
           {/*  ADMIN ROUTES                        */}
           {/* ════════════════════════════════════ */}
           <Route path="/dashboard/admin" element={
-            <ProtectedRoute allowedRoles={["admin"]}><AdminDashboard /></ProtectedRoute>
+            <ProtectedRoute allowedRoles={["admin"]}><AdminOverview /></ProtectedRoute>
+          } />
+          <Route path="/dashboard/admin/counsellors" element={
+            <ProtectedRoute allowedRoles={["admin"]}><AdminUsers /></ProtectedRoute>
+          } />
+          <Route path="/dashboard/admin/students" element={
+            <ProtectedRoute allowedRoles={["admin"]}><AdminUsers /></ProtectedRoute>
+          } />
+          <Route path="/dashboard/admin/assign" element={
+            <ProtectedRoute allowedRoles={["admin"]}><AdminAssign /></ProtectedRoute>
+          } />
+          <Route path="/dashboard/admin/staff" element={
+            <ProtectedRoute allowedRoles={["admin"]}><AdminCreateStaff /></ProtectedRoute>
           } />
 
-          {/* ── Fallback ── */}
+          {/* ── Catch-all: authenticated → role home, guest → landing ── */}
           <Route path="*" element={<HomeRoute />} />
 
         </Routes>
