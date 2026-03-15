@@ -65,16 +65,18 @@ const ProfileSidebar = ({ isOpen, onClose }) => {
           </div>
           <h3>{user?.name || 'User'}</h3>
           <p>{user?.email || ''}</p>
-          <span className="ps-role-badge">{user?.role}</span>
+          <div className="ps-role-row">
+            <span className="ps-role-badge">{user?.role}</span>
+          </div>
+
+          <button className="ps-edit-primary-btn" onClick={goToProfile}>
+            <User size={18} />
+            <span>Edit Profile</span>
+          </button>
         </div>
 
-        <div className="profile-menu">
-          {menuItems.map((item, index) => (
-            <button key={index} className="menu-item" onClick={item.action}>
-              <item.icon size={20} />
-              <span>{item.label}</span>
-            </button>
-          ))}
+        <div className="profile-menu-placeholder">
+          {/* Menu items removed as per request for a single primary button */}
         </div>
 
         <div className="profile-footer">

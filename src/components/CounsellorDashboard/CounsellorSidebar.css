@@ -1,17 +1,16 @@
-/* ─── Counsellor Sidebar ─────────────────────────────────── */
+/* ─── Counsellor Sidebar ────────────────────────────────── */
 .csb-sidebar {
   width: 260px;
-  background-color: #111827;
+  background-color: #111827; /* Dark navy from student theme */
   height: 100vh;
   padding: 1.5rem 1.25rem;
   position: sticky;
   top: 0;
   display: flex;
   flex-direction: column;
+  border-right: none;
   z-index: 100;
-  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-              padding 0.3s ease;
-  flex-shrink: 0;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s ease;
 }
 
 .csb-sidebar.collapsed {
@@ -19,167 +18,262 @@
   padding: 1.5rem 0.75rem;
 }
 
-/* Logo row */
-.csb-logo {
+/* Mobile Overlay */
+.cl-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.4);
+  z-index: 30;
+  backdrop-filter: blur(2px);
+}
+
+/* Brand Area */
+.csb-logo-area {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding: 0;
+  min-height: 32px;
+  justify-content: flex-start;
+}
+
+.csb-sidebar.collapsed .csb-logo-area {
+  justify-content: center;
+  padding: 0;
+}
+
+.csb-brand {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  margin-bottom: 1.25rem;
-  min-height: 32px;
+  overflow: hidden;
 }
 
-.csb-sidebar.collapsed .csb-logo {
-  flex-direction: column;
-  gap: 1.5rem;
-  justify-content: center;
+.csb-logo-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  letter-spacing: 1px;
+  white-space: nowrap;
+  opacity: 1;
+  transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
+.csb-sidebar.collapsed .csb-logo-title {
+  opacity: 0;
+  transform: translateX(-10px);
+  pointer-events: none;
+  position: absolute;
+}
+
+/* Toggle */
 .csb-toggle {
   background: none;
   border: none;
   cursor: pointer;
-  color: #94a3b8;
+  color: #94A3B8;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 4px;
   border-radius: 6px;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
 }
 
 .csb-toggle:hover {
-  background: rgba(255,255,255,0.08);
-  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+  color: #FFFFFF;
 }
 
-.csb-logo-text {
-  font-size: 1.1rem;
-  font-weight: 800;
-  color: #fff;
-  letter-spacing: 1px;
-  white-space: nowrap;
-  opacity: 1;
-  transition: opacity 0.2s, transform 0.2s;
-}
-
-.csb-sidebar.collapsed .csb-logo-text {
-  opacity: 0;
-  transform: translateX(-10px);
-  pointer-events: none;
-  position: absolute;
-}
-
-/* Role pill */
-.csb-role-pill {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: rgba(99, 102, 241, 0.15);
-  border: 1px solid rgba(99, 102, 241, 0.25);
-  border-radius: 99px;
-  padding: 0.3rem 0.85rem;
-  margin-bottom: 1.5rem;
-  width: fit-content;
-  overflow: hidden;
-  transition: width 0.3s, padding 0.3s, opacity 0.2s;
-}
-
-.csb-sidebar.collapsed .csb-role-pill {
-  padding: 0.4rem;
-  border-radius: 50%;
-  width: 32px;
-  height: 32px;
-  justify-content: center;
-}
-
-.csb-role-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #818cf8;
-  flex-shrink: 0;
-  animation: pulse-dot 2s infinite;
-}
-
-@keyframes pulse-dot {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.4; }
-}
-
-.csb-role-label {
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: #a5b4fc;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  white-space: nowrap;
-  opacity: 1;
-  transition: opacity 0.2s;
-}
-
-.csb-sidebar.collapsed .csb-role-label {
-  opacity: 0;
-  position: absolute;
-  pointer-events: none;
-}
-
-/* Nav links */
-.csb-nav {
+/* Navigation Main */
+.csb-nav-main {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
-  flex: 1;
+  gap: 0.5rem;
+  overflow-y: auto;
+  padding: 0;
 }
 
+/* Base Link */
 .csb-link {
   display: flex;
   align-items: center;
-  gap: 0.9rem;
-  padding: 0.8rem 1rem;
-  color: #94a3b8;
+  gap: 1rem;
+  padding: 0.85rem 1rem;
+  color: #94A3B8;
   text-decoration: none;
   border-radius: 10px;
   transition: all 0.2s;
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   white-space: nowrap;
 }
 
 .csb-sidebar.collapsed .csb-link {
   justify-content: center;
-  padding: 0.8rem 0;
+  padding: 0.85rem 0;
   gap: 0;
 }
 
-.csb-link span {
-  opacity: 1;
-  transition: opacity 0.2s, transform 0.2s;
+.csb-link:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #FFFFFF;
 }
 
-.csb-sidebar.collapsed .csb-link span {
+.csb-link.active {
+  background: rgba(255, 255, 255, 0.1);
+  color: #FFFFFF;
+}
+
+.csb-label {
+  opacity: 1;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.csb-sidebar.collapsed .csb-label {
   opacity: 0;
   transform: translateX(-10px);
   pointer-events: none;
   position: absolute;
 }
 
-.csb-link:hover {
-  background: rgba(255,255,255,0.05);
-  color: #fff;
+.csb-icon {
+  flex-shrink: 0;
 }
 
-.csb-link.active {
-  background: rgba(99, 102, 241, 0.18);
-  color: #a5b4fc;
+/* Badge for messages */
+.csb-badge {
+  background: rgba(255, 255, 255, 0.1);
+  color: #FFFFFF;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  margin-left: auto;
 }
 
-.csb-link.active svg {
-  color: #818cf8;
+.csb-sidebar.collapsed .csb-badge {
+  display: none;
 }
 
-/* Mobile — hide sidebar, counsellors use top header only */
-@media (max-width: 768px) {
+/* Bottom Section */
+.csb-bottom {
+  padding-top: 1rem;
+  margin-top: auto;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.csb-logout-btn {
+  background: none;
+  border: none;
+  width: 100%;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+}
+
+.csb-danger-text {
+  color: #dc2626 !important;
+}
+
+.csb-user-card {
+  margin-top: 0.5rem;
+  padding: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+}
+
+.csb-user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.csb-user-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.csb-user-info {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.csb-user-name {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  text-transform: capitalize;
+}
+
+.csb-user-role {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #94A3B8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Role Pill */
+.csb-role-pill-holder {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  padding: 0;
+}
+
+.csb-role-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(254, 252, 232, 0.1); 
+  border: 1px solid rgba(253, 224, 71, 0.3);
+  padding: 0.35rem 0.75rem;
+  border-radius: 10px;
+  width: 100%;
+  justify-content: center;
+}
+
+.csb-sidebar.collapsed .csb-role-pill-holder {
+  display: none;
+}
+
+.csb-role-dot {
+  width: 6px;
+  height: 6px;
+  background: #fde047;
+  border-radius: 50%;
+}
+
+.csb-role-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #fde047;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
   .csb-sidebar {
-    display: none;
+    position: fixed;
+    transform: translateX(-100%);
+  }
+  .csb-sidebar.open {
+    transform: translateX(0);
   }
 }

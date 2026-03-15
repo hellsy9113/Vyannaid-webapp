@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '../auth/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import {
-  Users, CalendarDays, TrendingUp, Clock,
-  AlertCircle, CheckCircle2, ChevronRight, Activity
+  Users, MessageSquare, AlertCircle, CheckCircle2, Calendar,
+  Plus, ChevronRight
 } from 'lucide-react';
 import CounsellorLayout from '../components/CounsellorDashboard/CounsellorLayout';
 import {
@@ -13,19 +13,7 @@ import {
 } from '../api/counsellorApi';
 import './CounsellorOverview.css';
 
-/* ── Stat card ──────────────────────────────────────────── */
-const StatCard = ({ icon: Icon, label, value, accent, sub }) => (
-  <div className={`co-stat-card ${accent}`}>
-    <div className="co-stat-icon"><Icon size={20} /></div>
-    <div className="co-stat-body">
-      <span className="co-stat-value">{value}</span>
-      <span className="co-stat-label">{label}</span>
-      {sub && <span className="co-stat-sub">{sub}</span>}
-    </div>
-  </div>
-);
-
-/* ── Session status pill ────────────────────────────────── */
+/* ── Status pill ── */
 const StatusPill = ({ status }) => {
   const map = {
     scheduled:  { label: 'Scheduled',  cls: 'pill-blue'   },
@@ -37,7 +25,7 @@ const StatusPill = ({ status }) => {
   return <span className={`co-pill ${cls}`}>{label}</span>;
 };
 
-/* ── Mood dot ───────────────────────────────────────────── */
+/* ── Mood dot ── */
 const MoodDot = ({ score }) => {
   const color = score >= 7 ? '#4ade80' : score >= 4 ? '#fbbf24' : '#f87171';
   return (
@@ -49,7 +37,6 @@ const MoodDot = ({ score }) => {
   );
 };
 
-/* ── Main component ─────────────────────────────────────── */
 const CounsellorOverview = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -66,27 +53,13 @@ const CounsellorOverview = () => {
       getCounsellorAnalytics(),
     ])
       .then(([pRes, sRes, aRes]) => {
-        setProfile(pRes.data.data);
-        setSessions(sRes.data.data || []);
-        setAnalytics(aRes.data.data);
+        setProfile(pRes.data?.data || null);
+        setSessions(sRes.data?.data || []);
+        setAnalytics(aRes.data?.data || null);
       })
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
-
-  const today = new Date().toLocaleDateString('en-GB', {
-    weekday: 'long', day: 'numeric', month: 'long'
-  });
-
-  /* ── Derive quick stats ── */
-  const totalStudents    = profile?.assignedStudents?.length ?? 0;
-  const todaySessions    = sessions.filter(s => {
-    const d = new Date(s.scheduledAt);
-    const now = new Date();
-    return d.toDateString() === now.toDateString();
-  });
-  const atRiskCount      = analytics?.atRiskStudents ?? 0;
-  const completionRate   = analytics?.completionRate  ?? 0;
 
   if (loading) {
     return (
@@ -99,152 +72,194 @@ const CounsellorOverview = () => {
     );
   }
 
+  // Derive today's actual data
+  const totalStudents = profile?.assignedStudents?.length ?? 0;
+  const todaySessions = sessions.filter(s => {
+    const d = new Date(s.scheduledAt);
+    const now = new Date();
+    return d.toDateString() === now.toDateString();
+  });
+  const activeSessions = todaySessions.length;
+  const atRiskCount = analytics?.atRiskStudents ?? 0;
+  const completionRate = analytics?.completionRate ? `${analytics.completionRate}%` : '0%';
+  const fullName = user?.name || 'Counsellor';
+
+  function formatTime(iso) {
+    if (!iso) return '—';
+    return new Date(iso).toLocaleTimeString('en-US', {
+      hour: '2-digit', minute: '2-digit'
+    });
+  }
+
   return (
     <CounsellorLayout>
       <div className="co-page">
 
-        {/* ── Greeting ── */}
-        <div className="co-greeting-row">
-          <div>
-            <h1 className="co-greeting">Good {getGreeting()}, {user?.name?.split(' ')[0]} 👋</h1>
-            <p className="co-date">{today} · {user?.institution || 'Your Institution'}</p>
+        {/* ── Welcome Header ── */}
+        <div className="co-welcome-row">
+          <div className="co-welcome-texts">
+            <h1 className="co-welcome-title">Welcome back, {fullName}</h1>
+            <p className="co-welcome-sub">
+              You have {activeSessions} session{activeSessions === 1 ? '' : 's'} scheduled for today.
+            </p>
           </div>
-          <button className="co-new-session-btn" onClick={() => navigate('/dashboard/counsellor/sessions')}>
-            <CalendarDays size={16} /> Schedule Session
+          <button className="co-new-session-primary" onClick={() => navigate('/dashboard/counsellor/sessions')}>
+            <Plus size={18} /> New Session
           </button>
         </div>
 
         {/* ── Alert banner for at-risk students ── */}
         {atRiskCount > 0 && (
-          <div className="co-alert-banner">
-            <AlertCircle size={18} />
+          <div className="co-alert-banner" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', background: '#fff7ed', border: '1px solid #fed7aa', borderRadius: '12px', padding: '0.9rem 1.25rem', color: '#9a3412', fontSize: '0.9rem' }}>
+            <AlertCircle size={18} style={{ color: '#f97316' }}/>
             <span>
               <strong>{atRiskCount} student{atRiskCount > 1 ? 's' : ''}</strong> show{atRiskCount === 1 ? 's' : ''} elevated distress signals — review their mood trends.
             </span>
-            <button onClick={() => navigate('/dashboard/counsellor/analytics')}>
+            <button onClick={() => navigate('/dashboard/counsellor/analytics')} style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '0.25rem', background: '#fff', border: '1px solid #fed7aa', borderRadius: '8px', padding: '0.4rem 0.85rem', fontSize: '0.82rem', fontWeight: 600, color: '#9a3412', cursor: 'pointer' }}>
               View Analytics <ChevronRight size={14} />
             </button>
           </div>
         )}
 
-        {/* ── Stat cards ── */}
+        {/* ── STATS GRID ── */}
         <div className="co-stats-grid">
-          <StatCard icon={Users}       label="Assigned Students" value={totalStudents}             accent="accent-blue"   sub={`${user?.institution || ''}`} />
-          <StatCard icon={CalendarDays} label="Today's Sessions" value={todaySessions.length}      accent="accent-indigo" sub="remaining today" />
-          <StatCard icon={TrendingUp}  label="Completion Rate"   value={`${completionRate}%`}      accent="accent-green"  sub="this month" />
-          <StatCard icon={AlertCircle} label="At-Risk Students"  value={atRiskCount}               accent={atRiskCount > 0 ? 'accent-red' : 'accent-slate'} sub="need attention" />
+          {/* Total Students */}
+          <div className="co-stat-card">
+            <div className="co-stat-header">
+              <div className="co-icon-sq bg-blue"><Users size={20} className="text-blue" /></div>
+            </div>
+            <div className="co-stat-body">
+              <div className="co-stat-label">Total Students</div>
+              <div className="co-stat-value">{totalStudents}</div>
+            </div>
+          </div>
+          
+          {/* Active Sessions */}
+          <div className="co-stat-card">
+            <div className="co-stat-header">
+              <div className="co-icon-sq bg-purple"><MessageSquare size={20} className="text-purple" /></div>
+            </div>
+            <div className="co-stat-body">
+              <div className="co-stat-label">Today's Sessions</div>
+              <div className="co-stat-value">{activeSessions}</div>
+            </div>
+          </div>
+
+          {/* At Risk Students - Exchanged Pending Notes for Real Metric */}
+          <div className="co-stat-card">
+            <div className="co-stat-header">
+              <div className="co-icon-sq bg-orange"><AlertCircle size={20} className="text-orange" /></div>
+            </div>
+            <div className="co-stat-body">
+              <div className="co-stat-label">At-Risk Students</div>
+              <div className="co-stat-value">{atRiskCount}</div>
+            </div>
+          </div>
+
+          {/* Completion Rate */}
+          <div className="co-stat-card">
+            <div className="co-stat-header">
+              <div className="co-icon-sq bg-teal"><CheckCircle2 size={20} className="text-teal" /></div>
+              <span className="co-badge badge-neutral">Overall</span>
+            </div>
+            <div className="co-stat-body">
+              <div className="co-stat-label">Completion Rate</div>
+              <div className="co-stat-value">{completionRate}</div>
+            </div>
+          </div>
         </div>
 
-        <div className="co-two-col">
-
-          {/* ── Upcoming sessions ── */}
-          <div className="co-card">
-            <div className="co-card-header">
-              <h2 className="co-section-title">
-                <CalendarDays size={18} /> Upcoming Sessions
+        {/* ── MAIN CONTENT GRID ── */}
+        <div className="co-main-grid">
+          
+          {/* LEFT: Upcoming Schedule */}
+          <div className="co-widget">
+            <div className="co-widget-header">
+              <h2 className="co-widget-title">
+                <Calendar size={20} strokeWidth={2.5}/> Upcoming Schedule
               </h2>
-              <button className="co-view-all" onClick={() => navigate('/dashboard/counsellor/sessions')}>
-                View all <ChevronRight size={14} />
+              <button 
+                className="co-view-link" 
+                onClick={() => navigate('/dashboard/counsellor/sessions')}
+              >
+                View Calendar
               </button>
             </div>
 
             {sessions.length === 0 ? (
-              <div className="co-empty">
-                <CheckCircle2 size={32} />
-                <p>No upcoming sessions scheduled.</p>
-                <button onClick={() => navigate('/dashboard/counsellor/sessions')}>Schedule one →</button>
-              </div>
+               <div className="co-timeline-card" style={{ justifyContent: 'center', margin: 0 }}>
+                 <p style={{ color: '#64748b', fontSize: '0.95rem' }}>No upcoming sessions scheduled.</p>
+               </div>
             ) : (
-              <div className="co-session-list">
-                {sessions.slice(0, 5).map((s) => (
-                  <div key={s._id} className="co-session-row">
-                    <div className="co-session-avatar">
-                      {s.studentName?.charAt(0).toUpperCase() ?? '?'}
+                <div className="co-schedule-timeline">
+                {/* Timeline Line */}
+                <div className="co-timeline-track"></div>
+  
+                {sessions.map((session, i) => {
+                  const sName = session.studentName || session.student?.name || 'Assigned Student';
+                  return (
+                    <div className="co-timeline-item" key={session._id || i}>
+                      <div className="co-timeline-dot dot-dark"></div>
+                      <div className="co-timeline-time">
+                        <span className="co-time-main">{formatTime(session.scheduledAt)}</span>
+                        <span className="co-time-sub">{session.durationMinutes ?? 50} MIN</span>
+                      </div>
+                      <div className="co-timeline-card">
+                        <div className="co-tc-info">
+                          <div className="co-tc-title">{sName}</div>
+                          <div className="co-tc-desc">{session.type || 'Counseling Session'}</div>
+                        </div>
+                        <StatusPill status={session.status} />
+                      </div>
                     </div>
-                    <div className="co-session-info">
-                      <span className="co-session-name">{s.studentName}</span>
-                      <span className="co-session-time">
-                        <Clock size={12} />
-                        {formatDateTime(s.scheduledAt)} · {s.durationMinutes ?? 50}min
-                      </span>
-                    </div>
-                    <StatusPill status={s.status} />
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>
 
-          {/* ── Assigned students quick view ── */}
-          <div className="co-card">
-            <div className="co-card-header">
-              <h2 className="co-section-title">
-                <Users size={18} /> My Students
-              </h2>
-              <button className="co-view-all" onClick={() => navigate('/dashboard/counsellor/students')}>
-                View all <ChevronRight size={14} />
-              </button>
-            </div>
-
-            {!profile?.assignedStudents?.length ? (
-              <div className="co-empty">
-                <Users size={32} />
-                <p>No students assigned yet.</p>
-                <span className="co-empty-sub">Contact your admin to get students assigned.</span>
+          {/* RIGHT: My Students */}
+          <div className="co-right-col">
+            
+            <div className="co-widget">
+              <div className="co-widget-header">
+                <h2 className="co-widget-title">
+                  <Users size={20} strokeWidth={2.5}/> My Students
+                </h2>
+                <button 
+                  className="co-view-link" 
+                  onClick={() => navigate('/dashboard/counsellor/students')}
+                >
+                  View all
+                </button>
               </div>
-            ) : (
-              <div className="co-student-quick-list">
-                {profile.assignedStudents.slice(0, 6).map((s) => (
-                  <div
-                    key={s._id}
-                    className="co-student-quick-row"
-                    onClick={() => navigate(`/dashboard/counsellor/students`)}
-                  >
-                    <div className="co-sq-avatar">{s.name?.charAt(0).toUpperCase()}</div>
-                    <div className="co-sq-info">
-                      <span className="co-sq-name">{s.name}</span>
-                      <span className="co-sq-email">{s.email}</span>
+              
+              <div className="co-activity-list" style={{ borderRadius: '12px', borderBottom: '1px solid #f1f5f9' }}>
+                
+                {!profile?.assignedStudents?.length ? (
+                    <div className="co-activity-item" style={{ justifyContent: 'center' }}>
+                         <p style={{ color: '#64748b', fontSize: '0.9rem' }}>No students assigned yet.</p>
                     </div>
-                    {s.latestMoodScore !== undefined && (
-                      <MoodDot score={s.latestMoodScore} />
-                    )}
-                    <ChevronRight size={14} className="co-sq-arrow" />
-                  </div>
-                ))}
-                {profile.assignedStudents.length > 6 && (
-                  <button className="co-more-btn" onClick={() => navigate('/dashboard/counsellor/students')}>
-                    +{profile.assignedStudents.length - 6} more students
-                  </button>
+                ) : (
+                    profile.assignedStudents.slice(0, 5).map((s) => (
+                        <div key={s._id} className="co-activity-item" style={{ cursor: 'pointer', transition: 'background 0.2s' }} onClick={() => navigate(`/dashboard/counsellor/students`)}>
+                            <div className="co-act-icon bg-blue-light text-blue" style={{ fontWeight: 700 }}>
+                                {s.name?.charAt(0).toUpperCase()}
+                            </div>
+                            <div className="co-act-info" style={{ flex: 1 }}>
+                                <div className="co-act-text"><strong>{s.name}</strong></div>
+                                <div className="co-act-time">{s.email}</div>
+                            </div>
+                            {s.latestMoodScore !== undefined && (
+                                <MoodDot score={s.latestMoodScore} />
+                            )}
+                            <ChevronRight size={16} style={{ color: '#cbd5e1' }} />
+                        </div>
+                    ))
                 )}
               </div>
-            )}
-          </div>
-        </div>
+            </div>
 
-        {/* ── Institution context (admin-link-ready) ── */}
-        <div className="co-card co-institution-card">
-          <div className="co-card-header">
-            <h2 className="co-section-title">
-              <Activity size={18} /> Institution Overview
-            </h2>
-          </div>
-          <div className="co-institution-grid">
-            <div className="co-inst-stat">
-              <span className="co-inst-value">{totalStudents}</span>
-              <span className="co-inst-label">Students Under Care</span>
-            </div>
-            <div className="co-inst-stat">
-              <span className="co-inst-value">{analytics?.totalSessionsThisMonth ?? '—'}</span>
-              <span className="co-inst-label">Sessions This Month</span>
-            </div>
-            <div className="co-inst-stat">
-              <span className="co-inst-value">{analytics?.avgMoodScore ? analytics.avgMoodScore.toFixed(1) : '—'}</span>
-              <span className="co-inst-label">Avg Mood Score</span>
-            </div>
-            <div className="co-inst-stat">
-              <span className="co-inst-value">{user?.institution || '—'}</span>
-              <span className="co-inst-label">Institution</span>
-            </div>
           </div>
         </div>
 
@@ -252,20 +267,5 @@ const CounsellorOverview = () => {
     </CounsellorLayout>
   );
 };
-
-/* ── Helpers ───────────────────────────────────────────── */
-function getGreeting() {
-  const h = new Date().getHours();
-  if (h < 12) return 'morning';
-  if (h < 17) return 'afternoon';
-  return 'evening';
-}
-
-function formatDateTime(iso) {
-  if (!iso) return '—';
-  return new Date(iso).toLocaleString('en-GB', {
-    day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'
-  });
-}
 
 export default CounsellorOverview;

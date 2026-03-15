@@ -1,0 +1,140 @@
+.ch-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 2.5rem;
+  background-color: transparent;
+  /* Assuming layout content background handles this */
+  border-bottom: 1px solid #f1f5f9;
+  width: 100%;
+}
+
+.ch-title-area {
+  display: flex;
+  align-items: center;
+}
+
+.ch-page-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1a2234;
+  margin: 0;
+}
+
+.ch-actions {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.ch-datetime {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  border-right: 1px solid #e2e8f0;
+  padding-right: 1.25rem;
+}
+
+.ch-profile-pill {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  transition: transform 0.2s ease;
+}
+
+.ch-profile-pill:hover {
+  transform: scale(1.05);
+}
+
+.ch-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.ch-notification-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.ch-notification-btn:hover {
+  background: #f8fafc;
+  border-radius: 50%;
+}
+
+.ch-notification-dot {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 6px;
+  height: 6px;
+  background-color: #3b82f6;
+  /* Blue dot from design */
+  border-radius: 50%;
+  border: 1px solid #fff;
+}
+
+.ch-datetime {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  border-right: 1px solid #e2e8f0;
+  padding-right: 1.5rem;
+}
+
+.ch-date {
+  font-size: 0.8rem;
+  color: #64748B;
+  font-weight: 500;
+}
+
+.ch-time {
+  font-size: 0.95rem;
+  color: #1a2234;
+  font-weight: 700;
+  margin-top: 0.1rem;
+}
+
+.ch-left-actions {
+  display: none;
+  /* Mobile only */
+}
+
+.ch-menu-btn {
+  background: none;
+  border: none;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 768px) {
+  .ch-header {
+    padding: 1rem 1.5rem;
+  }
+
+  .ch-left-actions {
+    display: flex;
+    margin-right: 1rem;
+  }
+
+  .mobile-hide {
+    display: none;
+  }
+}

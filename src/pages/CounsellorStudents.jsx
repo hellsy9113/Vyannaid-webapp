@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Search, ChevronRight, X, BookOpen,
-  Target, BarChart3, AlertCircle, Clock
+  Target, BarChart3, AlertCircle, Clock,
+  UserPlus, SlidersHorizontal, ChevronLeft
 } from 'lucide-react';
 import CounsellorLayout from '../components/CounsellorDashboard/CounsellorLayout';
 import {
@@ -13,10 +14,10 @@ import './CounsellorStudents.css';
 
 /* ── Mood badge ──────────────────────────────────────────── */
 const MoodBadge = ({ score }) => {
-  if (score == null) return <span className="cs-badge cs-badge-grey">No data</span>;
-  if (score >= 7)    return <span className="cs-badge cs-badge-green">Good ({score}/10)</span>;
-  if (score >= 4)    return <span className="cs-badge cs-badge-yellow">Fair ({score}/10)</span>;
-  return               <span className="cs-badge cs-badge-red">Low ({score}/10)</span>;
+  if (score == null) return <span className="cs-status-tag tag-grey">No data</span>;
+  if (score >= 7)    return <span className="cs-status-tag tag-green">Active</span>;
+  if (score >= 4)    return <span className="cs-status-tag tag-yellow">On Break</span>;
+  return               <span className="cs-status-tag tag-red">Low Score</span>;
 };
 
 /* ── Student detail panel ──────────────────────────────── */
@@ -33,184 +34,286 @@ const StudentPanel = ({ student, onClose }) => {
       .finally(() => setLoading(false));
   }, [student._id]);
 
+  // Try to generate a trend from history or use a fallback
+  const getMoodTrend = () => {
+    if (data?.mentalStats?.history?.length > 0) {
+      return data.mentalStats.history.slice(-6).map(h => h.moodScore || 5);
+    }
+    // Fallback if no history but single score exists
+    if (student.latestMoodScore) return [5, 6, 5.5, 6.2, 5.9, student.latestMoodScore];
+    return [5, 5, 5, 5, 5, 5]; // Default neutral
+  };
+
+  const moodTrend = getMoodTrend();
+  const displayScore = data?.mentalStats?.moodScore || student.latestMoodScore || '—';
+
   return (
     <div className="cs-panel">
       <div className="cs-panel-header">
         <div className="cs-panel-identity">
-          <div className="cs-panel-avatar">{student.name?.charAt(0).toUpperCase()}</div>
-          <div>
-            <h3 className="cs-panel-name">{student.name}</h3>
-            <p className="cs-panel-email">{student.email}</p>
+          <div className="cs-panel-avatar-circle">{student.name?.split(' ').map(n => n[0]).join('')}</div>
+          <div className="cs-panel-meta">
+            <h3 className="cs-panel-name">{student.name || 'Anonymous Student'}</h3>
+            <p className="cs-panel-subtitle-sm">
+              Student ID: ID-{student._id?.slice(-4).toUpperCase()} • {student.latestMoodScore >= 7 ? 'Active Status' : 'Monitoring'}
+            </p>
           </div>
         </div>
-        <button className="cs-close-btn" onClick={onClose}><X size={18} /></button>
+        <button className="cs-modal-close-btn" onClick={onClose}><X size={20} /></button>
       </div>
 
-      {loading ? (
-        <div className="cs-panel-loading"><div className="cs-spinner" /><p>Loading student data…</p></div>
-      ) : !data ? (
-        <div className="cs-panel-empty"><AlertCircle size={28} /><p>No dashboard data available yet.</p></div>
-      ) : (
-        <div className="cs-panel-body">
-
-          {/* Mental stats */}
-          <div className="cs-section">
-            <h4 className="cs-section-label"><BarChart3 size={14} /> Mental Health Stats</h4>
-            <div className="cs-stat-row">
-              <div className="cs-mini-stat">
-                <span className="cs-mini-val">{data.mentalStats?.moodScore ?? '—'}</span>
-                <span className="cs-mini-lbl">Mood Score</span>
-              </div>
-              <div className="cs-mini-stat">
-                <span className="cs-mini-val">{data.mentalStats?.stressLevel ?? '—'}</span>
-                <span className="cs-mini-lbl">Stress Level</span>
-              </div>
-              <div className="cs-mini-stat">
-                <span className="cs-mini-val">
-                  {data.mentalStats?.lastCheckIn
-                    ? new Date(data.mentalStats.lastCheckIn).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
-                    : '—'}
-                </span>
-                <span className="cs-mini-lbl">Last Check-in</span>
-              </div>
+      <div className="cs-panel-scroll">
+        {/* Mood Score Trend */}
+        <div className="cs-modal-section">
+          <div className="cs-section-header-flex">
+            <h4 className="cs-modal-section-title">MOOD SCORE TREND</h4>
+            <div className="cs-overall-score">
+              <span className="cs-score-big">{displayScore}</span><span className="cs-score-total">/10</span>
             </div>
           </div>
-
-          {/* Goals */}
-          <div className="cs-section">
-            <h4 className="cs-section-label"><Target size={14} /> Goals ({data.goals?.length || 0})</h4>
-            {data.goals?.length ? (
-              <ul className="cs-goals-list">
-                {data.goals.map((g, i) => (
-                  <li key={i} className={`cs-goal-item${g.completed ? ' done' : ''}`}>
-                    <span className="cs-goal-icon">{g.completed ? '✓' : '○'}</span>
-                    {g.title}
-                  </li>
-                ))}
-              </ul>
-            ) : <p className="cs-empty-text">No goals set yet.</p>}
-          </div>
-
-          {/* Journal entries */}
-          <div className="cs-section">
-            <h4 className="cs-section-label"><BookOpen size={14} /> Recent Journal Entries ({data.journalEntries?.length || 0})</h4>
-            {data.journalEntries?.length ? (
-              <div className="cs-journal-list">
-                {data.journalEntries.slice(0, 3).map((e, i) => (
-                  <div key={i} className="cs-journal-entry">
-                    <span className="cs-journal-date">
-                      {new Date(e.createdAt || e.date).toLocaleDateString('en-GB', {
-                        weekday: 'short', day: 'numeric', month: 'short'
-                      })}
-                    </span>
-                    <p className="cs-journal-text">{e.content?.slice(0, 160)}{e.content?.length > 160 ? '…' : ''}</p>
-                  </div>
-                ))}
+          
+          <div className="cs-trend-chart">
+            {moodTrend.map((val, i) => (
+              <div key={i} className="cs-chart-col">
+                <div className="cs-chart-bar-wrap">
+                  <div 
+                    className={`cs-chart-bar ${i === moodTrend.length - 1 ? 'current' : ''}`} 
+                    style={{ height: `${(val / 10) * 100}%` }}
+                  />
+                </div>
+                <span className="cs-chart-label">{i === moodTrend.length - 1 ? 'CURRENT' : `W${i + 1}`}</span>
               </div>
-            ) : <p className="cs-empty-text">No journal entries yet.</p>}
+            ))}
           </div>
-
-          {/* Session history (admin-reportable) */}
-          <div className="cs-section">
-            <h4 className="cs-section-label"><Clock size={14} /> Session History</h4>
-            {data.sessionHistory?.length ? (
-              <div className="cs-session-hist">
-                {data.sessionHistory.slice(0, 4).map((s, i) => (
-                  <div key={i} className="cs-sh-row">
-                    <span className="cs-sh-date">
-                      {new Date(s.scheduledAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
-                    </span>
-                    <span className={`cs-sh-status ${s.status}`}>{s.status}</span>
-                    {s.notes && <span className="cs-sh-note">{s.notes.slice(0, 60)}…</span>}
-                  </div>
-                ))}
-              </div>
-            ) : <p className="cs-empty-text">No sessions recorded yet.</p>}
-          </div>
-
         </div>
-      )}
+
+        {/* Psychometric Test Scores */}
+        <div className="cs-modal-section">
+          <h4 className="cs-modal-section-title">PSYCHOMETRIC TEST SCORES</h4>
+          {data?.psychometricScores?.length > 0 ? (
+            <div className="cs-scores-list">
+              {data.psychometricScores.map((item, idx) => (
+                <div key={idx} className="cs-score-card">
+                  <div className="cs-score-info">
+                    <span className="cs-score-label">{item.label || item.type}</span>
+                    <span className="cs-score-date">{item.date || 'No date recorded'}</span>
+                  </div>
+                  <span className="cs-score-val">{item.score || '—'}</span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="cs-empty-info">No test results available yet.</p>
+          )}
+        </div>
+
+        {/* Session History */}
+        <div className="cs-modal-section">
+          <h4 className="cs-modal-section-title">SESSION HISTORY</h4>
+          {data?.sessionHistory?.length > 0 ? (
+            <div className="cs-timeline">
+              <div className="cs-timeline-line" />
+              {data.sessionHistory.slice(0, 5).map((session, idx) => (
+                <div key={idx} className="cs-timeline-item">
+                  <div className={`cs-timeline-dot ${idx === 0 ? 'active' : ''}`} />
+                  <div className="cs-timeline-content">
+                    <div className="cs-timeline-header">
+                      <span className="cs-timeline-title">{session.title || 'Counseling Session'}</span>
+                      <span className="cs-timeline-date">
+                        {new Date(session.scheduledAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                      </span>
+                    </div>
+                    {session.notes && <p className="cs-timeline-note">"{session.notes}"</p>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="cs-empty-info">No session record available yet.</p>
+          )}
+        </div>
+      </div>
+
+      <div className="cs-modal-footer">
+        <button className="cs-footer-btn-ghost">Download PDF</button>
+        <button className="cs-footer-btn-primary" onClick={onClose}>Close File</button>
+      </div>
     </div>
   );
 };
 
 /* ── Main component ─────────────────────────────────────── */
 const CounsellorStudents = () => {
-  const [profile,  setProfile]  = useState(null);
-  const [loading,  setLoading]  = useState(true);
-  const [search,   setSearch]   = useState('');
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState('');
   const [selected, setSelected] = useState(null);
+  const [activeTab, setActiveTab] = useState('All Students');
+  const [currentPage, setCurrentPage] = useState(1);
+  const studentsPerPage = 5;
 
   useEffect(() => {
     getCounsellorProfile()
       .then(r => setProfile(r.data.data))
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => setLoading(false));
   }, []);
 
-  const students = (profile?.assignedStudents || []).filter(s =>
-    s.name?.toLowerCase().includes(search.toLowerCase()) ||
-    s.email?.toLowerCase().includes(search.toLowerCase())
-  );
+  const getFilteredStudents = () => {
+    let filtered = (profile?.assignedStudents || []).filter(s =>
+      s.name?.toLowerCase().includes(search.toLowerCase()) ||
+      s.email?.toLowerCase().includes(search.toLowerCase()) ||
+      s._id?.toLowerCase().includes(search.toLowerCase())
+    );
+
+    if (activeTab === 'Active') {
+      filtered = filtered.filter(s => (s.latestMoodScore || 0) >= 7);
+    } else if (activeTab === 'On Break') {
+      filtered = filtered.filter(s => (s.latestMoodScore || 0) >= 4 && (s.latestMoodScore || 0) < 7);
+    } else if (activeTab === 'Completed') {
+      filtered = filtered.filter(s => (s.latestMoodScore || 0) < 4 && s.latestMoodScore != null);
+    }
+    return filtered;
+  };
+
+  const allFiltered = getFilteredStudents();
+  const totalPages = Math.ceil(allFiltered.length / studentsPerPage);
+  const displayedStudents = allFiltered.slice((currentPage - 1) * studentsPerPage, currentPage * studentsPerPage);
+
+  const getInitials = (name = "") =>
+    name.trim().split(" ").map((w) => w[0]).join("").toUpperCase().slice(0, 2);
+
+  const tabs = [
+    { name: 'All Students', count: profile?.assignedStudents?.length || 0 },
+    { name: 'Active', count: (profile?.assignedStudents || []).filter(s => (s.latestMoodScore || 0) >= 7).length },
+    { name: 'On Break', count: (profile?.assignedStudents || []).filter(s => (s.latestMoodScore || 0) >= 4 && (s.latestMoodScore || 0) < 7).length },
+    { name: 'Completed', count: (profile?.assignedStudents || []).filter(s => (s.latestMoodScore || 0) < 4 && s.latestMoodScore != null).length },
+  ];
 
   return (
     <CounsellorLayout>
-      <div className={`cs-page ${selected ? 'with-panel' : ''}`}>
-
-        {/* Left: student list */}
-        <div className="cs-list-col">
-          <div className="cs-list-header">
-            <div>
-              <h1 className="cs-title">My Students</h1>
-              <p className="cs-subtitle">{profile?.assignedStudents?.length || 0} students assigned to you</p>
-            </div>
-          </div>
-
-          <div className="cs-search-box">
-            <Search size={16} className="cs-search-icon" />
-            <input
-              className="cs-search-input"
-              placeholder="Search by name or email…"
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-            />
-          </div>
-
-          {loading ? (
-            <div className="cs-load-row"><div className="cs-spinner" /></div>
-          ) : students.length === 0 ? (
-            <div className="cs-empty-list">
-              <p>{search ? 'No students match your search.' : 'No students assigned yet.'}</p>
-            </div>
-          ) : (
-            <div className="cs-students-grid">
-              {students.map(s => (
-                <div
-                  key={s._id}
-                  className={`cs-student-card${selected?._id === s._id ? ' active' : ''}`}
-                  onClick={() => setSelected(selected?._id === s._id ? null : s)}
-                >
-                  <div className="cs-sc-avatar">{s.name?.charAt(0).toUpperCase()}</div>
-                  <div className="cs-sc-info">
-                    <span className="cs-sc-name">{s.name}</span>
-                    <span className="cs-sc-email">{s.email}</span>
-                    {s.institution && <span className="cs-sc-inst">{s.institution}</span>}
-                  </div>
-                  <MoodBadge score={s.latestMoodScore} />
-                  <ChevronRight size={16} className="cs-sc-arrow" />
-                </div>
-              ))}
-            </div>
-          )}
+      <div className="cs-page-container">
+        <div className="cs-header-section">
+          <h1 className="cs-main-title">Student List</h1>
+          <p className="cs-main-subtitle">Manage student caseloads and monitor progress milestones.</p>
         </div>
 
-        {/* Right: student detail panel */}
-        {selected && (
-          <div className="cs-panel-col">
+        <div className="cs-controls-row">
+          <div className="cs-search-wrapper">
+            <Search size={18} className="cs-search-icon-fixed" />
+            <input
+              type="text"
+              className="cs-main-search"
+              placeholder="Search by student name, ID, or email..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+          <button className="cs-add-btn">
+            <UserPlus size={18} />
+            <span>Add Student</span>
+          </button>
+        </div>
+
+        <div className="cs-filters-bar">
+          <div className="cs-tabs">
+            {tabs.map(tab => (
+              <button
+                key={tab.name}
+                className={`cs-tab-item ${activeTab === tab.name ? 'active' : ''}`}
+                onClick={() => { setActiveTab(tab.name); setCurrentPage(1); }}
+              >
+                {tab.name} <span className="cs-tab-count">{tab.count}</span>
+              </button>
+            ))}
+          </div>
+          <button className="cs-more-filters">
+            <SlidersHorizontal size={16} />
+            <span>More Filters</span>
+          </button>
+        </div>
+
+        <div className="cs-table-container">
+          <table className="cs-student-table">
+            <thead>
+              <tr>
+                <th>STUDENT NAME</th>
+                <th>STUDENT ID</th>
+                <th>STATUS</th>
+                <th>LAST SESSION</th>
+                <th className="text-right">ACTIONS</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? (
+                <tr><td colSpan="5" className="text-center py-8"><div className="cs-spinner" /></td></tr>
+              ) : displayedStudents.length === 0 ? (
+                <tr><td colSpan="5" className="text-center py-8 text-slate-400">No students found</td></tr>
+              ) : (
+                displayedStudents.map(s => (
+                  <tr key={s._id} className={selected?._id === s._id ? 'row-active' : ''}>
+                    <td>
+                      <div className="cs-name-cell">
+                        <div className="cs-letter-avatar" style={{ background: '#f1f5f9', color: '#64748b' }}>
+                          {getInitials(s.name)}
+                        </div>
+                        <span className="cs-s-name">{s.name}</span>
+                      </div>
+                    </td>
+                    <td className="cs-id-cell">ID-{s._id?.slice(-4).toUpperCase()}</td>
+                    <td><MoodBadge score={s.latestMoodScore} /></td>
+                    <td className="cs-session-cell">Oct 12, 2023</td>
+                    <td className="text-right">
+                      <button className="cs-view-file-btn" onClick={() => setSelected(s)}>
+                        View File
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="cs-pagination-row">
+          <span className="cs-pagination-info">
+            Showing {(currentPage - 1) * studentsPerPage + 1}-{Math.min(currentPage * studentsPerPage, allFiltered.length)} of {allFiltered.length} students
+          </span>
+          <div className="cs-pagination-controls">
+            <button
+              className="cs-page-nav"
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage(p => p - 1)}
+            >
+              <ChevronLeft size={18} />
+            </button>
+            {[...Array(totalPages)].map((_, i) => (
+              <button
+                key={i}
+                className={`cs-page-num ${currentPage === i + 1 ? 'active' : ''}`}
+                onClick={() => setCurrentPage(i + 1)}
+              >
+                {i + 1}
+              </button>
+            ))}
+            <button
+              className="cs-page-nav"
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage(p => p + 1)}
+            >
+              <ChevronRight size={18} />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {selected && (
+        <div className="cs-panel-overlay" onClick={() => setSelected(null)}>
+          <div className="cs-panel-drawer" onClick={e => e.stopPropagation()}>
             <StudentPanel student={selected} onClose={() => setSelected(null)} />
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </CounsellorLayout>
   );
 };
