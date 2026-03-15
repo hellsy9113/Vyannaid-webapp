@@ -79,6 +79,7 @@ const StudentProfileSetup = () => {
         institution:     form.institution,
         course:          form.course,
         courseStartYear: Number(form.courseStartYear),
+         profileComplete: true,
       });
 
       const d = res.data.data;

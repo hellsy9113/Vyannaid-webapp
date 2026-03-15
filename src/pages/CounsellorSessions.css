@@ -232,6 +232,8 @@
 
 .css-icon-btn:hover     { border-color: #6366f1; color: #6366f1; }
 .css-icon-red:hover     { border-color: #ef4444; color: #ef4444; }
+.css-icon-green         { color: #15803d !important; }
+.css-icon-green:hover   { border-color: #16a34a !important; color: #15803d !important; background: #f0fdf4 !important; }
 
 /* ── Session Modal ──────────────────────────────────────── */
 .sm-backdrop {

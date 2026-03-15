@@ -13,22 +13,21 @@ import {
 } from '../api/counsellorApi';
 import './CounsellorSessions.css';
 
-const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const DAYS   = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 const MONTHS = ['January','February','March','April','May','June',
                 'July','August','September','October','November','December'];
 
-/* ── Status icon ───────────────────────────────────────── */
+/* ── Status icon ────────────────────────────────────────── */
 const StatusIcon = ({ status }) => {
-  if (status === 'completed') return <CheckCircle2 size={15} className="si-green" />;
-  if (status === 'cancelled') return <XCircle      size={15} className="si-red"   />;
-  if (status === 'no-show')   return <AlertCircle  size={15} className="si-yellow"/>;
+  if (status === 'completed') return <CheckCircle2 size={15} className="si-green"  />;
+  if (status === 'cancelled') return <XCircle      size={15} className="si-red"    />;
+  if (status === 'no-show')   return <AlertCircle  size={15} className="si-yellow" />;
   return <Clock size={15} className="si-blue" />;
 };
 
-/* ── Mini calendar ─────────────────────────────────────── */
+/* ── Mini calendar ──────────────────────────────────────── */
 const MiniCalendar = ({ sessions, onDayClick, selectedDate }) => {
   const [cur, setCur] = useState(new Date());
-
   const year  = cur.getFullYear();
   const month = cur.getMonth();
   const first = new Date(year, month, 1).getDay();
@@ -75,22 +74,21 @@ const MiniCalendar = ({ sessions, onDayClick, selectedDate }) => {
   );
 };
 
-/* ── Session form modal ────────────────────────────────── */
+/* ── Session form modal ─────────────────────────────────── */
 const SessionModal = ({ students, initial, onSave, onClose }) => {
   const [form, setForm] = useState(
-    initial || { studentId: '', scheduledAt: '', durationMinutes: 50, type: 'video', notes: '' }
+    initial
+      ? { ...initial, scheduledAt: initial.scheduledAt?.slice(0, 16) || '' }
+      : { studentId: '', scheduledAt: '', durationMinutes: 50, type: 'video', notes: '' }
   );
   const [saving, setSaving] = useState(false);
-
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }));
 
   const handleSubmit = async () => {
     if (!form.studentId || !form.scheduledAt) return;
     setSaving(true);
-    try {
-      await onSave(form);
-      onClose();
-    } catch { /* toast handled above */ }
+    try { await onSave(form); onClose(); }
+    catch { /* toast handled in parent */ }
     finally { setSaving(false); }
   };
 
@@ -146,16 +144,16 @@ const SessionModal = ({ students, initial, onSave, onClose }) => {
   );
 };
 
-/* ── Main page ─────────────────────────────────────────── */
+/* ── Main page ──────────────────────────────────────────── */
 const CounsellorSessions = () => {
-  const [sessions,  setSessions]  = useState([]);
-  const [students,  setStudents]  = useState([]);
-  const [loading,   setLoading]   = useState(true);
-  const [selDate,   setSelDate]   = useState(null);
-  const [modal,     setModal]     = useState(false);
-  const [editItem,  setEditItem]  = useState(null);
-  const [statusFilter, setFilter] = useState('');
-  const [toast,     setToast]     = useState('');
+  const [sessions,     setSessions] = useState([]);
+  const [students,     setStudents] = useState([]);
+  const [loading,      setLoading]  = useState(true);
+  const [selDate,      setSelDate]  = useState(null);
+  const [modal,        setModal]    = useState(false);
+  const [editItem,     setEditItem] = useState(null);
+  const [statusFilter, setFilter]   = useState('');
+  const [toast,        setToast]    = useState('');
 
   const showToast = (m) => { setToast(m); setTimeout(() => setToast(''), 3000); };
 
@@ -183,13 +181,24 @@ const CounsellorSessions = () => {
     load();
   };
 
+  // Soft-cancel — sets status to 'cancelled' on backend
   const handleDelete = async (id) => {
     if (!window.confirm('Cancel this session?')) return;
     try { await deleteSession(id); showToast('Session cancelled.'); load(); }
     catch { showToast('Failed to cancel.'); }
   };
 
-  /* Filtered view */
+  // Mark a scheduled session as completed
+  const handleComplete = async (id) => {
+    try {
+      await updateSession(id, { status: 'completed' });
+      showToast('Session marked as completed.');
+      load();
+    } catch {
+      showToast('Failed to update session.');
+    }
+  };
+
   const displayed = sessions.filter(s => {
     if (statusFilter && s.status !== statusFilter) return false;
     if (selDate) {
@@ -233,10 +242,10 @@ const CounsellorSessions = () => {
             <div className="css-card css-avail-card">
               <h4 className="css-filter-title">Quick Stats</h4>
               <div className="css-qs-grid">
-                <div className="css-qs-item"><span>{sessions.filter(s=>s.status==='scheduled').length}</span><small>Upcoming</small></div>
-                <div className="css-qs-item"><span>{sessions.filter(s=>s.status==='completed').length}</span><small>Completed</small></div>
-                <div className="css-qs-item"><span>{sessions.filter(s=>s.status==='cancelled').length}</span><small>Cancelled</small></div>
-                <div className="css-qs-item"><span>{sessions.filter(s=>s.status==='no-show').length}</span><small>No-Shows</small></div>
+                <div className="css-qs-item"><span>{sessions.filter(s => s.status === 'scheduled').length}</span><small>Upcoming</small></div>
+                <div className="css-qs-item"><span>{sessions.filter(s => s.status === 'completed').length}</span><small>Completed</small></div>
+                <div className="css-qs-item"><span>{sessions.filter(s => s.status === 'cancelled').length}</span><small>Cancelled</small></div>
+                <div className="css-qs-item"><span>{sessions.filter(s => s.status === 'no-show').length}</span><small>No-Shows</small></div>
               </div>
             </div>
           </div>
@@ -247,7 +256,9 @@ const CounsellorSessions = () => {
               <div>
                 <h1 className="css-title">Sessions</h1>
                 <p className="css-sub">
-                  {selDate ? `Sessions on ${selDate.toLocaleDateString('en-GB', {weekday:'long',day:'numeric',month:'long'})}` : 'All sessions'}
+                  {selDate
+                    ? `Sessions on ${selDate.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })}`
+                    : 'All sessions'}
                   {statusFilter && ` · ${statusFilter}`}
                 </p>
               </div>
@@ -274,8 +285,8 @@ const CounsellorSessions = () => {
                         <span className="css-sc-name">{s.studentName || '—'}</span>
                         <span className="css-sc-meta">
                           {new Date(s.scheduledAt).toLocaleString('en-GB', {
-                            weekday:'short', day:'numeric', month:'short',
-                            hour:'2-digit', minute:'2-digit'
+                            weekday: 'short', day: 'numeric', month: 'short',
+                            hour: '2-digit', minute: '2-digit'
                           })} · {s.durationMinutes ?? 50}min · {s.type || 'video'}
                         </span>
                         {s.notes && <span className="css-sc-notes">{s.notes}</span>}
@@ -283,8 +294,32 @@ const CounsellorSessions = () => {
                     </div>
                     <div className="css-sc-actions">
                       <span className={`css-pill css-pill-${s.status}`}>{s.status}</span>
-                      <button className="css-icon-btn" onClick={() => { setEditItem(s); setModal(true); }}><Edit3 size={14} /></button>
-                      <button className="css-icon-btn css-icon-red" onClick={() => handleDelete(s._id)}><Trash2 size={14} /></button>
+
+                      {/* Mark as complete — only for scheduled sessions */}
+                      {s.status === 'scheduled' && (
+                        <button
+                          className="css-icon-btn css-icon-green"
+                          title="Mark as complete"
+                          onClick={() => handleComplete(s._id)}
+                        >
+                          <CheckCircle2 size={14} />
+                        </button>
+                      )}
+
+                      <button
+                        className="css-icon-btn"
+                        title="Edit session"
+                        onClick={() => { setEditItem(s); setModal(true); }}
+                      >
+                        <Edit3 size={14} />
+                      </button>
+                      <button
+                        className="css-icon-btn css-icon-red"
+                        title="Cancel session"
+                        onClick={() => handleDelete(s._id)}
+                      >
+                        <Trash2 size={14} />
+                      </button>
                     </div>
                   </div>
                 ))}
