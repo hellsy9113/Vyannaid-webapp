@@ -1,18 +1,369 @@
-import React from 'react';
-import { MessageSquare } from 'lucide-react';
-import CounsellorLayout from '../components/CounsellorDashboard/CounsellorLayout';
+/**
+ * src/pages/CounsellorMessages.jsx  ── BUG-FIXED
+ *
+ * Bug 1 fix — double message:
+ *   Removed the optimistic bubble on send.
+ *   Server now emits dm:message:saved back to the sender only (with the real
+ *   persisted doc). Recipient gets dm:message as before.
+ *   Both paths share the same appendMessage dedup helper.
+ *
+ * Bug 2 fix — no persistence on refresh:
+ *   Required src/socket.js to be updated (see outputs/backend/socket.js).
+ *   Once that's applied, getConversation() on mount returns saved messages.
+ */
 
-const CounsellorMessages = () => (
-  <CounsellorLayout>
-    <div style={{
-      display: 'flex', flexDirection: 'column', alignItems: 'center',
-      justifyContent: 'center', height: '60vh', gap: '1rem', color: '#64748b'
-    }}>
-      <MessageSquare size={48} strokeWidth={1.5} />
-      <h2 style={{ margin: 0, color: '#0f172a', fontSize: '1.25rem', fontWeight: 700 }}>Messages</h2>
-      <p style={{ margin: 0, fontSize: '0.9rem' }}>Coming soon — messaging feature is under development.</p>
+import React, { useEffect, useRef, useState, useCallback } from 'react';
+import { Send, MessageSquare, Search, CheckCheck, X } from 'lucide-react';
+import CounsellorLayout from '../components/CounsellorDashboard/CounsellorLayout';
+import { useAuth } from '../auth/AuthContext';
+import { getSocket } from '../api/socketClient';
+import { getCounsellorProfile } from '../api/counsellorApi';
+import { getConversation, markRead } from '../api/messageApi';
+import './CounsellorMessages.css';
+
+/* ── Helpers ──────────────────────────────────────────────────── */
+const initials = (name = '') =>
+  name.trim().split(' ').filter(Boolean).map(w => w[0]).join('').toUpperCase().slice(0, 2) || '?';
+
+const formatTime = (iso) => {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (d.toDateString() === new Date().toDateString())
+    return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  return d.toLocaleDateString([], { month: 'short', day: 'numeric' });
+};
+
+/* ── Thread item ──────────────────────────────────────────────── */
+const ThreadItem = ({ student, active, unread, lastMsg, lastAt, onClick }) => (
+  <div className={`cm-thread ${active ? 'cm-thread-active' : ''}`} onClick={onClick}>
+    <div className="cm-thread-avatar">
+      {initials(student.name)}
+      {unread > 0 && <span className="cm-unread-dot" />}
     </div>
-  </CounsellorLayout>
+    <div className="cm-thread-info">
+      <div className="cm-thread-top">
+        <span className="cm-thread-name">{student.name}</span>
+        <span className="cm-thread-time">{formatTime(lastAt)}</span>
+      </div>
+      <div className="cm-thread-preview">
+        <span className={`cm-thread-last ${unread > 0 ? 'cm-thread-bold' : ''}`}>
+          {lastMsg || 'No messages yet'}
+        </span>
+        {unread > 0 && <span className="cm-unread-badge">{unread > 9 ? '9+' : unread}</span>}
+      </div>
+    </div>
+  </div>
 );
+
+/* ── Message bubble ───────────────────────────────────────────── */
+const Bubble = ({ msg, isMine }) => (
+  <div className={`cm-bubble-wrap ${isMine ? 'cm-mine' : 'cm-theirs'}`}>
+    {!isMine && <span className="cm-bubble-name">{msg.senderName}</span>}
+    <div className={`cm-bubble ${isMine ? 'cm-bubble-mine' : 'cm-bubble-theirs'}`}>
+      {msg.text}
+    </div>
+    <span className="cm-bubble-time">
+      {formatTime(msg.createdAt || msg.timestamp)}
+      {isMine && <CheckCheck size={11} className="cm-read-icon" />}
+    </span>
+  </div>
+);
+
+/* ── Main component ───────────────────────────────────────────── */
+const CounsellorMessages = () => {
+  const { user }  = useAuth();
+  const socketRef = useRef(null);
+
+  const [students,  setStudents]  = useState([]);
+  const [convMap,   setConvMap]   = useState({});
+  const [activeId,  setActiveId]  = useState(null);
+  const [messages,  setMessages]  = useState([]);
+  const [input,     setInput]     = useState('');
+  const [search,    setSearch]    = useState('');
+  const [sideLoad,  setSideLoad]  = useState(true);
+  const [msgLoad,   setMsgLoad]   = useState(false);
+  const [typing,    setTyping]    = useState(false);
+  const [sending,   setSending]   = useState(false);
+
+  const typingTimer = useRef(null);
+  const bottomRef   = useRef(null);
+  const inputRef    = useRef(null);
+  // Ref so socket callbacks always read the latest activeId without re-subscribing
+  const activeIdRef = useRef(null);
+  activeIdRef.current = activeId;
+
+  /* ── Init socket once ─────────────────────────────────────── */
+  useEffect(() => {
+    socketRef.current = getSocket(localStorage.getItem('token'));
+  }, []);
+
+  /* ── Load assigned students ───────────────────────────────── */
+  useEffect(() => {
+    getCounsellorProfile()
+      .then(res => setStudents(res.data.data?.assignedStudents || []))
+      .catch(console.error)
+      .finally(() => setSideLoad(false));
+  }, []);
+
+  /* ── Dedup append ─────────────────────────────────────────── */
+  const appendMessage = useCallback((msg) => {
+    setMessages(prev => {
+      if (prev.some(m => m._id === msg._id)) return prev;
+      return [...prev, msg];
+    });
+  }, []);
+
+  /* ── Socket listeners (set up once) ──────────────────────── */
+  useEffect(() => {
+    const socket = socketRef.current;
+    if (!socket) return;
+
+    // Message from the OTHER person
+    const onDmMessage = (msg) => {
+      const isFromStudent = msg.senderRole === 'student';
+      const partnerId = isFromStudent
+        ? msg.senderId?.toString()
+        : msg.studentId?.toString();
+
+      if (partnerId === activeIdRef.current) {
+        appendMessage(msg);
+        markRead(partnerId).catch(() => {});
+      } else {
+        setConvMap(prev => ({
+          ...prev,
+          [partnerId]: {
+            unread:  ((prev[partnerId]?.unread) || 0) + (isFromStudent ? 1 : 0),
+            lastMsg: msg.text,
+            lastAt:  msg.createdAt,
+          },
+        }));
+      }
+    };
+
+    // Server confirms the sender's message was saved — replace sending indicator
+    const onDmSaved = (msg) => {
+      setSending(false);
+      appendMessage(msg);
+      setConvMap(prev => ({
+        ...prev,
+        [activeIdRef.current]: {
+          ...(prev[activeIdRef.current] || {}),
+          lastMsg: msg.text,
+          lastAt:  msg.createdAt,
+        },
+      }));
+    };
+
+    const onTyping = ({ fromUserId, isTyping: t }) => {
+      if (fromUserId?.toString() === activeIdRef.current) {
+        setTyping(t);
+        if (t) {
+          clearTimeout(typingTimer.current);
+          typingTimer.current = setTimeout(() => setTyping(false), 3000);
+        }
+      }
+    };
+
+    const onError = () => setSending(false);
+
+    socket.on('dm:message',       onDmMessage);
+    socket.on('dm:message:saved', onDmSaved);
+    socket.on('dm:typing',        onTyping);
+    socket.on('dm:error',         onError);
+
+    return () => {
+      socket.off('dm:message',       onDmMessage);
+      socket.off('dm:message:saved', onDmSaved);
+      socket.off('dm:typing',        onTyping);
+      socket.off('dm:error',         onError);
+    };
+  }, [appendMessage]);
+
+  /* ── Open conversation ────────────────────────────────────── */
+  const openConversation = useCallback(async (studentId) => {
+    if (activeIdRef.current === studentId) return;
+    setActiveId(studentId);
+    setMessages([]);
+    setTyping(false);
+    setMsgLoad(true);
+
+    socketRef.current?.emit('dm:join', studentId);
+
+    try {
+      const res = await getConversation(studentId);
+      setMessages(res.data.data || []);
+      await markRead(studentId);
+      setConvMap(prev => ({
+        ...prev,
+        [studentId]: { ...(prev[studentId] || {}), unread: 0 },
+      }));
+    } catch (err) {
+      console.error('[Messages] load failed', err);
+    } finally {
+      setMsgLoad(false);
+      setTimeout(() => inputRef.current?.focus(), 80);
+    }
+  }, []);
+
+  /* ── Auto-scroll ──────────────────────────────────────────── */
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, sending]);
+
+  /* ── Send ─────────────────────────────────────────────────── */
+  const send = (e) => {
+    e.preventDefault();
+    const text = input.trim();
+    if (!text || !activeId || sending) return;
+    setInput('');
+    setSending(true);
+    // No optimistic bubble — dm:message:saved will add the real doc
+    socketRef.current?.emit('dm:send', { toUserId: activeId, text });
+  };
+
+  /* ── Typing indicator emit ────────────────────────────────── */
+  const handleInputChange = (e) => {
+    setInput(e.target.value);
+    if (activeId && socketRef.current) {
+      socketRef.current.emit('dm:typing', { toUserId: activeId, isTyping: true });
+      clearTimeout(typingTimer.current);
+      typingTimer.current = setTimeout(() => {
+        socketRef.current?.emit('dm:typing', { toUserId: activeId, isTyping: false });
+      }, 1500);
+    }
+  };
+
+  const filtered = students.filter(s =>
+    !search ||
+    s.name?.toLowerCase().includes(search.toLowerCase()) ||
+    s.email?.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const activeStudent = students.find(s => s._id?.toString() === activeId);
+
+  /* ── Render ───────────────────────────────────────────────── */
+  return (
+    <CounsellorLayout>
+      <div className="cm-page">
+
+        {/* Left: thread list */}
+        <div className="cm-sidebar">
+          <div className="cm-sidebar-header">
+            <h2 className="cm-sidebar-title"><MessageSquare size={18} /> Messages</h2>
+          </div>
+
+          <div className="cm-search-wrap">
+            <Search size={14} className="cm-search-icon" />
+            <input
+              className="cm-search"
+              placeholder="Search students…"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+            />
+          </div>
+
+          <div className="cm-thread-list">
+            {sideLoad ? (
+              <div className="cm-sidebar-loading">
+                {[1,2,3,4].map(i => <div key={i} className="cm-skeleton" />)}
+              </div>
+            ) : filtered.length === 0 ? (
+              <div className="cm-empty-threads">
+                {search ? 'No students match.' : 'No students assigned yet.'}
+              </div>
+            ) : (
+              filtered.map(s => (
+                <ThreadItem
+                  key={s._id}
+                  student={s}
+                  active={s._id?.toString() === activeId}
+                  unread={convMap[s._id?.toString()]?.unread || 0}
+                  lastMsg={convMap[s._id?.toString()]?.lastMsg}
+                  lastAt={convMap[s._id?.toString()]?.lastAt}
+                  onClick={() => openConversation(s._id?.toString())}
+                />
+              ))
+            )}
+          </div>
+        </div>
+
+        {/* Right: chat */}
+        <div className="cm-chat">
+          {!activeId ? (
+            <div className="cm-chat-empty">
+              <MessageSquare size={52} strokeWidth={1.2} />
+              <h3>Select a student to start messaging</h3>
+              <p>Messages are private and only visible to you and the student.</p>
+            </div>
+          ) : (
+            <>
+              <div className="cm-chat-header">
+                <div className="cm-chat-avatar">{initials(activeStudent?.name)}</div>
+                <div className="cm-chat-peer-info">
+                  <span className="cm-chat-peer-name">{activeStudent?.name}</span>
+                  <span className="cm-chat-peer-sub">
+                    {activeStudent?.email}
+                    {typing && <span className="cm-typing-text"> · typing…</span>}
+                  </span>
+                </div>
+                <button className="cm-close-chat" onClick={() => setActiveId(null)} title="Close">
+                  <X size={16} />
+                </button>
+              </div>
+
+              <div className="cm-messages">
+                {msgLoad ? (
+                  <div className="cm-msg-state">Loading messages…</div>
+                ) : messages.length === 0 && !sending ? (
+                  <div className="cm-msg-state">
+                    <MessageSquare size={28} strokeWidth={1.5} />
+                    <p>No messages yet. Say hello to {activeStudent?.name}!</p>
+                  </div>
+                ) : (
+                  messages.map((m, i) => (
+                    <Bubble
+                      key={m._id || i}
+                      msg={m}
+                      isMine={
+                        m.senderId?.toString() === user?.id ||
+                        m.senderRole === 'counsellor'
+                      }
+                    />
+                  ))
+                )}
+
+                {/* Sending spinner — shown while waiting for dm:message:saved */}
+                {sending && (
+                  <div className="cm-bubble-wrap cm-mine">
+                    <div className="cm-bubble cm-bubble-mine cm-bubble-sending">
+                      <span className="cm-sending-dots"><span/><span/><span/></span>
+                    </div>
+                  </div>
+                )}
+                <div ref={bottomRef} />
+              </div>
+
+              <form className="cm-input-row" onSubmit={send}>
+                <input
+                  ref={inputRef}
+                  className="cm-input"
+                  placeholder={`Message ${activeStudent?.name?.split(' ')[0] || 'student'}…`}
+                  value={input}
+                  onChange={handleInputChange}
+                  onKeyDown={e => e.key === 'Enter' && !e.shiftKey && send(e)}
+                  disabled={sending}
+                />
+                <button type="submit" className="cm-send-btn" disabled={!input.trim() || sending}>
+                  <Send size={16} />
+                </button>
+              </form>
+            </>
+          )}
+        </div>
+
+      </div>
+    </CounsellorLayout>
+  );
+};
 
 export default CounsellorMessages;

@@ -1,3 +1,5 @@
+/* src/pages/Appointments.css  ── UPDATED (drawer styles appended at bottom) */
+
 /* ── Page shell ────────────────────────────────────────────── */
 .appointments-page {
     width: 100%;
@@ -41,7 +43,6 @@
     background: #fff; border-radius: 16px;
     border: 1px solid #f1f5f9; color: #94a3b8;
 }
-
 .apt-empty p { font-size: 0.9rem; margin: 0; }
 
 /* ── Counsellor card ────────────────────────────────────────── */
@@ -91,6 +92,43 @@
     font-size: 0.75rem; font-weight: 500;
 }
 
+/* ── Message button (NEW) ───────────────────────────────────── */
+.apt-msg-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    position: relative;
+    background: #eef2ff;
+    color: #4f46e5;
+    border: 1px solid #c7d2fe;
+    border-radius: 10px;
+    padding: 0.55rem 1rem;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s, border-color 0.15s, transform 0.1s;
+    white-space: nowrap;
+    flex-shrink: 0;
+    align-self: center;
+}
+.apt-msg-btn:hover  { background: #e0e7ff; border-color: #a5b4fc; }
+.apt-msg-btn:active { transform: scale(0.97); }
+
+.apt-msg-badge {
+    position: absolute;
+    top: -7px; right: -7px;
+    background: #ef4444;
+    color: #fff;
+    font-size: 0.6rem;
+    font-weight: 800;
+    min-width: 17px; height: 17px;
+    border-radius: 99px;
+    display: flex; align-items: center; justify-content: center;
+    border: 2px solid #fff;
+    padding: 0 3px;
+}
+
 /* ── Sessions header + tabs ─────────────────────────────────── */
 .apt-sessions-header { display: flex; align-items: center; justify-content: space-between; }
 
@@ -105,7 +143,6 @@
     padding: 0.3rem 0.85rem; font-size: 0.8rem; font-weight: 600;
     color: #64748b; cursor: pointer; transition: all 0.15s; font-family: inherit;
 }
-
 .apt-tab.active { background: #fff; color: #1a2234; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
 
 .apt-tab-count {
@@ -122,7 +159,6 @@
     display: flex; align-items: center; gap: 1rem;
     transition: border-color 0.15s;
 }
-
 .apt-session-card:hover { border-color: #e2e8f0; }
 .apt-session-upcoming   { border-left: 3px solid #6366f1; }
 
@@ -137,14 +173,12 @@
 .apt-session-top {
     display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.3rem;
 }
-
 .apt-session-counsellor { font-size: 0.9rem; font-weight: 700; color: #1a2234; }
 
 .apt-session-time {
     display: flex; align-items: center; gap: 0.35rem;
     font-size: 0.8rem; color: #64748b; flex-wrap: wrap;
 }
-
 .apt-session-time svg { flex-shrink: 0; }
 .apt-dot { color: #cbd5e1; }
 .apt-session-notes { font-size: 0.8rem; color: #94a3b8; margin: 0.4rem 0 0; font-style: italic; }
@@ -158,25 +192,176 @@
 
 /* ── Join Call button ───────────────────────────────────────── */
 .apt-join-btn {
+    display: flex; align-items: center; gap: 0.4rem;
+    background: #6366f1; color: #fff; border: none; border-radius: 8px;
+    padding: 0.5rem 1rem; font-size: 0.8rem; font-weight: 700;
+    cursor: pointer; font-family: inherit;
+    transition: background 0.15s, transform 0.1s;
+    white-space: nowrap; flex-shrink: 0;
+}
+.apt-join-btn:hover  { background: #4f46e5; }
+.apt-join-btn:active { transform: scale(0.97); }
+
+/* ════════════════════════════════════════════════════════════════
+   CHAT DRAWER  (NEW)
+   ════════════════════════════════════════════════════════════════ */
+
+/* Backdrop */
+.apt-drawer-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.25);
+    z-index: 400;
+    animation: aptFadeIn 0.2s ease;
+}
+
+@keyframes aptFadeIn  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes aptSlideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+
+/* Drawer panel */
+.apt-drawer {
+    position: fixed;
+    right: 0; top: 0; bottom: 0;
+    width: 360px;
+    max-width: 100vw;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    z-index: 401;
+    box-shadow: -4px 0 24px rgba(0, 0, 0, 0.12);
+    animation: aptSlideIn 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Drawer header */
+.apt-drawer-header {
     display: flex;
     align-items: center;
-    gap: 0.4rem;
-    background: #6366f1;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    padding: 0.5rem 1rem;
-    font-size: 0.8rem;
-    font-weight: 700;
-    cursor: pointer;
-    font-family: inherit;
-    transition: background 0.15s, transform 0.1s;
-    white-space: nowrap;
+    gap: 0.85rem;
+    padding: 1rem 1.25rem;
+    background: #1a2234;
     flex-shrink: 0;
 }
 
-.apt-join-btn:hover  { background: #4f46e5; }
-.apt-join-btn:active { transform: scale(0.97); }
+.apt-drawer-avatar {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: #4f46e5; color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 0.9rem; flex-shrink: 0;
+}
+
+.apt-drawer-peer    { flex: 1; display: flex; flex-direction: column; gap: 0.05rem; min-width: 0; }
+.apt-drawer-name    { font-size: 0.92rem; font-weight: 700; color: #f1f5f9; }
+.apt-drawer-role    { font-size: 0.72rem; color: #94a3b8; }
+.apt-drawer-typing  { color: #818cf8; font-style: italic; }
+
+.apt-drawer-close {
+    background: none; border: none;
+    color: #94a3b8; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    padding: 4px; border-radius: 6px;
+    transition: color 0.15s, background 0.15s;
+    flex-shrink: 0;
+}
+.apt-drawer-close:hover { background: rgba(255,255,255,0.1); color: #f1f5f9; }
+
+/* Messages area */
+.apt-drawer-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    background: #f8fafc;
+}
+
+.apt-drawer-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    gap: 0.6rem;
+    color: #94a3b8;
+    font-size: 0.85rem;
+    text-align: center;
+}
+.apt-drawer-state p { margin: 0; }
+
+/* Message bubbles */
+.apt-msg-wrap {
+    display: flex;
+    flex-direction: column;
+    max-width: 78%;
+    gap: 0.18rem;
+}
+.apt-msg-mine   { align-self: flex-end; align-items: flex-end; }
+.apt-msg-theirs { align-self: flex-start; align-items: flex-start; }
+
+.apt-msg-bubble {
+    padding: 0.6rem 0.9rem;
+    border-radius: 14px;
+    font-size: 0.875rem;
+    line-height: 1.55;
+    word-break: break-word;
+}
+.apt-bubble-mine {
+    background: #6366f1;
+    color: #fff;
+    border-bottom-right-radius: 4px;
+}
+.apt-bubble-theirs {
+    background: #fff;
+    color: #1e293b;
+    border: 1px solid #e2e8f0;
+    border-bottom-left-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.apt-msg-time {
+    display: flex; align-items: center; gap: 0.25rem;
+    font-size: 0.62rem; color: #94a3b8; padding: 0 0.2rem;
+}
+.apt-check-icon { color: #818cf8; }
+
+/* Input row */
+.apt-drawer-input-row {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.85rem 1rem;
+    background: #fff;
+    border-top: 1px solid #f1f5f9;
+    flex-shrink: 0;
+    align-items: center;
+}
+
+.apt-drawer-input {
+    flex: 1;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 0.6rem 0.9rem;
+    font-size: 0.88rem;
+    color: #0f172a;
+    background: #f8fafc;
+    outline: none;
+    transition: border-color 0.15s, background 0.15s;
+    font-family: inherit;
+}
+.apt-drawer-input:focus { border-color: #6366f1; background: #fff; }
+
+.apt-drawer-send {
+    width: 38px; height: 38px;
+    border-radius: 10px;
+    background: #6366f1;
+    color: #fff; border: none;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s, transform 0.1s;
+    flex-shrink: 0;
+}
+.apt-drawer-send:hover    { background: #4f46e5; }
+.apt-drawer-send:active   { transform: scale(0.95); }
+.apt-drawer-send:disabled { background: #c7d2fe; cursor: not-allowed; }
 
 /* ── Responsive ─────────────────────────────────────────────── */
 @media (max-width: 600px) {
@@ -184,4 +369,6 @@
     .apt-sessions-header { flex-direction: column; align-items: flex-start; gap: 0.75rem; }
     .apt-session-card    { flex-wrap: wrap; }
     .apt-join-btn        { width: 100%; justify-content: center; }
+    .apt-msg-btn         { width: 100%; justify-content: center; }
+    .apt-drawer          { width: 100%; }
 }
