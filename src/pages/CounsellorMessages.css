@@ -3,7 +3,7 @@
 /* ── Page shell ───────────────────────────────────────────────── */
 .cm-page {
   display: flex;
-  height: calc(100vh - 72px); /* Matches header height */
+  height: 100%;
   overflow: hidden;
   background: #ffffff;
 }
@@ -20,10 +20,12 @@
 }
 
 .cm-sidebar-header {
-  padding: 1.5rem 1.5rem 1rem;
+  padding: 1.5rem 1.5rem 1.25rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  border-bottom: 1px solid transparent;
+  min-height: 72px;
 }
 
 .cm-sidebar-title {
@@ -73,6 +75,7 @@
   padding: 0 1.5rem 1rem;
   gap: 0.5rem;
   background: #ffffff;
+  border-bottom: 1px solid #f1f5f9;
 }
 
 .cm-tab {
@@ -106,7 +109,7 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.85rem 1rem;
+  padding: 0.6rem 1rem;
   cursor: pointer;
   transition: background 0.2s;
   position: relative;
@@ -126,16 +129,16 @@
 }
 
 .cm-thread-avatar {
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   object-fit: cover;
 }
 
 .cm-status-indicator {
   position: absolute;
-  bottom: 2px;
-  right: 2px;
+  bottom: 0px;
+  right: 0px;
   width: 10px;
   height: 10px;
   border-radius: 50%;
@@ -149,7 +152,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.15rem;
 }
 
 .cm-thread-name { font-size: 0.9rem; font-weight: 700; color: #1a2234; }
@@ -192,7 +195,7 @@
 /* Skeleton loader */
 .cm-sidebar-loading { padding: 0.5rem; display: flex; flex-direction: column; gap: 0.75rem; }
 .cm-skeleton {
-  height: 56px;
+  height: 48px;
   border-radius: 10px;
   background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
   background-size: 200% 100%;
@@ -239,6 +242,7 @@
   padding: 1rem 2rem;
   background: #fff;
   border-bottom: 1px solid #f1f5f9;
+  min-height: 72px; /* match sidebar header */
 }
 
 .cm-chat-avatar {
@@ -267,6 +271,30 @@
   color: #22c55e; 
   font-weight: 600; 
   margin-top: 1px;
+}
+
+.cm-peer-name-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cm-online-bullet {
+  width: 8px;
+  height: 8px;
+  background: #22c55e;
+  border-radius: 50%;
+}
+
+.cm-mobile-back-btn {
+  display: none;
+  background: #f1f5f9;
+  border: none;
+  border-radius: 8px;
+  padding: 4px;
+  cursor: pointer;
+  color: #64748b;
+  margin-right: 0.5rem;
 }
 
 .cm-chat-header-actions {
@@ -436,7 +464,6 @@
   .cm-sidebar {
     width: 100%;
     border-right: none;
-    display: flex;
   }
   .cm-chat {
     display: none;
@@ -444,6 +471,11 @@
   /* When a conversation is active on mobile, hide sidebar, show chat */
   .cm-page.mobile-active .cm-sidebar { display: none; }
   .cm-page.mobile-active .cm-chat    { display: flex; width: 100%; }
+
+  .cm-mobile-back-btn { display: flex; align-items: center; justify-content: center; }
+  .cm-chat-header { padding: 1rem 1.5rem; }
+  .cm-messages { padding: 1.5rem 1.5rem; }
+  .cm-input-area { padding: 1.5rem 1.5rem; }
 }
 
 /* ── Sending indicator ────────────────────────────────────────── */

@@ -255,7 +255,7 @@ const CounsellorMessages = () => {
   /* ── Render ───────────────────────────────────────────────── */
   return (
     <CounsellorLayout>
-      <div className="cm-page">
+      <div className={`cm-page ${activeId ? 'mobile-active' : ''}`}>
 
         {/* Left: thread list */}
         <div className="cm-sidebar">
@@ -322,13 +322,19 @@ const CounsellorMessages = () => {
           ) : (
             <>
               <div className="cm-chat-header">
+                <button className="cm-mobile-back-btn" onClick={() => setActiveId(null)}>
+                  <Plus size={24} style={{ transform: 'rotate(45deg)' }} />
+                </button>
                 <img 
                   src={activeStudent?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(activeStudent?.name || 'Student')}&background=random`} 
                   className="cm-chat-avatar" 
                   alt="avatar" 
                 />
                 <div className="cm-chat-peer-info">
-                  <span className="cm-chat-peer-name">{activeStudent?.name}</span>
+                  <div className="cm-peer-name-wrap">
+                    <span className="cm-chat-peer-name">{activeStudent?.name}</span>
+                    <span className="cm-online-bullet" />
+                  </div>
                   <span className="cm-chat-status">
                     Online
                     {typing && <span className="cm-typing-text"> · typing…</span>}
@@ -399,7 +405,7 @@ const CounsellorMessages = () => {
                 </form>
               </div>
             </>
-          )}
+          ) /* END activeId conditional */}
         </div>
 
       </div>
