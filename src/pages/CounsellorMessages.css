@@ -411,7 +411,8 @@
   color: #94a3b8;
   margin-top: 2px;
 }
-.cm-read-tick { color: #1a2234; }
+.cm-read-tick { color: #94a3b8; margin-left: 2px; }
+.cm-read-blue { color: #3b82f6 !important; }
 
 /* Input row */
 .cm-input-area {

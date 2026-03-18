@@ -12,7 +12,7 @@
  *   Once that's applied, getConversation() on mount returns saved messages.
  */
 
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { Send, MessageSquare, Search, CheckCheck, X, Phone, Video, Info, Plus, Smile, Paperclip, MoreHorizontal } from 'lucide-react';
 import CounsellorLayout from '../components/CounsellorDashboard/CounsellorLayout';
 import { useAuth } from '../auth/AuthContext';
@@ -28,42 +28,58 @@ const initials = (name = '') =>
 const formatTime = (iso) => {
   if (!iso) return '';
   const d = new Date(iso);
-  if (d.toDateString() === new Date().toDateString())
-    return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  return d.toLocaleDateString([], { month: 'short', day: 'numeric' });
+  if (isNaN(d.getTime())) return '';
+  return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+};
+
+const formatDateDivider = (dateStr) => {
+  if (!dateStr) return '';
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return '';
+  const now = new Date();
+  if (d.toDateString() === now.toDateString()) return 'Today';
+  const yesterday = new Date();
+  yesterday.setDate(now.getDate() - 1);
+  if (d.toDateString() === yesterday.toDateString()) return 'Yesterday';
+  return d.toLocaleDateString([], { month: 'long', day: 'numeric', year: 'numeric' });
 };
 
 /* ── Thread item ──────────────────────────────────────────────── */
-const ThreadItem = ({ student, active, unread, lastMsg, lastAt, isOnline, onClick }) => (
-  <div className={`cm-thread ${active ? 'cm-thread-active' : ''}`} onClick={onClick}>
-    <div className="cm-thread-avatar-wrap">
-      <img 
-        src={student.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(student.name)}&background=random`} 
-        alt={student.name} 
-        className="cm-thread-avatar" 
-      />
-      {isOnline && <span className="cm-status-indicator cm-status-online" />}
-    </div>
-    <div className="cm-thread-info">
-      <div className="cm-thread-top">
-        <span className="cm-thread-name">{student.name}</span>
-        <span className="cm-thread-time">{formatTime(lastAt)}</span>
+const ThreadItem = ({ student, active, unread, lastMsg, lastAt, isOnline, onClick }) => {
+  if (!student) return null;
+  const avatarUrl = student.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(student.name || 'S')}&background=random`;
+  
+  return (
+    <div className={`cm-thread ${active ? 'cm-thread-active' : ''}`} onClick={onClick}>
+      <div className="cm-thread-avatar-wrap">
+        <img 
+          src={avatarUrl} 
+          alt={student.name || 'Student'} 
+          className="cm-thread-avatar" 
+        />
+        {isOnline && <span className="cm-status-indicator cm-status-online" />}
       </div>
-      <div className="cm-thread-preview">
-        <span className="cm-thread-last">
-          {lastMsg || 'No messages yet'}
-        </span>
-        {unread > 0 && <span className="cm-unread-dot-indicator" />}
+      <div className="cm-thread-info">
+        <div className="cm-thread-top">
+          <span className="cm-thread-name">{student.name || 'Unknown Student'}</span>
+          <span className="cm-thread-time">{lastAt ? formatTime(lastAt) : ''}</span>
+        </div>
+        <div className="cm-thread-preview">
+          <span className="cm-thread-last">
+            {lastMsg || ''}
+          </span>
+          {unread > 0 && <span className="cm-unread-dot-indicator" />}
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 /* ── Message bubble ───────────────────────────────────────────── */
-const Bubble = ({ msg, isMine, peerAvatar }) => (
+const Bubble = ({ msg, isMine, peerAvatar, myAvatar }) => (
   <div className={`cm-bubble-container ${isMine ? 'cm-mine-container' : 'cm-theirs-container'}`}>
     <img 
-      src={isMine ? 'https://ui-avatars.com/api/?name=Counsellor&background=1a2234&color=fff' : (peerAvatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(msg.senderName)}&background=f1f5f9`)} 
+      src={isMine ? (myAvatar || 'https://ui-avatars.com/api/?name=Counsellor&background=1a2234&color=fff') : (peerAvatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(msg.senderName)}&background=f1f5f9`)} 
       alt="avatar" 
       className="cm-bubble-avatar" 
     />
@@ -73,7 +89,12 @@ const Bubble = ({ msg, isMine, peerAvatar }) => (
       </div>
       <div className="cm-bubble-footer">
         {formatTime(msg.createdAt || msg.timestamp)}
-        {isMine && <CheckCheck size={14} className="cm-read-tick" />}
+        {isMine && (
+          <CheckCheck 
+            size={14} 
+            className={`cm-read-tick ${msg.read ? 'cm-read-blue' : ''}`} 
+          />
+        )}
       </div>
     </div>
   </div>
@@ -85,6 +106,7 @@ const CounsellorMessages = () => {
   const socketRef = useRef(null);
 
   const [students,  setStudents]  = useState([]);
+  const [profile,   setProfile]   = useState(null);
   const [convMap,   setConvMap]   = useState({});
   const [activeId,  setActiveId]  = useState(null);
   const [messages,  setMessages]  = useState([]);
@@ -111,7 +133,37 @@ const CounsellorMessages = () => {
   /* ── Load assigned students ───────────────────────────────── */
   useEffect(() => {
     getCounsellorProfile()
-      .then(res => setStudents(res.data.data?.assignedStudents || []))
+      .then(async res => {
+        const profileData = res.data.data;
+        const assignedStudents = profileData?.assignedStudents || [];
+        setProfile(profileData);
+        setStudents(assignedStudents);
+
+        // Fetch last message for each student to populate sidebar
+        const recentMessages = await Promise.all(
+          assignedStudents.map(async (s) => {
+            try {
+              const convRes = await getConversation(s._id, { limit: 1 });
+              const lastMsg = convRes.data.data?.[0];
+              return { studentId: s._id, lastMsg };
+            } catch (err) {
+              return { studentId: s._id, lastMsg: null };
+            }
+          })
+        );
+
+        const newConvMap = {};
+        recentMessages.forEach(({ studentId, lastMsg }) => {
+          if (lastMsg) {
+            newConvMap[studentId.toString()] = {
+              lastMsg: lastMsg.text,
+              lastAt: lastMsg.createdAt,
+              unread: 0, 
+            };
+          }
+        });
+        setConvMap(prev => ({ ...prev, ...newConvMap }));
+      })
       .catch(console.error)
       .finally(() => setSideLoad(false));
   }, []);
@@ -203,11 +255,14 @@ const CounsellorMessages = () => {
     try {
       const res = await getConversation(studentId);
       setMessages(res.data.data || []);
-      await markRead(studentId);
+      
+      // Update local unread immediately for UX
       setConvMap(prev => ({
         ...prev,
         [studentId]: { ...(prev[studentId] || {}), unread: 0 },
       }));
+
+      await markRead(studentId);
     } catch (err) {
       console.error('[Messages] load failed', err);
     } finally {
@@ -244,13 +299,35 @@ const CounsellorMessages = () => {
     }
   };
 
-  const filtered = students.filter(s =>
-    !search ||
-    s.name?.toLowerCase().includes(search.toLowerCase()) ||
-    s.email?.toLowerCase().includes(search.toLowerCase())
-  );
+  const filtered = students.filter(s => {
+    const sName = s?.name?.toLowerCase() || '';
+    const sEmail = s?.email?.toLowerCase() || '';
+    const q = search.toLowerCase();
+    return !search || sName.includes(q) || sEmail.includes(q);
+  });
 
   const activeStudent = students.find(s => s._id?.toString() === activeId);
+
+  const groupedMessages = useMemo(() => {
+    const groups = [];
+    let lastDate = null;
+
+    messages.forEach(m => {
+      const timestamp = m.createdAt || m.timestamp;
+      if (!timestamp) return;
+      
+      const d = new Date(timestamp);
+      if (isNaN(d.getTime())) return;
+
+      const dStr = d.toDateString();
+      if (dStr !== lastDate) {
+        groups.push({ type: 'divider', date: dStr });
+        lastDate = dStr;
+      }
+      groups.push({ type: 'message', ...m });
+    });
+    return groups;
+  }, [messages]);
 
   /* ── Render ───────────────────────────────────────────────── */
   return (
@@ -268,7 +345,7 @@ const CounsellorMessages = () => {
             <Search size={18} className="cm-search-icon" />
             <input
               className="cm-search"
-              placeholder="Search student or message..."
+              placeholder="Search conversations..."
               value={search}
               onChange={e => setSearch(e.target.value)}
             />
@@ -293,20 +370,24 @@ const CounsellorMessages = () => {
               </div>
             ) : filtered.length === 0 ? (
               <div className="cm-empty-threads">
-                {search ? 'No students match.' : 'No students assigned yet.'}
+                {search ? 'No results found.' : 'No active conversations.'}
               </div>
             ) : (
-              filtered.map(s => (
-                <ThreadItem
-                  key={s._id}
-                  student={s}
-                  active={s._id?.toString() === activeId}
-                  unread={convMap[s._id?.toString()]?.unread || 0}
-                  lastMsg={convMap[s._id?.toString()]?.lastMsg}
-                  lastAt={convMap[s._id?.toString()]?.lastAt}
-                  onClick={() => openConversation(s._id?.toString())}
-                />
-              ))
+              filtered.map(s => {
+                if (!s?._id) return null;
+                const sId = s._id.toString();
+                return (
+                  <ThreadItem
+                    key={sId}
+                    student={s}
+                    active={sId === activeId}
+                    unread={convMap[sId]?.unread || 0}
+                    lastMsg={convMap[sId]?.lastMsg}
+                    lastAt={convMap[sId]?.lastAt}
+                    onClick={() => openConversation(sId)}
+                  />
+                );
+              })
             )}
           </div>
         </div>
@@ -333,10 +414,9 @@ const CounsellorMessages = () => {
                 <div className="cm-chat-peer-info">
                   <div className="cm-peer-name-wrap">
                     <span className="cm-chat-peer-name">{activeStudent?.name}</span>
-                    <span className="cm-online-bullet" />
                   </div>
                   <span className="cm-chat-status">
-                    Online
+                    Available
                     {typing && <span className="cm-typing-text"> · typing…</span>}
                   </span>
                 </div>
@@ -348,27 +428,31 @@ const CounsellorMessages = () => {
               </div>
 
               <div className="cm-messages">
-                <div className="cm-date-divider">
-                  <span className="cm-date-text">Today</span>
-                </div>
                 {msgLoad ? (
-                  <div className="cm-msg-state">Loading messages…</div>
+                  <div className="cm-msg-state">Loading history…</div>
                 ) : messages.length === 0 && !sending ? (
                   <div className="cm-msg-state">
                     <MessageSquare size={28} strokeWidth={1.5} />
-                    <p>No messages yet. Say hello to {activeStudent?.name}!</p>
+                    <p>Start a conversation with {activeStudent?.name}</p>
                   </div>
                 ) : (
-                  messages.map((m, i) => (
-                    <Bubble
-                      key={m._id || i}
-                      msg={m}
-                      peerAvatar={activeStudent?.avatar}
-                      isMine={
-                        m.senderId?.toString() === user?.id ||
-                        m.senderRole === 'counsellor'
-                      }
-                    />
+                  groupedMessages.map((item, i) => (
+                    item.type === 'divider' ? (
+                      <div className="cm-date-divider" key={`div-${item.date}`}>
+                        <span className="cm-date-text">{formatDateDivider(item.date)}</span>
+                      </div>
+                    ) : (
+                      <Bubble
+                        key={item._id || i}
+                        msg={item}
+                        peerAvatar={activeStudent?.avatar}
+                        myAvatar={profile?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile?.name || 'C')}&background=1a2234&color=fff`}
+                        isMine={
+                          item.senderId?.toString() === user?.id ||
+                          item.senderRole === 'counsellor'
+                        }
+                      />
+                    )
                   ))
                 )}
 
