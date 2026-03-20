@@ -449,6 +449,8 @@
   align-items: center;
   justify-content: center;
   padding: 2rem;
+  background: #0a0d14;
+  min-height: 100vh;
 }
 .vc-error-card,
 .vc-ended-card {
@@ -469,6 +471,9 @@
 .vc-error-card h2,.vc-ended-card h2 { font-size:1.2rem;font-weight:700;color:#f1f5f9;margin:0; }
 .vc-error-card p,.vc-ended-card p { font-size:0.88rem;color:#64748b;margin:0;line-height:1.6; }
 .vc-error-back {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
   background: #6366f1;
   color: #fff;
   border: none;

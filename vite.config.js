@@ -10,6 +10,9 @@ export default defineConfig(({ mode }) => {
     plugins: [react()],
     server: {
       host: true, // Expose to LAN (needed for testing from a second machine)
+      headers: {
+        'ngrok-skip-browser-warning': 'true', // Skip ngrok interstitial page
+      },
       proxy: {
         '/api': {
           target: apiTarget,
