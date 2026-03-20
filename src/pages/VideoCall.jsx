@@ -139,32 +139,38 @@ const VideoCall = () => {
     let pc;
 
     const onPeerJoined = async ({ name, role }) => {
+      console.log('[WebRTC] peer-joined → creating offer as initiator', { name, role });
       setPeerInfo({ name, role });
       pc = createPC(); pcRef.current = pc;
       stream.getTracks().forEach(t => pc.addTrack(t, stream));
       const offer = await pc.createOffer();
       await pc.setLocalDescription(offer);
+      console.log('[WebRTC] Sending offer to room', sessionId);
       socket.emit('offer', { roomId: sessionId, sdp: offer });
     };
 
     const onOffer = async ({ sdp }) => {
+      console.log('[WebRTC] Received offer → creating answer');
       pc = createPC(); pcRef.current = pc;
       stream.getTracks().forEach(t => pc.addTrack(t, stream));
       await pc.setRemoteDescription(new RTCSessionDescription(sdp));
       const answer = await pc.createAnswer();
       await pc.setLocalDescription(answer);
+      console.log('[WebRTC] Sending answer to room', sessionId);
       socket.emit('answer', { roomId: sessionId, sdp: answer });
       setStatus('live');
     };
 
     const onAnswer = async ({ sdp }) => {
+      console.log('[WebRTC] Received answer → setting remote description');
       await pcRef.current?.setRemoteDescription(new RTCSessionDescription(sdp));
       setStatus('live');
     };
 
     const onIceCandidate = async ({ candidate }) => {
+      console.log('[WebRTC] Received ICE candidate:', candidate?.type, candidate?.address);
       try { await pcRef.current?.addIceCandidate(new RTCIceCandidate(candidate)); }
-      catch (e) { console.warn('[WebRTC] ICE error:', e); }
+      catch (e) { console.warn('[WebRTC] ICE add error:', e); }
     };
 
     const onPeerLeft = () => {
