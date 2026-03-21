@@ -1,68 +1,90 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { CheckCircle, Activity, Sun, ChevronRight } from 'lucide-react';
+import { CheckCircle, Activity, Sun, ChevronRight, Zap } from 'lucide-react';
+import { useReveal } from '../../utils/useReveal';
 import './GentleInsights.css';
 
 const GentleInsights = () => {
+    useReveal();
+
     return (
         <section className="gentle-insights-section">
             <div className="insights-container">
-
-                {/* Left Side: Visuals */}
-                <div className="visuals-container">
-                    <div className="visuals-wrapper">
-                        {/* Abstract Layout for Visuals */}
-                        <div className="visuals-row">
-                            <div className="visual-card">
-                                <div className="visual-icon"><Activity size={24} /></div>
-                                <div className="visual-title">IoT Integration</div>
-                                <div className="visual-desc">Sync your daily metrics...</div>
+                {/* Left Side: Visuals (Abstract UI Cards) */}
+                <div className="visuals-container" data-reveal>
+                    <div className="visuals-grid">
+                        <div className="v-card v-card-1 transition-all">
+                            <div className="v-icon-box blue">
+                                <Activity size={20} />
                             </div>
-
-                            <div className="visual-card highlight">
-                                <div className="visual-icon"><Sun size={24} /></div>
-                                <div className="visual-title">Fresh Start Metrics</div>
-                                <div className="visual-desc">Visualizing your journey...</div>
+                            <div className="v-content">
+                                <div className="v-label">Real-time Sync</div>
+                                <div className="v-val">98% Accuracy</div>
                             </div>
                         </div>
 
-                        <div className="visual-card">
-                            <div className="visual-icon"><Activity size={24} /></div>
-                            <div className="visual-title">ML-based analytics</div>
-                            <div className="visual-desc">Predictive Mental Health Analytics...</div>
+                        <div className="v-card v-card-2 transition-all">
+                            <div className="v-icon-box amber">
+                                <Sun size={20} />
+                            </div>
+                            <div className="v-content">
+                                <div className="v-label">Wellness Score</div>
+                                <div className="v-val">Increasing</div>
+                            </div>
+                        </div>
+
+                        <div className="v-card v-card-3 transition-all">
+                            <div className="v-icon-box indigo">
+                                <Zap size={20} />
+                            </div>
+                            <div className="v-content">
+                                <div className="v-label">AI Insights</div>
+                                <div className="v-val">3 New Tips</div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 {/* Right Side: Text */}
-                <div className="text-container">
+                <div className="text-container" data-reveal>
+                    <div className="section-tag">Smart Assistance</div>
                     <h2 className="insights-heading">
-                        Gentle Insights for a <br /> Brighter Path
+                        Gentle Insights for a <br /> 
+                        <span className="text-accent">Brighter Path</span>
                     </h2>
                     <p className="insights-description">
-                        We use technology not to overwhelm, but to empower. By understanding your unique rhythms, SereneCampus helps you find balance and positivity in the fast-paced college environment.
+                        We use technology not to overwhelm, but to empower. By understanding your 
+                        unique rhythms, we help you find balance and positivity in the fast-paced 
+                        college environment.
                     </p>
 
                     <div className="features-list">
-                        <div className="feature-item">
-                            <CheckCircle size={24} color="var(--color-primary)" fill="white" />
-                            <div>
+                        <div className="feature-item transition-all">
+                            <div className="feature-icon-outer">
+                                <CheckCircle size={20} className="feature-icon" />
+                            </div>
+                            <div className="feature-text">
                                 <h4 className="feature-title">Holistic Health Sync</h4>
-                                <p className="feature-desc">Easily connect your preferred wearables for an integrated view.</p>
+                                <p className="feature-desc">Connect your preferred wearables for an integrated view of your wellness.</p>
                             </div>
                         </div>
-                        <div className="feature-item">
-                            <CheckCircle size={24} color="var(--color-primary)" fill="white" />
-                            <div>
+                        
+                        <div className="feature-item transition-all">
+                            <div className="feature-icon-outer text-amber">
+                                <CheckCircle size={20} className="feature-icon" />
+                            </div>
+                            <div className="feature-text">
                                 <h4 className="feature-title">Positivity Reports</h4>
-                                <p className="feature-desc">Focus on growth with personalized insights that celebrate progress.</p>
+                                <p className="feature-desc">Personalized insights that celebrate your growth and celebrate progress.</p>
                             </div>
                         </div>
                     </div>
 
-                    <Link to="/register" className="explore-link">
-                        Explore Dashboard <ChevronRight size={20} />
-                    </Link>
+                    <div className="insights-actions">
+                        <Link to="/register" className="btn-link">
+                            Explore Dashboard <ChevronRight size={18} />
+                        </Link>
+                    </div>
                 </div>
             </div>
         </section>

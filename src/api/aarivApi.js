@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = "http://localhost:3000/api/aariv";
+const API_BASE_URL = "/api/aariv";
 
 export const sendMessageToAariv = async (data) => {
   const res = await axios.post(`${API_BASE_URL}/chat`, data);

@@ -9,7 +9,7 @@ let socket = null;
 
 export function getSocket(token) {
   if (!socket || socket.disconnected) {
-    socket = io(import.meta.env.VITE_SOCKET_URL || 'http://localhost:3000', {
+    socket = io(import.meta.env.VITE_SOCKET_URL, {
       auth:       { token },
       transports: ['websocket'],
       reconnectionAttempts: 5,

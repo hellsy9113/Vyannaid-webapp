@@ -1,104 +1,108 @@
-// import React from 'react';
-// import { Menu } from 'lucide-react';
-
-// const Navbar = () => {
-//     return (
-//         <nav style={{
-//             display: 'flex',
-//             alignItems: 'center',
-//             justifyContent: 'space-between',
-//             padding: '1.5rem 5%',
-//             backgroundColor: 'var(--color-bg-cream)',
-//             position: 'sticky',
-//             top: 0,
-//             zIndex: 100
-//         }}>
-//             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-//                 <div style={{ width: '24px', height: '24px', backgroundColor: '#FFD1AA', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-//                     <div style={{ width: '12px', height: '12px', backgroundColor: 'var(--color-primary)', borderRadius: '50%' }}></div>
-//                 </div>
-//                 <span style={{ fontSize: '1.25rem', fontWeight: '700', letterSpacing: '-0.5px' }}>Vyannaid</span>
-//             </div>
-
-//             <div style={{ display: 'none', gap: '2rem', md: { display: 'flex' } }} className="desktop-menu">
-//                 <a href="#" style={{ fontSize: '0.9rem', fontWeight: '500' }}>How it Works</a>
-//                 <a href="#" style={{ fontSize: '0.9rem', fontWeight: '500' }}>Community</a>
-//                 <a href="#" style={{ fontSize: '0.9rem', fontWeight: '500' }}>Insights</a>
-//             </div>
-
-//             <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-//                 <a href="#" style={{ fontSize: '0.9rem', fontWeight: '600' }}>Sign In</a>
-//                 <button style={{
-//                     backgroundColor: 'var(--color-primary)',
-//                     color: 'white',
-//                     padding: '0.6rem 1.4rem',
-//                     borderRadius: '50px',
-//                     fontWeight: '600',
-//                     fontSize: '0.9rem',
-//                     boxShadow: 'var(--shadow-md)',
-//                     transition: 'background-color 0.2s',
-//                     cursor: 'pointer'
-//                 }}
-//                     onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'var(--color-primary-hover)'}
-//                     onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'var(--color-primary)'}
-//                 >
-//                     Get Started
-//                 </button>
-//             </div>
-
-//             <style>{`
-//         @media (max-width: 768px) {
-//           .desktop-menu { display: none !important; }
-//         }
-//         @media (min-width: 769px) {
-//           .desktop-menu { display: flex !important; }
-//         }
-//       `}</style>
-//         </nav>
-//     );
-// };
-
-// export default Navbar;
-
-
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Menu, X, ArrowRight, Sun } from 'lucide-react';
 import { useAuth } from "../../auth/AuthContext";
-import "./Navbar.css";
+import './Navbar.css';
 
 const Navbar = () => {
-  const { isAuthenticated, logout } = useAuth();
-  const navigate = useNavigate();
+    const [isOpen, setIsOpen] = useState(false);
+    const [scrolled, setScrolled] = useState(false);
+    const { isAuthenticated, logout } = useAuth();
+    const location = useLocation();
+    const navigate = useNavigate();
 
-  const handleLogout = () => {
-    logout();
-    navigate("/");
-  };
+    useEffect(() => {
+        const handleScroll = () => {
+            setScrolled(window.scrollY > 20);
+        };
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
 
-  return (
-    <nav className="navbar">
-      <Link to="/" className="nav-logo" style={{ textDecoration: 'none', color: 'inherit' }}>
-        <div className="logo-dot"></div>
-        <span>Vyannaid</span>
-      </Link>
+    const handleLogout = () => {
+        logout();
+        navigate("/");
+        setIsOpen(false);
+    };
 
-      <div className="nav-links">
-        <a href="#" className="nav-link">How it Works</a>
-        <a href="#" className="nav-link">Community</a>
-        <a href="#" className="nav-link">Insights</a>
-      </div>
+    const navLinks = [
+        { name: 'Home', path: '/' },
+        { name: 'About', path: '/about' },
+        { name: 'Community', path: '/community' },
+        { name: 'For Universities', path: '/universities' },
+    ];
 
-      <div className="nav-actions">
-        {!isAuthenticated ? (
-          <>
-            <Link to="/login" className="sign-in-btn">Sign In</Link>
-            <Link to="/register" className="get-started-btn">Get Started</Link>
-          </>
-        ) : (
-          <button onClick={handleLogout} className="logout-btn">Logout</button>
-        )}
-      </div>
-    </nav>
-  );
+    return (
+        <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
+            <div className="navbar-container">
+                {/* Logo */}
+                <Link to="/" className="navbar-logo">
+                    <div className="logo-icon-box">
+                        <Sun size={20} className="logo-icon" />
+                    </div>
+                    <span>Vyannaid</span>
+                </Link>
+
+                {/* Desktop Links */}
+                <div className="nav-menu-desktop">
+                    {navLinks.map((link) => (
+                        <Link
+                            key={link.name}
+                            to={link.path}
+                            className={`nav-link ${location.pathname === link.path ? 'active' : ''}`}
+                        >
+                            {link.name}
+                        </Link>
+                    ))}
+                </div>
+
+                {/* Auth Buttons */}
+                <div className="nav-auth-desktop">
+                    {!isAuthenticated ? (
+                        <>
+                            <Link to="/login" className="btn-login transition-all">Sign In</Link>
+                            <Link to="/register" className="btn-register transition-all">
+                                Get Started <ArrowRight size={16} />
+                            </Link>
+                        </>
+                    ) : (
+                        <button onClick={handleLogout} className="btn-register transition-all">Logout</button>
+                    )}
+                </div>
+
+                {/* Mobile Toggle */}
+                <button className="mobile-menu-toggle" onClick={() => setIsOpen(!isOpen)}>
+                    {isOpen ? <X size={24} /> : <Menu size={24} />}
+                </button>
+            </div>
+
+            {/* Mobile Menu Overlay */}
+            <div className={`mobile-menu-overlay ${isOpen ? 'active' : ''}`}>
+                <div className="mobile-menu-content">
+                    {navLinks.map((link) => (
+                        <Link
+                            key={link.name}
+                            to={link.path}
+                            className={`mobile-nav-link ${location.pathname === link.path ? 'active' : ''}`}
+                            onClick={() => setIsOpen(false)}
+                        >
+                            {link.name}
+                        </Link>
+                    ))}
+                    <div className="mobile-auth-actions">
+                        {!isAuthenticated ? (
+                            <>
+                                <Link to="/login" className="mobile-btn-login" onClick={() => setIsOpen(false)}>Sign In</Link>
+                                <Link to="/register" className="mobile-btn-register" onClick={() => setIsOpen(false)}>Get Started</Link>
+                            </>
+                        ) : (
+                            <button onClick={handleLogout} className="mobile-btn-register">Logout</button>
+                        )}
+                    </div>
+                </div>
+            </div>
+        </nav>
+    );
 };
 
 export default Navbar;

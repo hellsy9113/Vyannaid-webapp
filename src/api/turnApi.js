@@ -11,8 +11,21 @@ import { api } from './authApi';
 export const getTurnCredentials = async () => {
   try {
     const res = await api.get('/api/turn/credentials');
-    return res.data.iceServers || getStunFallback();
-  } catch {
+    
+    // Check for standard backend response structure
+    if (res.data && Array.isArray(res.data.iceServers)) {
+      return res.data.iceServers;
+    }
+    
+    // Check if the array is directly at root (unlikely with our backend but good for robustness)
+    if (Array.isArray(res.data)) {
+      return res.data;
+    }
+
+    console.warn('[TURN] API returned non-array iceServers, using fallback');
+    return getStunFallback();
+  } catch (err) {
+    console.error('[TURN] Request failed, using fallback:', err.message);
     return getStunFallback();
   }
 };

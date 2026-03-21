@@ -74,20 +74,30 @@ const VideoCall = () => {
   const [swapped,     setSwapped]     = useState(false);
   const [showUI,      setShowUI]      = useState(true);
   const [duration,    setDuration]    = useState(0);
+  /* Socket state */
+  const [socket,      setSocket]      = useState(null);
 
   const hideTimerRef   = useRef(null);
   const durationRef    = useRef(null);
 
-  /* ── 1. Init TURN & Timers ───────────────────────────────────── */
+  /* ── 1. Init TURN ────────────────────────────────────────────── */
   useEffect(() => {
     getTurnCredentials()
       .then(servers => { 
-        console.log('[WebRTC] ICE Servers loaded:', servers.map(s => s.urls));
-        iceServersRef.current = servers; 
+        if (Array.isArray(servers)) {
+          console.log('[WebRTC] ICE Servers loaded');
+          iceServersRef.current = servers; 
+        } else {
+          iceServersRef.current = [{ urls: 'stun:stun.l.google.com:19302' }];
+        }
+      })
+      .catch(() => {
+        iceServersRef.current = [{ urls: 'stun:stun.l.google.com:19302' }];
       })
       .finally(() => setTurnLoading(false));
   }, []);
 
+  /* ── 2. Timer Logic ────────────────────────────────────────────── */
   useEffect(() => {
     if (!sessionInfo?.scheduledAt) return;
     const tick = () => {
@@ -108,17 +118,17 @@ const VideoCall = () => {
     return () => clearInterval(durationRef.current);
   }, [status]);
 
-  /* ── 2. View Management ────────────────────────────────────────── */
-  const assignVideos = useCallback((localStream, remoteStream, isSwapped) => {
+  /* ── 3. Helpers ────────────────────────────────────────────────── */
+  const assignVideos = useCallback((local, remote, swap) => {
     const mainEl = mainVideoRef.current;
     const pipEl  = pipVideoRef.current;
     if (!mainEl || !pipEl) return;
-    if (isSwapped) {
-      mainEl.srcObject = localStream  || null;
-      pipEl.srcObject  = remoteStream || null;
+    if (swap) {
+      mainEl.srcObject = local  || null;
+      pipEl.srcObject  = remote || null;
     } else {
-      mainEl.srcObject = remoteStream || null;
-      pipEl.srcObject  = localStream  || null;
+      mainEl.srcObject = remote || null;
+      pipEl.srcObject  = local  || null;
     }
   }, []);
 
@@ -126,7 +136,6 @@ const VideoCall = () => {
     assignVideos(streamRef.current, remoteStrmRef.current, swapped);
   }, [swapped, assignVideos]);
 
-  /* ── 3. WebRTC Core ────────────────────────────────────────────── */
   const processQueuedCandidates = async (pc) => {
     while (candQueueRef.current.length > 0) {
       const cand = candQueueRef.current.shift();
@@ -140,7 +149,7 @@ const VideoCall = () => {
   };
 
   const createPC = useCallback(() => {
-    const socket = socketRef.current;
+    if (!socket) return null;
     const iceServers = iceServersRef.current || [{ urls: 'stun:stun.l.google.com:19302' }];
 
     const pc = new RTCPeerConnection({ iceServers });
@@ -167,17 +176,17 @@ const VideoCall = () => {
     };
 
     return pc;
-  }, [sessionId, assignVideos, swapped]);
+  }, [sessionId, socket, assignVideos, swapped]);
 
   /* ── 4. Signaling Listeners ────────────────────────────────────── */
   useEffect(() => {
-    const socket = socketRef.current;
     if (!socket) return;
 
     const onPeerJoined = async ({ name, role }) => {
       console.log('[WebRTC] Peer joined → sending offer');
       setPeerInfo({ name, role });
       const pc = createPC();
+      if (!pc) return;
       pcRef.current = pc;
       
       const stream = streamRef.current;
@@ -191,6 +200,7 @@ const VideoCall = () => {
     const onOffer = async ({ sdp }) => {
       console.log('[WebRTC] Received offer → answering');
       const pc = createPC();
+      if (!pc) return;
       pcRef.current = pc;
 
       const stream = streamRef.current;
@@ -226,7 +236,6 @@ const VideoCall = () => {
       if (!candidate) return;
       const pc = pcRef.current;
       if (!pc || !pc.remoteDescription) {
-        console.log('[WebRTC] Queuing ICE candidate');
         candQueueRef.current.push(candidate);
         return;
       }
@@ -266,21 +275,21 @@ const VideoCall = () => {
       socket.off('peer-left',     onPeerLeft);
       socket.off('chat-message',  onChatMessage);
     };
-  }, [sessionId, createPC, assignVideos, swapped]);
+  }, [sessionId, socket, createPC, assignVideos, swapped]);
 
   /* ── 5. User Actions ───────────────────────────────────────────── */
   const startCall = async () => {
     if (turnLoading) return;
     setStatus('connecting');
 
-    const socket = getSocket(localStorage.getItem('token'));
-    socketRef.current = socket;
+    const s = getSocket(localStorage.getItem('token'));
+    setSocket(s);
 
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
       streamRef.current = stream;
       assignVideos(stream, null, false);
-      socket.emit('join-room', sessionId);
+      s.emit('join-room', sessionId);
       setStatus('waiting');
     } catch (err) {
       setMediaErr(err.name === 'NotAllowedError' 
