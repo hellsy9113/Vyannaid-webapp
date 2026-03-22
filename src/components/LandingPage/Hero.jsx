@@ -44,7 +44,7 @@ const Hero = () => {
                     <div className="hero-image-wrapper">
                         <div className="hero-image-overlay"></div>
                         <img
-                            src="https://images.unsplash.com/photo-1523240715630-991df268491c?auto=format&fit=crop&q=80&w=1000"
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBI6l0So_p6mWssqNFgrorTD6BhZ_AiPIS_R4xVWV8_EUCJEn7b_tZFpz00dlw3Hytve2nUERddt182DUNhdwIj9-kXNGpsJBhucC8Kis_Ys_dMH3ORqLRT-gJxZ3hlHHH_LnYp8O1T05EQ_c3yypSMFtlEPqeZkPgwrcFfjQL18vujrawGqEJOZEe2gZiyDWAXA-Y3BvI-b0mjmysRAA-zAWJtlpuUBhP6vfjeFnqGCaMmZVjirZ3DHirGe-ZKRgI9v8CywhaYJPij"
                             alt="Students on campus"
                             className="hero-image"
                         />

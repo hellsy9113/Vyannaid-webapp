@@ -23,7 +23,7 @@
 .visuals-container {
     position: relative;
     padding: 2rem;
-    background: var(--color-bg-soft);
+    background: transparent;
     border-radius: var(--radius-xl);
     min-height: 400px;
     display: flex;
@@ -36,12 +36,12 @@
     flex-direction: column;
     gap: 1.5rem;
     width: 100%;
-    max-width: 320px;
+    max-width: 360px;
 }
 
 .v-card {
     background: var(--color-white);
-    padding: 1.25rem;
+    padding: 1.5rem;
     border-radius: var(--radius-lg);
     display: flex;
     align-items: center;
@@ -63,17 +63,17 @@
 }
 
 .v-icon-box {
-    width: 48px;
-    height: 48px;
+    width: 56px;
+    height: 56px;
     border-radius: var(--radius-md);
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.v-icon-box.blue { background: #E0F2FE; color: #0EA5E9; }
-.v-icon-box.amber { background: #FEF3C7; color: #F59E0B; }
-.v-icon-box.indigo { background: #E0E7FF; color: #6366F1; }
+.v-icon-box.blue { background: var(--color-bg-cream); color: var(--color-primary); }
+.v-icon-box.amber { background: var(--color-bg-cream); color: var(--color-primary-soft); }
+.v-icon-box.indigo { background: var(--color-bg-cream); color: var(--color-accent); }
 
 .v-label {
     font-size: var(--fs-xs);
@@ -130,8 +130,8 @@
 
 .feature-item:hover .feature-icon-outer {
     transform: scale(1.1);
-    background: var(--color-primary);
-    color: white;
+    background: var(--color-text-main);
+    color: var(--color-bg-main);
 }
 
 .feature-icon-outer {

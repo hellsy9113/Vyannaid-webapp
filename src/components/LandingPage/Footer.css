@@ -110,5 +110,5 @@
 }
 
 .footer-bottom-link:hover {
-    color: #666;
+    color: var(--color-primary-soft);
 }

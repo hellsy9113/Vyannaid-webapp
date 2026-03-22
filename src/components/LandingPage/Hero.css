@@ -1,8 +1,13 @@
 .hero-section {
     padding: clamp(2rem, 5vh, 6rem) 5%;
-    margin-top: 80px;
-    background-color: var(--color-bg-cream);
-    min-height: calc(100vh - 80px);
+    padding-top: calc(clamp(2rem, 5vh, 6rem) + 80px);
+    margin-top: 0;
+    background: linear-gradient(180deg,
+            rgb(17, 24, 39) 0px,
+            rgb(17, 24, 39) 85px,
+            rgba(17, 24, 39, 0.1) 250px,
+            #FFFFFF 100%);
+    min-height: 100vh;
     display: flex;
     align-items: center;
     overflow: hidden;
@@ -58,7 +63,7 @@
 
 .hero-highlight {
     color: var(--color-accent);
-    background: linear-gradient(120deg, var(--color-accent) 0%, #818CF8 100%);
+    background: linear-gradient(120deg, var(--color-primary) 0%, var(--color-text-muted) 100%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -79,7 +84,7 @@
 
 .btn-primary {
     background-color: var(--color-primary);
-    color: white;
+    color: var(--color-bg-main);
     padding: 1rem 2rem;
     border-radius: var(--radius-md);
     font-size: var(--fs-base);
@@ -93,7 +98,7 @@
 .btn-primary:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow-lg);
-    background-color: #2D3A54;
+    background-color: var(--color-primary-soft);
 }
 
 .btn-secondary {
@@ -135,7 +140,8 @@
 .hero-image-wrapper {
     position: relative;
     border-radius: var(--radius-xl);
-    overflow: visible; /* To allow floating cards */
+    overflow: visible;
+    /* To allow floating cards */
     aspect-ratio: 4 / 3;
     width: 100%;
     max-width: 600px;
@@ -153,7 +159,6 @@
 .hero-image-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(30deg, rgba(26, 34, 52, 0.1) 0%, transparent 100%);
     border-radius: var(--radius-xl);
 }
 
@@ -176,8 +181,15 @@
 }
 
 @keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
 }
 
 .floating-card-glass.bottom-left {
@@ -196,8 +208,15 @@
 }
 
 @keyframes float-mobile {
-    0%, 100% { transform: translateX(-50%) translateY(0); }
-    50% { transform: translateX(-50%) translateY(-10px); }
+
+    0%,
+    100% {
+        transform: translateX(-50%) translateY(0);
+    }
+
+    50% {
+        transform: translateX(-50%) translateY(-10px);
+    }
 }
 
 .card-icon-container {
@@ -212,7 +231,7 @@
 }
 
 .sun-icon {
-    color: #F59E0B;
+    color: var(--color-text-muted);
 }
 
 .card-content {
@@ -242,7 +261,7 @@
 .progress-fill {
     height: 100%;
     width: 85%;
-    background: linear-gradient(90deg, var(--color-accent) 0%, #818CF8 100%);
+    background: linear-gradient(90deg, var(--color-text-muted) 0%, var(--color-primary-soft) 100%);
     border-radius: var(--radius-full);
 }
 
@@ -257,10 +276,13 @@
     .hero-section {
         padding-top: 4rem;
     }
+
     .hero-actions {
         flex-direction: column;
     }
-    .btn-primary, .btn-secondary {
+
+    .btn-primary,
+    .btn-secondary {
         width: 100%;
         justify-content: center;
     }

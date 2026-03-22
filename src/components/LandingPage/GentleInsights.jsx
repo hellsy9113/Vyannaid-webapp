@@ -19,7 +19,7 @@ const GentleInsights = () => {
                             </div>
                             <div className="v-content">
                                 <div className="v-label">Real-time Sync</div>
-                                <div className="v-val">98% Accuracy</div>
+                                <div className="v-val">100% Private</div>
                             </div>
                         </div>
 

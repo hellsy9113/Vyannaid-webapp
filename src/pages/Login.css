@@ -1,5 +1,7 @@
 .auth-container {
-  min-height: 80vh;
+  min-height: calc(100vh - 80px);
+  margin-top: 80px;
+  padding: 2rem 5%;
   display: flex;
   justify-content: center;
   align-items: center;

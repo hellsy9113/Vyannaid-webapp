@@ -3,17 +3,17 @@
 :root {
   --font-main: 'Outfit', sans-serif;
 
-  /* Premium HSL Color Palette */
-  --p-h: 222;
-  --p-s: 47%;
-  --p-l: 11%;
-  --color-primary: hsl(var(--p-h), var(--p-s), var(--p-l));
-  --color-primary-soft: hsl(var(--p-h), var(--p-s), 95%);
-  --color-accent: #6366F1; /* Indigo Accent */
+  /* Premium Slate Palette (#111827) */
+  --p-h: 217;
+  --p-s: 33%;
+  --p-l: 12%; 
+  --color-primary: #111827;
+  --color-primary-soft: #1F2937;
+  --color-accent: #374151;
   
   --color-bg-main: #FFFFFF;
   --color-bg-soft: #F9FAFB;
-  --color-bg-cream: #FAFAFA;
+  --color-bg-cream: #F3F4F6;
   
   --color-text-main: #111827;
   --color-text-muted: #6B7280;
@@ -22,8 +22,8 @@
   --color-border: #E5E7EB;
 
   /* Glassmorphism */
-  --glass-bg: rgba(255, 255, 255, 0.7);
-  --glass-border: rgba(255, 255, 255, 0.3);
+  --glass-bg: rgba(255, 255, 255, 0.9);
+  --glass-border: rgba(17, 24, 39, 0.1);
   --glass-blur: blur(12px);
 
   /* Shadows */
@@ -69,7 +69,12 @@ body {
   overflow-x: hidden;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   line-height: 1.2;
   font-weight: 700;
   color: var(--color-text-main);
