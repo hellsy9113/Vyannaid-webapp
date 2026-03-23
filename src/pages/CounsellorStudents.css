@@ -226,6 +226,82 @@
 
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
+/* ── Print Styles ───────────────────────────────────────────── */
+@media print {
+  /* Hide UI elements that shouldn't be in the report */
+  .cs-sidebar,
+  .cs-header,
+  .cs-page-container,
+  .cs-modal-close-btn,
+  .cs-modal-footer,
+  nav,
+  header {
+    display: none !important;
+  }
+
+  /* Reset overlay and drawer for print */
+  .cs-panel-overlay {
+    position: static !important;
+    padding: 0 !important;
+    display: block !important;
+    background: none !important;
+    overflow: visible !important;
+  }
+
+  .cs-panel-drawer {
+    position: static !important;
+    width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    display: block !important;
+    overflow: visible !important;
+    transform: none !important;
+    animation: none !important;
+  }
+
+  /* Target the actual report content */
+  #student-report-print {
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+  }
+
+  .cs-panel-scroll {
+    overflow: visible !important;
+    height: auto !important;
+    max-height: none !important;
+    padding: 0 !important;
+  }
+
+  body {
+    background: white !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Force background colors and typography for professional look */
+  .cs-modal-section-title {
+    background: #f1f5f9 !important;
+    color: #1e293b !important;
+    padding: 8px !important;
+    border-radius: 4px !important;
+    margin-top: 2rem !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    border: 1px solid #e2e8f0 !important;
+  }
+
+  .cs-chart-bar {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .cs-score-card {
+    break-inside: avoid;
+  }
+}
 .cs-panel-drawer {
   width: 720px;
   max-width: 100%;

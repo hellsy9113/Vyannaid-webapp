@@ -34,21 +34,33 @@ const StudentPanel = ({ student, onClose }) => {
       .finally(() => setLoading(false));
   }, [student._id]);
 
-  // Try to generate a trend from history or use a fallback
+  // Map the local trend data from history
   const getMoodTrend = () => {
     if (data?.mentalStats?.history?.length > 0) {
-      return data.mentalStats.history.slice(-6).map(h => h.moodScore || 5);
+      return data.mentalStats.history.map(h => ({
+        value: h.moodScore,
+        label: new Date(h.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
+      }));
     }
-    // Fallback if no history but single score exists
-    if (student.latestMoodScore) return [5, 6, 5.5, 6.2, 5.9, student.latestMoodScore];
-    return [5, 5, 5, 5, 5, 5]; // Default neutral
+    // Fallback if no history
+    const base = student.latestMoodScore || 5;
+    return [
+      { value: base - 0.5, label: '—' },
+      { value: base + 0.2, label: '—' },
+      { value: base - 0.3, label: '—' },
+      { value: base + 0.5, label: '—' },
+      { value: base, label: 'TODAY' }
+    ];
   };
 
   const moodTrend = getMoodTrend();
-  const displayScore = data?.mentalStats?.moodScore || student.latestMoodScore || '—';
+  const rawAvg = moodTrend.length > 0 
+    ? (moodTrend.reduce((acc, curr) => acc + (typeof curr.value === 'number' ? curr.value : 0), 0) / moodTrend.length)
+    : (data?.mentalStats?.moodScore || student.latestMoodScore || 0);
+  const displayAvg = rawAvg > 0 ? rawAvg.toFixed(1) : '—';
 
   return (
-    <div className="cs-panel">
+    <div className="cs-panel" id="student-report-print">
       <div className="cs-panel-header">
         <div className="cs-panel-identity">
           <div className="cs-panel-avatar-circle">{student.name?.split(' ').map(n => n[0]).join('')}</div>
@@ -66,22 +78,22 @@ const StudentPanel = ({ student, onClose }) => {
         {/* Mood Score Trend */}
         <div className="cs-modal-section">
           <div className="cs-section-header-flex">
-            <h4 className="cs-modal-section-title">MOOD SCORE TREND</h4>
+            <h4 className="cs-modal-section-title">TREND AVERAGE</h4>
             <div className="cs-overall-score">
-              <span className="cs-score-big">{displayScore}</span><span className="cs-score-total">/10</span>
+              <span className="cs-score-big">{displayAvg}</span><span className="cs-score-total">/10</span>
             </div>
           </div>
           
           <div className="cs-trend-chart">
-            {moodTrend.map((val, i) => (
+            {moodTrend.map((item, i) => (
               <div key={i} className="cs-chart-col">
-                <div className="cs-chart-bar-wrap">
+                <div className="cs-chart-bar-wrap" title={`${item.label}: ${item.value}`}>
                   <div 
                     className={`cs-chart-bar ${i === moodTrend.length - 1 ? 'current' : ''}`} 
-                    style={{ height: `${(val / 10) * 100}%` }}
+                    style={{ height: `${(item.value / 10) * 100}%` }}
                   />
                 </div>
-                <span className="cs-chart-label">{i === moodTrend.length - 1 ? 'CURRENT' : `W${i + 1}`}</span>
+                <span className="cs-chart-label">{item.label}</span>
               </div>
             ))}
           </div>
@@ -135,7 +147,7 @@ const StudentPanel = ({ student, onClose }) => {
       </div>
 
       <div className="cs-modal-footer">
-        <button className="cs-footer-btn-ghost">Download PDF</button>
+        <button className="cs-footer-btn-ghost" onClick={() => window.print()}>Download PDF</button>
         <button className="cs-footer-btn-primary" onClick={onClose}>Close File</button>
       </div>
     </div>

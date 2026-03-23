@@ -4,7 +4,7 @@ const BASE_URL = import.meta.env.VITE_API_URL || "";
 
 // Shared axios instance — all requests get the Bearer token automatically
 export const api = axios.create({
-  baseURL: BASE_URL,
+  baseURL: BASE_URL + "/api",
   headers: {
     "Content-Type": "application/json",
     // Tells ngrok free tier to skip its browser warning interstitial page.

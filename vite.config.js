@@ -15,14 +15,9 @@ export default defineConfig(({ mode }) => {
         'ngrok-skip-browser-warning': 'true', // Skip ngrok interstitial page
       },
       proxy: {
-        // Handle all backend routes
+        // Handle all backend routes - keep focused on API and Auth
         '/api': { target: apiTarget, changeOrigin: true },
         '/auth': { target: apiTarget, changeOrigin: true },
-        '/dashboard': { target: apiTarget, changeOrigin: true },
-        '/admin': { target: apiTarget, changeOrigin: true },
-        '/counsellor': { target: apiTarget, changeOrigin: true },
-        '/profile': { target: apiTarget, changeOrigin: true },
-        '/messages': { target: apiTarget, changeOrigin: true },
         '/socket.io': {
           target: apiTarget,
           ws: true,
