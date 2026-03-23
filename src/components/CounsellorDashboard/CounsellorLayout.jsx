@@ -24,6 +24,7 @@ const CounsellorLayout = ({ children }) => {
     if (path.endsWith('/counsellor') || path.endsWith('/counsellor/')) return 'Dashboard';
     if (path.includes('/students')) return 'My Students';
     if (path.includes('/sessions')) return 'Sessions';
+    if (path.includes('/volunteers')) return 'Volunteers';
     if (path.includes('/notes')) return 'Notes';
     if (path.includes('/analytics')) return 'Analytics';
     if (path.includes('/messages')) return 'Messages';

@@ -66,6 +66,9 @@ const AdminOverview = () => {
           <button className="ao-qa-btn ao-qa-secondary" onClick={() => navigate('/dashboard/admin/staff')}>
             <ShieldCheck size={18} /> Create Staff Account
           </button>
+          <button className="ao-qa-btn ao-qa-secondary" onClick={() => navigate('/dashboard/admin/volunteers')}>
+            <UserCheck size={18} /> Volunteer Applications
+          </button>
           <button className="ao-qa-btn ao-qa-secondary" onClick={() => navigate('/dashboard/admin/counsellors')}>
             <UserCheck size={18} /> Manage Counsellors
           </button>

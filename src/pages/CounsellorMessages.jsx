@@ -44,6 +44,8 @@ const formatDateDivider = (dateStr) => {
   return d.toLocaleDateString([], { month: 'long', day: 'numeric', year: 'numeric' });
 };
 
+const TAB_TYPES = ['ALL', 'VOLUNTEERS', 'UNREAD', 'ARCHIVED'];
+
 /* ── Thread item ──────────────────────────────────────────────── */
 const ThreadItem = ({ student, active, unread, lastMsg, lastAt, isOnline, onClick }) => {
   if (!student) return null;
@@ -101,11 +103,14 @@ const Bubble = ({ msg, isMine, peerAvatar, myAvatar }) => (
 );
 
 /* ── Main component ───────────────────────────────────────────── */
+import { useLocation } from 'react-router-dom';
+
 const CounsellorMessages = () => {
   const { user }  = useAuth();
+  const location  = useLocation();
   const socketRef = useRef(null);
 
-  const [students,  setStudents]  = useState([]);
+  const [contacts,  setContacts]  = useState([]);
   const [profile,   setProfile]   = useState(null);
   const [convMap,   setConvMap]   = useState({});
   const [activeId,  setActiveId]  = useState(null);
@@ -130,32 +135,50 @@ const CounsellorMessages = () => {
     socketRef.current = getSocket(localStorage.getItem('token'));
   }, []);
 
-  /* ── Load assigned students ───────────────────────────────── */
+  /* ── Load assigned contacts (students + volunteers) ───────── */
   useEffect(() => {
     getCounsellorProfile()
       .then(async res => {
         const profileData = res.data.data;
-        const assignedStudents = profileData?.assignedStudents || [];
-        setProfile(profileData);
-        setStudents(assignedStudents);
+        const assignedStudents   = profileData?.assignedStudents || [];
+        const assignedVolunteers = profileData?.assignedVolunteers || [];
 
-        // Fetch last message for each student to populate sidebar
+        // Use a Map to deduplicate by _id. If a user is both, prioritize 'volunteer' role.
+        const contactMap = new Map();
+
+        assignedStudents.forEach(s => {
+          if (!s?._id) return;
+          contactMap.set(s._id.toString(), { ...s, role: 'student' });
+        });
+
+        assignedVolunteers.forEach(v => {
+          if (!v?._id) return;
+          // Overwrite if already exists as student, or just add new
+          contactMap.set(v._id.toString(), { ...v, role: 'volunteer' });
+        });
+
+        const allContacts = Array.from(contactMap.values());
+
+        setProfile(profileData);
+        setContacts(allContacts);
+
+        // Fetch last message for each contact to populate sidebar
         const recentMessages = await Promise.all(
-          assignedStudents.map(async (s) => {
+          allContacts.map(async (c) => {
             try {
-              const convRes = await getConversation(s._id, { limit: 1 });
+              const convRes = await getConversation(c._id, { limit: 1 });
               const lastMsg = convRes.data.data?.[0];
-              return { studentId: s._id, lastMsg };
+              return { contactId: c._id, lastMsg };
             } catch (err) {
-              return { studentId: s._id, lastMsg: null };
+              return { contactId: c._id, lastMsg: null };
             }
           })
         );
 
         const newConvMap = {};
-        recentMessages.forEach(({ studentId, lastMsg }) => {
+        recentMessages.forEach(({ contactId, lastMsg }) => {
           if (lastMsg) {
-            newConvMap[studentId.toString()] = {
+            newConvMap[contactId.toString()] = {
               lastMsg: lastMsg.text,
               lastAt: lastMsg.createdAt,
               unread: 0, 
@@ -163,6 +186,11 @@ const CounsellorMessages = () => {
           }
         });
         setConvMap(prev => ({ ...prev, ...newConvMap }));
+
+        // Auto-open if redirected from elsewhere (e.g. Volunteer management)
+        if (location.state?.otherUserId) {
+          openConversation(location.state.otherUserId);
+        }
       })
       .catch(console.error)
       .finally(() => setSideLoad(false));
@@ -299,14 +327,20 @@ const CounsellorMessages = () => {
     }
   };
 
-  const filtered = students.filter(s => {
-    const sName = s?.name?.toLowerCase() || '';
-    const sEmail = s?.email?.toLowerCase() || '';
+  const filtered = contacts.filter(c => {
+    const cName = c?.name?.toLowerCase() || '';
+    const cEmail = c?.email?.toLowerCase() || '';
     const q = search.toLowerCase();
-    return !search || sName.includes(q) || sEmail.includes(q);
+    const matchesSearch = !search || cName.includes(q) || cEmail.includes(q);
+    if (!matchesSearch) return false;
+
+    if (activeTab === 'VOLUNTEERS') return c.role === 'volunteer';
+    if (activeTab === 'UNREAD') return (convMap[c._id.toString()]?.unread || 0) > 0;
+    // Archived is just a placeholder here unless we add a field
+    return true;
   });
 
-  const activeStudent = students.find(s => s._id?.toString() === activeId);
+  const activeContact = contacts.find(c => c._id?.toString() === activeId);
 
   const groupedMessages = useMemo(() => {
     const groups = [];
@@ -352,7 +386,7 @@ const CounsellorMessages = () => {
           </div>
 
           <div className="cm-tabs">
-            {['ALL', 'UNREAD', 'ARCHIVED'].map(tab => (
+            {TAB_TYPES.map(tab => (
               <button 
                 key={tab} 
                 className={`cm-tab ${activeTab === tab ? 'cm-tab-active' : ''}`}
@@ -373,18 +407,18 @@ const CounsellorMessages = () => {
                 {search ? 'No results found.' : 'No active conversations.'}
               </div>
             ) : (
-              filtered.map(s => {
-                if (!s?._id) return null;
-                const sId = s._id.toString();
+              filtered.map(c => {
+                if (!c?._id) return null;
+                const cId = c._id.toString();
                 return (
                   <ThreadItem
-                    key={sId}
-                    student={s}
-                    active={sId === activeId}
-                    unread={convMap[sId]?.unread || 0}
-                    lastMsg={convMap[sId]?.lastMsg}
-                    lastAt={convMap[sId]?.lastAt}
-                    onClick={() => openConversation(sId)}
+                    key={cId}
+                    student={c}
+                    active={cId === activeId}
+                    unread={convMap[cId]?.unread || 0}
+                    lastMsg={convMap[cId]?.lastMsg}
+                    lastAt={convMap[cId]?.lastAt}
+                    onClick={() => openConversation(cId)}
                   />
                 );
               })
@@ -397,8 +431,8 @@ const CounsellorMessages = () => {
           {!activeId ? (
             <div className="cm-chat-empty">
               <MessageSquare size={52} strokeWidth={1.2} />
-              <h3>Select a student to start messaging</h3>
-              <p>Messages are private and only visible to you and the student.</p>
+              <h3>Select someone to start messaging</h3>
+              <p>Messages are private and only visible to you and the recipient.</p>
             </div>
           ) : (
             <>
@@ -407,13 +441,13 @@ const CounsellorMessages = () => {
                   <Plus size={24} style={{ transform: 'rotate(45deg)' }} />
                 </button>
                 <img 
-                  src={activeStudent?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(activeStudent?.name || 'Student')}&background=random`} 
+                  src={activeContact?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(activeContact?.name || 'User')}&background=random`} 
                   className="cm-chat-avatar" 
                   alt="avatar" 
                 />
                 <div className="cm-chat-peer-info">
                   <div className="cm-peer-name-wrap">
-                    <span className="cm-chat-peer-name">{activeStudent?.name}</span>
+                    <span className="cm-chat-peer-name">{activeContact?.role === 'volunteer' ? `[Volunteer] ${activeContact?.name}` : activeContact?.name}</span>
                   </div>
                   <span className="cm-chat-status">
                     Available
@@ -433,7 +467,7 @@ const CounsellorMessages = () => {
                 ) : messages.length === 0 && !sending ? (
                   <div className="cm-msg-state">
                     <MessageSquare size={28} strokeWidth={1.5} />
-                    <p>Start a conversation with {activeStudent?.name}</p>
+                    <p>Start a conversation with {activeContact?.name}</p>
                   </div>
                 ) : (
                   groupedMessages.map((item, i) => (
@@ -445,7 +479,7 @@ const CounsellorMessages = () => {
                       <Bubble
                         key={item._id || i}
                         msg={item}
-                        peerAvatar={activeStudent?.avatar}
+                        peerAvatar={activeContact?.avatar}
                         myAvatar={profile?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile?.name || 'C')}&background=1a2234&color=fff`}
                         isMine={
                           item.senderId?.toString() === user?.id ||

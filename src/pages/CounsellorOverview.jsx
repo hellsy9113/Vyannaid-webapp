@@ -3,7 +3,7 @@ import { useAuth } from '../auth/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import {
   Users, MessageSquare, AlertCircle, CheckCircle2, Calendar,
-  Plus, ChevronRight
+  Plus, ChevronRight, UserCheck
 } from 'lucide-react';
 import CounsellorLayout from '../components/CounsellorDashboard/CounsellorLayout';
 import {
@@ -74,6 +74,7 @@ const CounsellorOverview = () => {
 
   // Derive today's actual data
   const totalStudents = profile?.assignedStudents?.length ?? 0;
+  const totalVolunteers = profile?.assignedVolunteers?.length ?? 0;
   const todaySessions = sessions.filter(s => {
     const d = new Date(s.scheduledAt);
     const now = new Date();
@@ -142,6 +143,17 @@ const CounsellorOverview = () => {
             <div className="co-stat-body">
               <div className="co-stat-label">Today's Sessions</div>
               <div className="co-stat-value">{activeSessions}</div>
+            </div>
+          </div>
+
+          {/* Total Volunteers */}
+          <div className="co-stat-card" onClick={() => navigate('/dashboard/counsellor/volunteers')} style={{ cursor: 'pointer' }}>
+            <div className="co-stat-header">
+              <div className="co-icon-sq bg-green"><UserCheck size={20} className="text-green" /></div>
+            </div>
+            <div className="co-stat-body">
+              <div className="co-stat-label">My Volunteers</div>
+              <div className="co-stat-value">{totalVolunteers}</div>
             </div>
           </div>
 

@@ -47,6 +47,10 @@ import AdminOverview    from "./pages/AdminOverview";
 import AdminUsers       from "./pages/AdminUsers";
 import AdminAssign      from "./pages/AdminAssign";
 import AdminCreateStaff from "./pages/AdminCreateStaff";
+import AdminVolunteers   from "./pages/AdminVolunteers";
+
+// ── Counsellor volunteer management ───────────────────────────────
+import CounsellorVolunteers from "./pages/CounsellorVolunteers";
 
 // ── Video / Voice call ─────────────────────────────────────────
 // Accessible to both students AND counsellors
@@ -232,6 +236,9 @@ function App() {
           <Route path="/dashboard/counsellor/settings" element={
             <ProtectedRoute allowedRoles={["counsellor"]}><CounsellorSettings /></ProtectedRoute>
           } />
+          <Route path="/dashboard/counsellor/volunteers" element={
+            <ProtectedRoute allowedRoles={["counsellor"]}><CounsellorVolunteers /></ProtectedRoute>
+          } />
 
           {/* ════════════════════════════════════ */}
           {/*  ADMIN ROUTES                        */}
@@ -250,6 +257,9 @@ function App() {
           } />
           <Route path="/dashboard/admin/staff" element={
             <ProtectedRoute allowedRoles={["admin"]}><AdminCreateStaff /></ProtectedRoute>
+          } />
+          <Route path="/dashboard/admin/volunteers" element={
+            <ProtectedRoute allowedRoles={["admin"]}><AdminVolunteers /></ProtectedRoute>
           } />
 
           {/* ── Catch-all ── */}

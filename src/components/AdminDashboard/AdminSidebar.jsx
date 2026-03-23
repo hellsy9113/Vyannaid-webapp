@@ -10,6 +10,7 @@ const NAV = [
   { to: '/dashboard/admin',                    icon: LayoutDashboard, label: 'Overview'    },
   { to: '/dashboard/admin/counsellors',         icon: UserCheck,       label: 'Counsellors' },
   { to: '/dashboard/admin/students',            icon: GraduationCap,   label: 'Students'    },
+  { to: '/dashboard/admin/volunteers',          icon: UserCheck,       label: 'Volunteers'  },
   { to: '/dashboard/admin/assign',              icon: Users,           label: 'Assign'      },
   { to: '/dashboard/admin/staff',               icon: ShieldCheck,     label: 'Create Staff' },
   { to: '/dashboard/admin/settings',            icon: Settings,        label: 'Settings'    },
