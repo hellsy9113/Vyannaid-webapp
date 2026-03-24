@@ -15,9 +15,6 @@ export default defineConfig(({ mode }) => {
         'ngrok-skip-browser-warning': 'true', // Skip ngrok interstitial page
       },
       proxy: {
-        // Handle all backend routes - keep focused on API and Auth
-        '/api': { target: apiTarget, changeOrigin: true },
-        '/auth': { target: apiTarget, changeOrigin: true },
         // Handle all backend routes — but bypass for navigation requests (HTML)
         // so React Router handle deep links/refreshes.
         '/api': { target: apiTarget, changeOrigin: true },

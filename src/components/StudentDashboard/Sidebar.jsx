@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, Activity, Calendar, Users, Music, Menu, ShieldCheck, MessageSquare } from 'lucide-react';
+import { Home, Activity, Calendar, Users, Music, Menu, ShieldCheck, MessageSquare, Brain } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 
 import './Sidebar.css';
@@ -28,6 +28,10 @@ const Sidebar = ({ isOpen, isCollapsed, setIsCollapsed, closeSidebar }) => {
                 <Link to="/dashboard/analytics" className={`sidebar-link ${location.pathname === '/dashboard/analytics' ? 'active' : ''}`}>
                     <Activity size={20} strokeWidth={2} />
                     <span>Vitals</span>
+                </Link>
+                <Link to="/dashboard/assessments" className={`sidebar-link ${location.pathname === '/dashboard/assessments' ? 'active' : ''}`}>
+                    <Brain size={20} strokeWidth={2} />
+                    <span>Assessments</span>
                 </Link>
                 <Link to="/dashboard/activities" className={`sidebar-link ${location.pathname === '/dashboard/activities' ? 'active' : ''}`}>
                     <div className="activity-icon-compound">

@@ -2,7 +2,8 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
   Home, Users, CalendarDays, FileText,
-  MessageSquare, BookOpen, Menu, UserPlus
+  MessageSquare, BookOpen, Menu, UserPlus,
+  Brain
 } from 'lucide-react';
 import { useAuth } from '../../auth/AuthContext';
 import './CounsellorSidebar.css';
@@ -10,6 +11,7 @@ import './CounsellorSidebar.css';
 const NAV = [
   { to: '/dashboard/counsellor', icon: Home, label: 'Home' },
   { to: '/dashboard/counsellor/students', icon: Users, label: 'Student List' },
+  { to: '/dashboard/counsellor/assessments', icon: Brain, label: 'Assessments' },
   { to: '/dashboard/counsellor/volunteers', icon: UserPlus, label: 'Volunteers' },
   { to: '/dashboard/counsellor/sessions', icon: CalendarDays, label: 'Sessions' },
   { to: '/dashboard/counsellor/notes', icon: FileText, label: 'Notes' },

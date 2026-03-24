@@ -31,6 +31,7 @@ import JournalingEditor from "./pages/JournalingEditor";
 import VolunteerApplication from "./pages/VolunteerApplication";
 import VolunteerForm from "./pages/VolunteerForm";
 import CalmMusic from "./pages/CalmMusic";
+import Assessments from "./pages/Assessments";
 
 // ── Counsellor pages ─────────────────────────────────────────────
 import CounsellorOverview  from "./pages/CounsellorOverview";
@@ -178,6 +179,9 @@ function App() {
           <Route path="/dashboard/analytics" element={
             <ProtectedRoute allowedRoles={["student"]}><Analytics /></ProtectedRoute>
           } />
+          <Route path="/dashboard/assessments" element={
+            <ProtectedRoute allowedRoles={["student"]}><Assessments /></ProtectedRoute>
+          } />
           <Route path="/dashboard/chatbot" element={
             <ProtectedRoute allowedRoles={["student"]}><Chatbot /></ProtectedRoute>
           } />
@@ -220,6 +224,9 @@ function App() {
           } />
           <Route path="/dashboard/counsellor/sessions" element={
             <ProtectedRoute allowedRoles={["counsellor"]}><CounsellorSessions /></ProtectedRoute>
+          } />
+          <Route path="/dashboard/counsellor/assessments" element={
+            <ProtectedRoute allowedRoles={["counsellor"]}><Assessments /></ProtectedRoute>
           } />
           <Route path="/dashboard/counsellor/notes" element={
             <ProtectedRoute allowedRoles={["counsellor"]}><CounsellorNotes /></ProtectedRoute>
