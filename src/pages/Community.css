@@ -1,7 +1,12 @@
+:root {
+    --mobile-side-padding: 1.25rem;
+}
+
 .community-page {
     width: 100%;
     max-width: 800px;
     margin: 0 auto;
+    padding: 1rem var(--mobile-side-padding) 2rem; /* Added horizontal padding */
 }
 
 /* Header Elements */
@@ -13,7 +18,7 @@
 }
 
 .community-header-text h1 {
-    font-size: 1.75rem;
+    font-size: clamp(1.5rem, 6vw, 1.75rem); /* Fluid title */
     color: var(--color-text-main);
     margin: 0 0 0.25rem 0;
 }
@@ -106,7 +111,7 @@
 .base-card {
     background: white;
     border-radius: 16px;
-    padding: 1.5rem;
+    padding: clamp(1rem, 4vw, 1.5rem); /* Responsive padding */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
     border: 1px solid #F1F5F9;
 }

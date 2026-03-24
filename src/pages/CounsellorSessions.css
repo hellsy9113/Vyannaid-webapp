@@ -365,61 +365,15 @@
   opacity: 1;
 }
 
-/* Custom Time Picker */
-.time-picker-wrapper {
-  position: relative;
-  flex: 1;
-  display: flex;
+/* ─────────────────────────────────────────────────────────── */
+
+.status-pulse {
+  animation: csStatusPulse 2s infinite;
+  box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
 }
 
-.time-picker-wrapper .sm-input.time-picker-trigger {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  user-select: none;
-  background: transparent;
-}
-
-.time-picker-wrapper .placeholder {
-  color: #94a3b8;
-}
-
-.time-picker-popup {
-  position: absolute;
-  top: calc(100% + 4px);
-  left: 0;
-  width: 100%;
-  max-height: 220px;
-  overflow-y: auto;
-  background: #fff;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
-  z-index: 1000;
-}
-
-.time-picker-popup::-webkit-scrollbar {
-  width: 6px;
-}
-.time-picker-popup::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 4px;
-}
-
-.time-picker-item {
-  padding: 0.5rem 0.85rem;
-  cursor: pointer;
-  font-size: 0.9rem;
-  color: #1a2234;
-  transition: background 0.15s;
-}
-
-.time-picker-item:hover {
-  background: #f1f5f9;
-}
-
-.time-picker-item.selected {
-  background: #eef2ff;
-  color: #6366f1;
-  font-weight: 600;
+@keyframes csStatusPulse {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+  70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
 }

@@ -79,8 +79,8 @@ const Navbar = () => {
             </div>
 
             {/* Mobile Menu Overlay */}
-            <div className={`mobile-menu-overlay ${isOpen ? 'active' : ''}`}>
-                <div className="mobile-menu-content">
+            <div className={`mobile-menu-overlay ${isOpen ? 'active' : ''}`} onClick={() => setIsOpen(false)}>
+                <div className="mobile-menu-content" onClick={(e) => e.stopPropagation()}>
                     {navLinks.map((link) => (
                         <Link
                             key={link.name}

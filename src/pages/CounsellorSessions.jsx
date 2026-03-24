@@ -75,58 +75,6 @@ const MiniCalendar = ({ sessions, onDayClick, selectedDate }) => {
   );
 };
 
-/* ── Custom Time Picker ─────────────────────────────────────── */
-const CustomTimePicker = ({ value, onChange }) => {
-  const [open, setOpen] = useState(false);
-  const containerRef = useRef(null);
-
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (containerRef.current && !containerRef.current.contains(e.target)) setOpen(false);
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  const times = useMemo(() => {
-    const t = [];
-    for(let i=0; i<24; i++) {
-      for(let j=0; j<60; j+=15) {
-        t.push(`${String(i).padStart(2,'0')}:${String(j).padStart(2,'0')}`);
-      }
-    }
-    return t;
-  }, []);
-
-  // Scroll to selected on open
-  useEffect(() => {
-    if (open && value && containerRef.current) {
-      const el = containerRef.current.querySelector('.selected');
-      if (el) el.scrollIntoView({ block: 'center' });
-    }
-  }, [open, value]);
-
-  return (
-    <div className="time-picker-wrapper" ref={containerRef}>
-      <div className="sm-input time-picker-trigger" onClick={() => setOpen(!open)}>
-        {value || <span className="placeholder">Select</span>}
-      </div>
-      {open && (
-        <div className="time-picker-popup">
-          {times.map(t => (
-            <div 
-              key={t} 
-              className={`time-picker-item ${value === t ? 'selected' : ''}`}
-              onClick={() => { onChange(t); setOpen(false); }}
-            >
-              {t}
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-};
 
 /* ── Session form modal ─────────────────────────────────────── */
 const SessionModal = ({ students, initial, onSave, onClose, showToast }) => {
@@ -183,7 +131,7 @@ const SessionModal = ({ students, initial, onSave, onClose, showToast }) => {
               <label className="sm-label">Time</label>
               <div className="sm-input-group">
                 <div className="sm-input-icon"><Clock size={16} /></div>
-                <CustomTimePicker value={timeStr} onChange={setTimeStr} />
+                <input className="sm-input" type="time" value={timeStr} onChange={e => setTimeStr(e.target.value)} />
               </div>
             </div>
           </div>
@@ -231,6 +179,7 @@ const CounsellorSessions = () => {
   const [modal,        setModal]    = useState(false);
   const [editItem,     setEditItem] = useState(null);
   const [statusFilter, setFilter]   = useState('');
+  const [tab,          setTab]      = useState('upcoming');
   const [toast,        setToast]    = useState('');
 
   const showToast = (m) => { setToast(m); setTimeout(() => setToast(''), 3000); };
@@ -279,7 +228,7 @@ const CounsellorSessions = () => {
     navigate(`/call/${sessionId}`);
   };
 
-  const displayed = sessions.filter(s => {
+  const baseFiltered = sessions.filter(s => {
     if (statusFilter && s.status !== statusFilter) return false;
     if (selDate) {
       const d = new Date(s.scheduledAt);
@@ -287,6 +236,109 @@ const CounsellorSessions = () => {
     }
     return true;
   });
+
+  const nowTs = Date.now();
+  const ONE_HOUR = 60 * 60 * 1000;
+
+  const ongoing = baseFiltered.filter(s => {
+    if (s.status !== 'scheduled') return false;
+    const start = new Date(s.scheduledAt).getTime();
+    return nowTs >= start && nowTs <= start + ONE_HOUR;
+  });
+
+  const upcoming = baseFiltered.filter(s => {
+    if (s.status === 'cancelled') return false;
+    const start = new Date(s.scheduledAt).getTime();
+    return nowTs < start;
+  }).sort((a, b) => new Date(a.scheduledAt) - new Date(b.scheduledAt));
+
+  const past = baseFiltered.filter(s => {
+    if (s.status === 'completed' || s.status === 'cancelled' || s.status === 'no-show') return true;
+    if (s.status === 'scheduled') {
+      const start = new Date(s.scheduledAt).getTime();
+      return nowTs > start + ONE_HOUR;
+    }
+    return false;
+  }).sort((a, b) => new Date(b.scheduledAt) - new Date(a.scheduledAt));
+
+  const displayed = tab === 'upcoming' ? upcoming : past;
+
+  const renderSessionCard = (s) => {
+    const startTs = new Date(s.scheduledAt).getTime();
+    const isOngoingSession = nowTs >= startTs && nowTs <= startTs + ONE_HOUR && s.status === 'scheduled';
+    const isPastSession = (nowTs > startTs + ONE_HOUR) && s.status === 'scheduled';
+    
+    let displayStatus = s.status;
+    let pillClass = `css-pill-${s.status}`;
+    
+    if (isOngoingSession) {
+      displayStatus = 'ongoing';
+      pillClass = 'css-pill-completed';
+    } else if (isPastSession) {
+      displayStatus = 'expired';
+      pillClass = 'css-pill-cancelled';
+    }
+
+    // Join Button Condition (Live or Upcoming)
+    const canJoin = (s.status === 'scheduled' || isOngoingSession) && (s.type === 'video' || s.type === 'phone');
+
+    return (
+      <div key={s._id} className="css-session-card">
+        <div className="css-sc-left">
+          <StatusIcon status={s.status} />
+          <div className="css-sc-info">
+            <span className="css-sc-name">{s.studentName || '—'}</span>
+            <span className="css-sc-meta">
+              {new Date(s.scheduledAt).toLocaleString('en-GB', {
+                weekday: 'short', day: 'numeric', month: 'short',
+                hour: '2-digit', minute: '2-digit'
+              })} · {s.durationMinutes ?? 50}min · {s.type || 'video'}
+            </span>
+            {s.notes && <span className="css-sc-notes">{s.notes}</span>}
+          </div>
+        </div>
+        <div className="css-sc-actions">
+          <span className={`css-pill ${pillClass}`}>{displayStatus}</span>
+
+          {canJoin && (
+            <button
+              className="css-icon-btn css-icon-indigo"
+              title="Join call"
+              onClick={() => handleJoin(s._id)}
+            >
+              <Video size={14} />
+            </button>
+          )}
+
+          {s.status === 'scheduled' && (
+            <button
+              className="css-icon-btn css-icon-green"
+              title="Mark as complete"
+              onClick={() => handleComplete(s._id)}
+            >
+              <CheckCircle2 size={14} />
+            </button>
+          )}
+
+          <button
+            className="css-icon-btn"
+            title="Edit session"
+            onClick={() => { setEditItem(s); setModal(true); }}
+          >
+            <Edit3 size={14} />
+          </button>
+          <button
+            className="css-icon-btn css-icon-red"
+            title="Cancel session"
+            onClick={() => handleDelete(s._id)}
+          >
+            <Trash2 size={14} />
+          </button>
+        </div>
+      </div>
+    );
+  };
+
 
   return (
     <CounsellorLayout>
@@ -347,76 +399,38 @@ const CounsellorSessions = () => {
               </button>
             </div>
 
+            <div className="tab-switcher" style={{ marginTop: '1rem', marginBottom: '1.5rem', background: '#f8fafc', padding: '4px', borderRadius: '10px', display: 'flex', gap: '4px' }}>
+              <button className={`tab-btn ${tab === 'upcoming' ? 'active' : ''}`} onClick={() => setTab('upcoming')} style={{flex: 1, border: 'none', background: tab === 'upcoming' ? '#fff' : 'transparent', color: tab === 'upcoming' ? '#1a2234' : '#64748b', fontWeight: tab === 'upcoming' ? 700 : 500, padding: '0.6rem', borderRadius: '8px', cursor: 'pointer', boxShadow: tab === 'upcoming' ? '0 2px 8px rgba(0,0,0,0.05)' : 'none', transition: 'all 0.2s'}}>Upcoming</button>
+              <button className={`tab-btn ${tab === 'past' ? 'active' : ''}`} onClick={() => setTab('past')} style={{flex: 1, border: 'none', background: tab === 'past' ? '#fff' : 'transparent', color: tab === 'past' ? '#1a2234' : '#64748b', fontWeight: tab === 'past' ? 700 : 500, padding: '0.6rem', borderRadius: '8px', cursor: 'pointer', boxShadow: tab === 'past' ? '0 2px 8px rgba(0,0,0,0.05)' : 'none', transition: 'all 0.2s'}}>Past</button>
+            </div>
+
             {loading ? (
               <div className="css-loading"><div className="css-spinner" /></div>
-            ) : displayed.length === 0 ? (
-              <div className="css-empty">
-                <CalendarDays size={36} />
-                <p>No sessions {selDate ? 'on this day' : 'found'}.</p>
-                <button onClick={() => { setEditItem(null); setModal(true); }}>Schedule one →</button>
-              </div>
             ) : (
-              <div className="css-list">
-                {displayed.map(s => (
-                  <div key={s._id} className="css-session-card">
-                    <div className="css-sc-left">
-                      <StatusIcon status={s.status} />
-                      <div className="css-sc-info">
-                        <span className="css-sc-name">{s.studentName || '—'}</span>
-                        <span className="css-sc-meta">
-                          {new Date(s.scheduledAt).toLocaleString('en-GB', {
-                            weekday: 'short', day: 'numeric', month: 'short',
-                            hour: '2-digit', minute: '2-digit'
-                          })} · {s.durationMinutes ?? 50}min · {s.type || 'video'}
-                        </span>
-                        {s.notes && <span className="css-sc-notes">{s.notes}</span>}
-                      </div>
-                    </div>
-                    <div className="css-sc-actions">
-                      <span className={`css-pill css-pill-${s.status}`}>{s.status}</span>
-
-                      {/* Join Call — video/phone + scheduled only */}
-                      {s.status === 'scheduled' &&
-                       (s.type === 'video' || s.type === 'phone') &&
-                       new Date(s.scheduledAt) > new Date() && (
-                        <button
-                          className="css-icon-btn css-icon-indigo"
-                          title="Join call"
-                          onClick={() => handleJoin(s._id)}
-                        >
-                          <Video size={14} />
-                        </button>
-                      )}
-
-                      {/* Mark as complete — scheduled only */}
-                      {s.status === 'scheduled' && (
-                        <button
-                          className="css-icon-btn css-icon-green"
-                          title="Mark as complete"
-                          onClick={() => handleComplete(s._id)}
-                        >
-                          <CheckCircle2 size={14} />
-                        </button>
-                      )}
-
-                      <button
-                        className="css-icon-btn"
-                        title="Edit session"
-                        onClick={() => { setEditItem(s); setModal(true); }}
-                      >
-                        <Edit3 size={14} />
-                      </button>
-                      <button
-                        className="css-icon-btn css-icon-red"
-                        title="Cancel session"
-                        onClick={() => handleDelete(s._id)}
-                      >
-                        <Trash2 size={14} />
-                      </button>
+              <>
+                {ongoing.length > 0 && (
+                  <div className="ongoing-sessions-container" style={{ marginBottom: '2rem' }}>
+                    <h2 className="section-label-alt" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#16a34a', fontSize: '0.9rem', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.75rem' }}>
+                      <span className="status-pulse" style={{ display: 'inline-block', width: '8px', height: '8px', padding: 0, borderRadius: '50%', background: '#22c55e' }}></span> Live Sessions
+                    </h2>
+                    <div className="css-list">
+                      {ongoing.map(renderSessionCard)}
                     </div>
                   </div>
-                ))}
-              </div>
+                )}
+                
+                {displayed.length === 0 ? (
+                  <div className="css-empty">
+                    <CalendarDays size={36} />
+                    <p>No {tab} sessions {selDate ? 'on this day' : 'found'}.</p>
+                    <button onClick={() => { setEditItem(null); setModal(true); }}>Schedule one →</button>
+                  </div>
+                ) : (
+                  <div className="css-list">
+                    {displayed.map(renderSessionCard)}
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>

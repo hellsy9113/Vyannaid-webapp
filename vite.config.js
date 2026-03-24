@@ -15,20 +15,22 @@ export default defineConfig(({ mode }) => {
         'ngrok-skip-browser-warning': 'true', // Skip ngrok interstitial page
       },
       proxy: {
-        // Handle all backend routes
-        '/api': { target: apiTarget, changeOrigin: true },
-        '/auth': { target: apiTarget, changeOrigin: true },
-        '/dashboard': { target: apiTarget, changeOrigin: true },
-        '/admin': { target: apiTarget, changeOrigin: true },
-        '/counsellor': { target: apiTarget, changeOrigin: true },
-        '/profile': { target: apiTarget, changeOrigin: true },
-        '/messages': { target: apiTarget, changeOrigin: true },
+        // Handle all backend routes — but bypass for navigation requests (HTML)
+        // so React Router handle deep links/refreshes.
+        '/api':       { target: apiTarget, changeOrigin: true },
+        '/auth':      { target: apiTarget, changeOrigin: true, bypass: (req) => req.headers.accept?.includes('html') ? '/index.html' : null },
+        '/dashboard': { target: apiTarget, changeOrigin: true, bypass: (req) => req.headers.accept?.includes('html') ? '/index.html' : null },
+        '/admin':     { target: apiTarget, changeOrigin: true, bypass: (req) => req.headers.accept?.includes('html') ? '/index.html' : null },
+        '/counsellor':{ target: apiTarget, changeOrigin: true, bypass: (req) => req.headers.accept?.includes('html') ? '/index.html' : null },
+        '/profile':   { target: apiTarget, changeOrigin: true, bypass: (req) => req.headers.accept?.includes('html') ? '/index.html' : null },
+        '/messages':  { target: apiTarget, changeOrigin: true, bypass: (req) => req.headers.accept?.includes('html') ? '/index.html' : null },
         '/socket.io': {
           target: apiTarget,
           ws: true,
           changeOrigin: true,
         },
       },
+
     },
   };
 })

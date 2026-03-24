@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, Activity, Calendar, Users, Music, Menu, ShieldCheck } from 'lucide-react';
+import { Home, Activity, Calendar, Users, Music, Menu, ShieldCheck, MessageSquare } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 
 import './Sidebar.css';
@@ -40,8 +40,8 @@ const Sidebar = ({ isOpen, isCollapsed, setIsCollapsed, closeSidebar }) => {
                     <span>Activities</span>
                 </Link>
                 <Link to="/dashboard/appointments" className={`sidebar-link ${location.pathname === '/dashboard/appointments' ? 'active' : ''}`}>
-                    <Calendar size={20} strokeWidth={2} />
-                    <span>Appointments</span>
+                    <MessageSquare size={20} strokeWidth={2} />
+                    <span>Counsellor's Desk</span>
                 </Link>
                 <Link to="/dashboard/community" className={`sidebar-link ${location.pathname === '/dashboard/community' ? 'active' : ''}`}>
                     <Users size={20} strokeWidth={2} />

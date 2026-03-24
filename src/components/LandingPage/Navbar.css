@@ -148,12 +148,13 @@
 .mobile-menu-overlay {
     position: fixed;
     inset: 0;
-    background-color: rgb(17, 24, 39) !important;
-    z-index: 1001; /* Ensure it stays above everything */
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 1001;
     opacity: 0;
     visibility: hidden;
-    transition: all 0.3s ease;
-    padding-top: 100px;
+    transition: all 0.4s ease;
 }
 
 .mobile-menu-overlay.active {
@@ -162,17 +163,43 @@
 }
 
 .mobile-menu-content {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: min(85%, 380px);
+    height: 100vh;
+    background-color: rgb(17, 24, 39);
+    background: linear-gradient(180deg, rgba(17, 24, 39, 1) 0%, rgba(31, 41, 55, 1) 100%);
+    box-shadow: -15px 0 40px rgba(0, 0, 0, 0.4);
+    padding: 80px 2.5rem 2.5rem;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 2rem;
-    padding: 2rem;
+    gap: 1.25rem;
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+    overflow-y: auto;
+    z-index: 1001;
+}
+
+.mobile-menu-overlay.active .mobile-menu-content {
+    right: 0;
 }
 
 .mobile-nav-link {
-    font-size: 1.5rem;
-    font-weight: 700;
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+    padding: 1rem 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.2s ease;
+}
+
+.mobile-nav-link:hover, .mobile-nav-link.active {
     color: #FFFFFF;
+    padding-left: 0.5rem;
 }
 
 .mobile-auth-actions {
@@ -180,25 +207,27 @@
     flex-direction: column;
     width: 100%;
     gap: 1rem;
-    margin-top: 2rem;
+    margin-top: 1.5rem;
 }
 
 .mobile-btn-login {
     text-align: center;
-    padding: 1rem;
+    padding: 0.875rem;
     font-weight: 700;
     color: #FFFFFF;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: var(--radius-lg);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-md);
+    background: rgba(255, 255, 255, 0.05);
 }
 
 .mobile-btn-register {
     text-align: center;
-    padding: 1rem;
+    padding: 0.875rem;
     background: #FFFFFF;
     color: rgb(17, 24, 39);
     font-weight: 700;
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-md);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 /* Auth Page Navbar (Restored for light theme) */

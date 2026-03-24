@@ -286,15 +286,25 @@
   border-radius: 50%;
 }
 
-.cm-mobile-back-btn {
-  display: none;
+.cm-back-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: #f1f5f9;
   border: none;
-  border-radius: 8px;
-  padding: 4px;
+  border-radius: 12px;
+  width: 40px;
+  height: 40px;
   cursor: pointer;
-  color: #64748b;
-  margin-right: 0.5rem;
+  color: #1a2234;
+  margin-right: 0.75rem;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.cm-back-btn:hover {
+  background: #e2e8f0;
+  transform: translateX(-2px);
 }
 
 .cm-chat-header-actions {
@@ -473,7 +483,6 @@
   .cm-page.mobile-active .cm-sidebar { display: none; }
   .cm-page.mobile-active .cm-chat    { display: flex; width: 100%; }
 
-  .cm-mobile-back-btn { display: flex; align-items: center; justify-content: center; }
   .cm-chat-header { padding: 1rem 1.5rem; }
   .cm-messages { padding: 1.5rem 1.5rem; }
   .cm-input-area { padding: 1.5rem 1.5rem; }

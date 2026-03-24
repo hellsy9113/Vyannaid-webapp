@@ -1,3 +1,7 @@
+:root {
+    --mobile-side-padding: 1.25rem;
+}
+
 .volunteer-chat-page {
     display: flex;
     flex-direction: column;
@@ -7,13 +11,14 @@
     min-height: calc(100vh - 120px);
     background-color: #FAFAFA;
     font-family: 'Inter', sans-serif;
+    padding: 0 var(--mobile-side-padding) 2rem; /* Added horizontal padding */
 }
 
 .volunteer-chat-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 16px 24px;
+    padding: 16px 0; /* Adjusted padding */
     background-color: transparent;
 }
 

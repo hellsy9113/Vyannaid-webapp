@@ -1,3 +1,7 @@
+:root {
+    --mobile-side-padding: 1.25rem;
+}
+
 .chatbot-container {
     display: flex;
     flex-direction: column;
@@ -6,6 +10,7 @@
     color: #111827;
     background-color: #FFFFFF;
     min-height: 0;
+    padding: 0 var(--mobile-side-padding); /* Added horizontal padding */
 }
 
 .chat-main-header {

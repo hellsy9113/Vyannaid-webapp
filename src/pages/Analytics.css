@@ -1,5 +1,9 @@
 /* ── Analytics.css — clean rewrite ── */
 
+:root {
+    --mobile-side-padding: 1.25rem;
+}
+
 .analytics-page {
     width: 100%;
     max-width: 800px;
@@ -7,14 +11,14 @@
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
-    padding-bottom: 2rem;
+    padding: 1rem var(--mobile-side-padding) 2rem; /* Added horizontal padding */
 }
 
 /* ── Header ── */
 .analytics-header { margin-bottom: 0.5rem; }
 
 .analytics-title {
-    font-size: 2rem;
+    font-size: clamp(1.75rem, 5vw, 2rem); /* Fluid title */
     font-weight: 800;
     color: #1A2234;
     margin: 0 0 0.5rem 0;
@@ -22,7 +26,7 @@
 }
 
 .analytics-subtitle {
-    font-size: 0.95rem;
+    font-size: clamp(0.85rem, 3vw, 0.95rem); /* Fluid subtitle */
     color: #94A3B8;
     margin: 0;
 }
@@ -41,7 +45,7 @@
 .metric-card {
     background: white;
     border-radius: 24px;
-    padding: 1.25rem;
+    padding: clamp(1rem, 4vw, 1.25rem); /* Responsive padding */
     box-shadow: 0 2px 10px rgba(0,0,0,0.02);
     display: flex;
     flex-direction: column;
@@ -67,7 +71,7 @@
 .metric-svg { width: 100%; height: 100%; }
 
 .metric-value {
-    font-size: 2.5rem;
+    font-size: clamp(1.8rem, 8vw, 2.5rem); /* Scale down on small screens */
     font-weight: 700;
     color: #0F172A;
     margin-bottom: 0.25rem;
@@ -133,7 +137,7 @@
 }
 
 .state-value {
-    font-size: 1rem;
+    font-size: clamp(0.9rem, 4vw, 1rem); /* Fluid text */
     font-weight: 700;
     color: #1A2234;
     margin: 0;

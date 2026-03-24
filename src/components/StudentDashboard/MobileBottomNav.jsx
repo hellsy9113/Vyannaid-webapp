@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, Activity, Calendar, Users, Bot } from 'lucide-react';
+import { Home, Activity, Calendar, Users, Bot, MessageSquare } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import './MobileBottomNav.css';
 
@@ -17,8 +17,8 @@ const MobileBottomNav = () => {
             </Link>
 
             <Link to="/dashboard/appointments" className={`nav-item ${isActive('/dashboard/appointments') ? 'active' : ''}`}>
-                <Calendar size={isActive('/dashboard/appointments') ? 26 : 22} />
-                <span>Care</span>
+                <MessageSquare size={isActive('/dashboard/appointments') ? 26 : 22} />
+                <span>Desk</span>
             </Link>
 
             <Link to="/dashboard/analytics" className={`nav-item ${isActive('/dashboard/analytics') ? 'active' : ''}`}>

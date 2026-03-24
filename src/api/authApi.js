@@ -15,23 +15,49 @@ export const api = axios.create({
 
 api.interceptors.request.use((req) => {
   const token = localStorage.getItem("token");
-  if (token) req.headers.Authorization = `Bearer ${token}`;
+  
+  // ── Public Routes ─────────────────────────────────────────────
+  // These routes DO NOT require a token to be sent.
+  const publicRoutes = ["/auth/login", "/auth/register", "/api/music", "/"];
+  const isPublic = publicRoutes.some(route => req.url.startsWith(route));
+
+  if (token) {
+    req.headers.Authorization = `Bearer ${token}`;
+  } else if (!isPublic) {
+    // Prevent execution of protected calls if no token is available
+    console.warn(`[API] Blocked protected request to ${req.url} - No token found.`);
+    return Promise.reject(new Error("No token provided. Request blocked."));
+  }
+
   return req;
 });
 
+// ── Shared Authenticated Request Helper ──────────────────────────
+/**
+ * Wrapper for API calls to ensure a token is present.
+ * usage: authenticatedRequest(() => api.get('/protected-route'))
+ */
+export const authenticatedRequest = async (apiCall) => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    window.location.replace("/login");
+    throw new Error("Session expired. Please log in.");
+  }
+  return apiCall();
+};
+
 // ─── 401 interceptor ────────────────────────────────────────────
-// Only force-logout when the response body explicitly says the token
-// is invalid/expired — NOT for every 401 (e.g. wrong role, missing
-// permissions, or a race-condition on first load).
-//
-// Previously this wiped localStorage and hard-redirected on ANY 401,
-// which caused admins/counsellors to be kicked to /login immediately
-// after logging in because an API call on the dashboard returned 401
-// (e.g. due to tokenVersion mismatch on seeded accounts).
-// ────────────────────────────────────────────────────────────────
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    // If request was blocked by our request interceptor above
+    if (error.message === "No token provided. Request blocked.") {
+      if (window.location.pathname !== "/login") {
+         window.location.replace("/login");
+      }
+      return Promise.reject(error);
+    }
+
     if (error.response?.status === 401) {
       const msg = error.response?.data?.error || error.response?.data?.message || "";
       const isTokenError =
@@ -41,7 +67,6 @@ api.interceptors.response.use(
         msg.includes("No token provided") ||
         msg.includes("Invalid authorization format");
 
-      // Only wipe session for definitive token errors, not permission/role errors
       if (isTokenError && window.location.pathname !== "/login") {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
@@ -54,4 +79,4 @@ api.interceptors.response.use(
 
 // Auth endpoints
 export const registerUser = (data) => api.post("/auth/register", data);
-export const loginUser    = (data) => api.post("/auth/login", data);
+export const loginUser    = (data) => api.post("/auth/login", data);

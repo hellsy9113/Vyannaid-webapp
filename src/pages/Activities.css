@@ -1,4 +1,8 @@
 /* Activities.css */
+:root {
+    --mobile-side-padding: 1.25rem;
+}
+
 .activities-page {
     width: 100%;
     max-width: 800px;
@@ -6,11 +10,12 @@
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    padding: 1rem var(--mobile-side-padding) 2rem; /* Added horizontal padding */
 }
 
 /* Base Headings */
 .page-title {
-    font-size: 1.75rem;
+    font-size: clamp(1.5rem, 6vw, 1.75rem); /* Fluid title */
     color: #1A2234;
     font-weight: 700;
     margin: 0 0 0.5rem 0;
@@ -64,7 +69,7 @@
 }
 
 .practice-title {
-    font-size: 1.75rem;
+    font-size: clamp(1.5rem, 7vw, 1.75rem); /* Fluid title */
     font-weight: 700;
     margin: 0 0 0.75rem 0;
     line-height: 1.2;

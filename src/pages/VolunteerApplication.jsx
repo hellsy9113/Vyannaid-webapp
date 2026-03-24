@@ -234,7 +234,7 @@ const VolunteerApplication = () => {
                             <ShieldCheck size={14} />
                             <span>VOLUNTEER PROGRAM</span>
                         </div>
-                        <h1 className="va-title">Support. Listen. <span className="text-gradient">Empower.</span></h1>
+                        <h1 className="va-title"><span className="text-gradient">Support. Listen. Empower.</span></h1>
                         <p className="va-subtitle">
                             Become a Peer Volunteer and help build a safer, more supportive space for mental health within our student community.
                         </p>
