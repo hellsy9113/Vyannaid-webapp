@@ -10,10 +10,15 @@ import { api } from './authApi';
  */
 export const getTurnCredentials = async () => {
   try {
-    const res = await api.get('/api/turn/credentials');
+    const res = await api.get('/turn/credentials');
     
     // Check for standard backend response structure
     if (res.data && Array.isArray(res.data.iceServers)) {
+      if (res.data.debug?.fallback) {
+        console.warn('[TURN] Backend returned fallback (STUN only). Error:', res.data.debug.error);
+      } else {
+        console.log('[TURN] Credentials loaded successfully');
+      }
       return res.data.iceServers;
     }
     
