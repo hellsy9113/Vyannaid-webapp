@@ -67,26 +67,4 @@ Vyannaid-webapp/
 └─ vite.config.js
 
 
-
-curl \
-	-H "Authorization: Bearer 885e2ef67f847596c36b01086ea6b2894d8a459dc1545412d0894fbcfe71c569" \
-	-H "Content-Type: application/json" -d '{"ttl": 86400}' \
-	https://rtc.live.cloudflare.com/v1/turn/keys/93435d43a28ad371b37e6e6961dff98b/credentials/generate-ice-servers
-
-
-
-
-    {
-	"iceServers": [
-    {
-      "urls": [
-        "stun:stun.cloudflare.com:3478",
-        "turn:turn.cloudflare.com:3478?transport=udp",
-        "turn:turn.cloudflare.com:3478?transport=tcp",
-        "turns:turn.cloudflare.com:5349?transport=tcp"
-      ],
-      "username": "xxxx",
-      "credential": "yyyy",
-    }
-  ]
-}
+	
