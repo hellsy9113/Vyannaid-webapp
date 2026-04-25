@@ -10,6 +10,8 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [react()],
     server: {
+      port: 5173,        // Pin to a fixed port
+      strictPort: true,  // Fail instead of silently bumping to 5174, 5175…
       allowedHosts: true, // Thoroughly allow all tunnels (ngrok, etc.)
       host: true, // Expose to LAN (needed for testing from a second machine)
       headers: {
