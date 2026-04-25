@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AuthProvider, useAuth } from "./auth/AuthContext";
 import ProtectedRoute from "./auth/ProtectedRoute";
+import { Analytics as VercelAnalytics } from '@vercel/analytics/react';
 
 // ── Landing page ────────────────────────────────────────────────
 import LandingLayout from "./components/LandingPage/LandingLayout";
@@ -273,6 +274,7 @@ function App() {
           <Route path="*" element={<HomeRoute />} />
 
         </Routes>
+        <VercelAnalytics />
       </BrowserRouter>
     </AuthProvider>
   );
